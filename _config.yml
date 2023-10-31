@@ -2,8 +2,8 @@ title: Pirrandi
 author: Pirrandi
 email: 
 description: > # this means to ignore newlines until "show_exerpts:"
-  Blog personal sobre Conceptos de
-  Hacking Etico.
+  Blog personal | Conceptos de
+  Hacking | Write-Ups
 show_excerpts: true # set to true to show excerpts on the homepage
 url: https://pirrandi.github.io
 baseurl: /
