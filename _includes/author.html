@@ -1,14 +1,14 @@
 <div class="author-box">
     {% if site.avatar_source == "github" and site.github_username %}
         {% capture avatar_image %}
-           <img src="{{ https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.ashreinu.us%2Fwp-content%2Fuploads%2F2017%2F11%2FTop-5-hacking-tools.jpg&f=1&nofb=1 }}"
+           <img src="https://www.hackthebox.com/storage/avatars/6bcb2b4c2931783b04d57610d49c7694.png"
         {% endcapture %}
     {% elsif site.plugins contains "liquid-md5" %}
         {% capture avatar_image %}
         {% endcapture %}
     {% endif %}
     {% if avatar_image %}
-        <img src="{{ https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.ashreinu.us%2Fwp-content%2Fuploads%2F2017%2F11%2FTop-5-hacking-tools.jpg&f=1&nofb=1 }}" class="author-avatar" alt="Avatar" />
+        <img src="https://www.hackthebox.com/storage/avatars/6bcb2b4c2931783b04d57610d49c7694.png" class="author-avatar" alt="Avatar" />
     {% endif %}
 {{ site.description }}
 </div>

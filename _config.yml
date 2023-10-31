@@ -1,11 +1,10 @@
-title: Pirrandi Blog
+title: Pirrandi  
 author: Pirrandi
 email: 
 description: > # this means to ignore newlines until "show_exerpts:"
-  Este es mi blog personal sobre Conceptos
-  Hacking Etico // HTB // TryHackMe // Resumenes de Hacking
-  // Herramientas para distintas tareas.
-show_excerpts: false # set to true to show excerpts on the homepage
+  Blog personal sobre Conceptos de
+  Hacking Etico.
+show_excerpts: true # set to true to show excerpts on the homepage
 url: https://pirrandi.github.io
 baseurl: /
 
@@ -29,9 +28,15 @@ dash:
   # generate social links in footer
   # supported colors: green, red, orange, blue, cyan, pink, teal, yellow, indigo, purple
   social_links:
-      url: https://Ki-pro.github.io
-      icon: github-square
-      color: red
+  - url: https://github.com/pirrandi
+    icon: github-square
+    color: green
+  - url: https://twitter.com/tucuentadetwitter
+    icon: twitter-square
+    color: green
+  - url: https://www.linkedin.com/in/tuperfillinkedin
+    icon: linkedin
+    color: green
 
   show_author: true
 
@@ -48,5 +53,5 @@ plugins:
  - jekyll/tagging
 
 # Replaces the default avatar provider (gravatar)
-#avatar_source: github
-#github_username: bitbrain
+avatar_source: github
+github_username: pirrandi

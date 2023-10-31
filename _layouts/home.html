@@ -7,7 +7,9 @@ layout: default
 {% assign posts_count = paginator.posts | size %}
 {% if posts_count > 0 %}
 <h1>Últimas publicaciones</h1>
-    <marquee>// HTB // TryHackMe // OvertheWire // PortSwigger // Write Ups // OWASP Top 10 // Active Directory // Tecnicas // Conceptos // Tools //</marquee>
+<p style="font-size: 25px; color:#73ff00;">::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::</p>
+
+    <!--<marquee>// HTB // TryHackMe // OvertheWire // PortSwigger // Write Ups // OWASP Top 10 // Active Directory // Tecnicas // Conceptos // Tools //</marquee>-->
     <div class="post-links">
       {% for post in paginator.posts %}
         <div class="post-link-wrapper">
@@ -38,7 +40,7 @@ layout: default
 
     {% include pagination.html %}
 
-    {% include tagcloud.html %}
+    
 {% else %}
 <h2>no posts yet.</h2>
 {% endif %}
