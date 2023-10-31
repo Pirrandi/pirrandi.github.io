@@ -4669,9 +4669,11 @@ pre {
   position: relative; }
   .site-header .blinking_cursor {
     animation: blinker 1s none infinite;
-    font-size: 20px; }
+    font-size: 20px; 
+    color: #88ff00;
+  }
   .site-header .command_prompt {
-    color: #637AFE;
+    color: #88ff00;
     font-size: 16px;
     margin-left: 0.1em; }
     .site-header .command_prompt:before {
