@@ -10763,7 +10763,9 @@ pre, code {
 .theme--dark pre,
 .theme--dark code {
   background-color: #1E2227;
-  color: #DAE4ED; }
+  color: #baff52;
+  font-size: 12px;
+  border-radius: 0px; }
 
 .theme--light pre, .theme--light code {
   background-color: #1E2227;
@@ -11017,7 +11019,8 @@ pre > code {
   font-size: 16px;
   font-size: 20px;
   display: inline-block;
-  text-align: initial; }
+  text-align: initial;
+  text-decoration: none; }
 
 .post-link-wrapper > .post-meta {
   font-size: 14px; }

