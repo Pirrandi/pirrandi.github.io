@@ -1,7 +1,3 @@
----
-# Only the main Sass file needs front matter (the dashes are enough)
----
-
 @import "dash";
 
 .post-excerpt {
@@ -4639,7 +4635,9 @@ pre, code {
   .theme--dark pre,
   .theme--dark code {
     background-color: #1E2227;
-    color: #DAE4ED; }
+    color: #baff52;
+    font-size: 12px;
+    border-radius: 0px; }
   .theme--light pre, .theme--light code {
     background-color: #1E2227;
     color: #DAE4ED; }
