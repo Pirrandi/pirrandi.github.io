@@ -6,6 +6,10 @@ description: > # this means to ignore newlines until "show_exerpts:"
   Hacking Etico // HTB // TryHackMe // Resumenes de Hacking
   // Herramientas para distintas tareas.
 show_excerpts: false # set to true to show excerpts on the homepage
+url: https://pirrandi.github.io
+baseurl: /
+
+
 
 paginate: 4
 paginate_path: "/blog/page:num"
