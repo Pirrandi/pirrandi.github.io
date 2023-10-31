@@ -31,10 +31,10 @@ dash:
   - url: https://github.com/pirrandi
     icon: github-square
     color: green
-  - url: https://twitter.com/tucuentadetwitter
-    icon: twitter-square
-    color: green
-  - url: https://www.linkedin.com/in/tuperfillinkedin
+ # - url: https://twitter.com/pirrandi
+ #   icon: twitter-square
+ #   color: green
+  - url: https://www.linkedin.com/in/diego-valencia-molina/
     icon: linkedin
     color: green
 
