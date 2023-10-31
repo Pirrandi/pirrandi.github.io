@@ -4534,7 +4534,7 @@ figure {
   margin: 0; }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #637AFE; }
+  color: #82ff00; }
 
 /**
  * `main` element
@@ -4586,7 +4586,7 @@ h1, h2, h3, h4, h5, h6 {
  * Links
  */
 a {
-  color: #F24784;
+  color: #cbffac;
   text-decoration: none; }
   a:hover {
     text-decoration: underline; }
@@ -4669,9 +4669,11 @@ pre {
   position: relative; }
   .site-header .blinking_cursor {
     animation: blinker 1s none infinite;
-    font-size: 20px; }
+    font-size: 20px; 
+    color: #82ff00;
+  }
   .site-header .command_prompt {
-    color: #637AFE;
+    color: #82ff00;
     font-size: 16px;
     margin-left: 0.1em; }
     .site-header .command_prompt:before {

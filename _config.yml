@@ -1,8 +1,8 @@
 title: Pirrandi Blog
-author: K0Hack
+author: Pirrandi
 email: 
 description: > # this means to ignore newlines until "show_exerpts:"
-  Blog Personal de K0Hack sobre Conceptos
+  Este es mi blog personal sobre Conceptos
   Hacking Etico // HTB // TryHackMe // Resumenes de Hacking
   // Herramientas para distintas tareas.
 show_excerpts: false # set to true to show excerpts on the homepage

